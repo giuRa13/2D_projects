@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <Rendering/Essentials/ShaderLoader.hpp>
+#include <Logger/Logger.hpp>
 
 class Camera2D
 {
@@ -57,7 +58,6 @@ public:
 
         m_bNeedsUpdate = false;
     }
-
 };
 
 struct UVs
@@ -90,7 +90,7 @@ bool LoadTexture(const std::string& filepath, int& width, int& height, bool blen
 
     if (!image)
     {
-        std::cout << "failed to load image [" << filepath << "]" <<SOIL_last_result();
+        std::cout << "failed to load image [" << filepath << "]" << SOIL_last_result() << std::endl;
         return false;
     }
 
@@ -137,6 +137,8 @@ bool LoadTexture(const std::string& filepath, int& width, int& height, bool blen
 
 int main(int argc, char* argv[])
 {
+    ENGINE_INIT_LOGS(true, true);
+
 	bool running{ true };
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -196,6 +198,7 @@ int main(int argc, char* argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    /////////////////////////////////////////////////////////////////////////////////////////////
     GLuint texID;
     glGenTextures(1, &texID);
     glBindTexture(GL_TEXTURE_2D, texID);
@@ -204,9 +207,11 @@ int main(int argc, char* argv[])
 
     if (!LoadTexture("assets/textures/16map.png", width, height, false))
     {
-        std::cout << "Failed to load Texture\n";
+        ENGINE_ERROR("Failed to load Texture");
         return -1;
     }
+    ENGINE_LOG("Loaded Texture: [width = {0}, height{1}]", width, height);
+
 
     UVs uvs{};
 
