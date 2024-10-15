@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <Rendering/Essentials/ShaderLoader.hpp>
 
 class Camera2D
 {
@@ -251,75 +252,15 @@ int main(int argc, char* argv[])
     Camera2D camera{};
     camera.SetScale(5.f);
 
-    const char* vertexSource =
-        "#version 460 core\n"
-        "layout (location = 0) in vec3 aPosition;\n"
-        "layout (location = 1) in vec2 aTexCoords;\n"
-        "out vec2 fragUVs;\n"
-        "uniform mat4 uProjection;"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = uProjection * vec4(aPosition, 1.0);\n"
-        "    fragUVs = aTexCoords;\n"
-        "}\0";
-    GLuint vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER); //Create
-    glShaderSource(vertexShader, 1, &vertexSource, NULL); //Add Source
-    glCompileShader(vertexShader); //Compile
-
-    int status;
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-    if (!status)
+    auto shader = ENGINE_RENDERING::ShaderLoader::Create(
+        "assets/shaders/basicShader.vert", 
+        "assets/shaders/basicShader.frag");
+    if (!shader)
     {
-        char infoLog[1024];
-        glGetShaderInfoLog(vertexShader, 1024, NULL, infoLog);
-        std::cout << "Failed to Compile Vertex Shader \n" << infoLog << std::endl;
+        std::cout << "Failete to Create shaders" << std::endl;
         return -1;
     }
 
-    //
-    const char* fragmentSource =
-        "#version 460 core\n"
-        "in vec2 fragUVs;"
-        "out vec4 color;\n"
-        "uniform sampler2D uTexture;\n"
-        "void main()\n"
-        "{\n"
-        //"   color = vec4(1.0f, 0.5f, 0.0f, 1.0f);\n"
-        "   color = texture(uTexture, fragUVs);\n"
-        "}\0";
-    GLuint fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); //Create
-    glShaderSource(fragmentShader, 1, &fragmentSource, NULL); //Add Source
-    glCompileShader(fragmentShader); //Compile
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
-    if (!status)
-    {
-        char infoLog[1024];
-        glGetShaderInfoLog(fragmentShader, 1024, NULL, infoLog);
-        std::cout << "Failed to Compile Fragment Shader \n" << infoLog << std::endl;
-        return -1;
-    }
-
-    // Create, Link Program
-    GLuint shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
-    if (!status)
-    {
-        char infoLog[1024];
-        glGetProgramInfoLog(shaderProgram, 1024, NULL, infoLog);
-        std::cout << "Failed to Link Shader Program \n" << infoLog << std::endl;
-        return -1;
-    }
-    glUseProgram(shaderProgram);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
 
     // VAO VBO EBO
     GLuint VAO, VBO, IBO;
@@ -378,16 +319,14 @@ int main(int argc, char* argv[])
 		}
 
 		glViewport(0, 0, window.GetWidth(), window.GetHeight());
-
 		glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shader->Enable();
         glBindVertexArray(VAO);
 
         auto projection = camera.GetCameramatrix();
-        GLuint location = glGetUniformLocation(shaderProgram, "uProjection");
-        glUniformMatrix4fv(location, 1, GL_FALSE, &projection[0][0]);
+        shader->SetUniformMat4("uProjection", projection);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texID);
@@ -399,6 +338,7 @@ int main(int argc, char* argv[])
 		SDL_GL_SwapWindow(window.GetWindow().get());
 
         camera.Update();
+        shader->Disable();
 	}
 
 	return 0;
