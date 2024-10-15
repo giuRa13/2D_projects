@@ -4,8 +4,67 @@
 #include <SDL.h>
 #include <glad/glad.h>
 #include <SOIL/SOIL.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
+class Camera2D
+{
+private: 
+    int m_Width, m_Height;
+    float m_Scale;
+    
+    glm::vec2 m_Position;
+    glm::mat4 m_CameraMatrix, m_OrthoProjection;
+
+    bool m_bNeedsUpdate;
+
+
+public:
+    Camera2D() : Camera2D(640, 480)
+    { }
+
+    Camera2D(int width, int height)
+        : m_Width{ width }, m_Height{ height }, m_Scale{ 1.0f },
+        m_Position{ glm::vec2{0} }, m_CameraMatrix{ 1.0f }, m_OrthoProjection{ 1.0f }, m_bNeedsUpdate{ true }
+    {
+
+        // Origin Top Left                           // Origin Bottom Left
+        m_OrthoProjection = glm::ortho(              
+            0.0f,                             // Left       
+            static_cast<float>(m_Width),      // Right      
+            static_cast<float>(m_Height),     // Bottom     0.0f,
+            0.0f,                             // Top        static_cast<float>(m_Height), 
+            -1.0f,                            // near       
+            1.0f                              // far       
+        );                                          
+    }
+
+    inline void SetScale(float scale) { m_Scale = scale; m_bNeedsUpdate = true; }
+    inline glm::mat4 GetCameramatrix() { return m_CameraMatrix; }
+
+    void Update()
+    {
+        if (!m_bNeedsUpdate)
+            return;
+
+        glm::vec3 translate{ -m_Position.x, -m_Position.y, 0.0f };
+        m_CameraMatrix = glm::translate(m_OrthoProjection, translate);
+
+        glm::vec3 scale{ m_Scale, m_Scale, 0.0f };
+        m_CameraMatrix *= glm::scale(glm::mat4(1.0f), scale);
+
+        m_bNeedsUpdate = false;
+    }
+
+};
+
+struct UVs
+{
+    float u, v, width, height;
+    UVs(): u{ 0.0f }, v{ 0.0f }, width{ 0.0f }, height{ 0.0f }
+    { }
+};
 
 void GetOpenGLVersionInfo()
 {
@@ -69,7 +128,6 @@ bool LoadTexture(const std::string& filepath, int& width, int& height, bool blen
         image
     );
 
-    //stbi_image_free(image);
     SOIL_free_image_data(image);
 
     return true;
@@ -106,7 +164,7 @@ int main(int argc, char* argv[])
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); //1=hardware accelleration, 0=software rendering
 
-	ENGINE_WINDOWING::Window window("Test Window", 480, 480, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, SDL_WINDOW_OPENGL);
+	ENGINE_WINDOWING::Window window("Test Window", 640, 480, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, true, SDL_WINDOW_OPENGL);
 	if (!window.GetWindow())
 	{
 		std::string error = SDL_GetError();
@@ -132,7 +190,10 @@ int main(int argc, char* argv[])
 		running = false;
 		return -1;
 	}
-
+    
+    // Enable Alpha Blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     GLuint texID;
     glGenTextures(1, &texID);
@@ -140,41 +201,65 @@ int main(int argc, char* argv[])
 
     int width{ 0 }, height{ 0 };
 
-    if (!LoadTexture("assets/textures/Dungeon_Character_at.png", width, height, false))
+    if (!LoadTexture("assets/textures/16map.png", width, height, false))
     {
         std::cout << "Failed to load Texture\n";
         return -1;
     }
 
+    UVs uvs{};
+
+    auto generateUVs = [&](float startX, float startY, float spriteWidth, float spriteHeight)
+    {
+            uvs.width = spriteWidth / width;
+            uvs.height = spriteHeight / height;
+            
+            uvs.u = startX * uvs.width;
+            uvs.v = startY * uvs.height;
+    };
+
+    generateUVs(13, 10, 16, 16);
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     /*float vertices[] =
     {
-        -0.5f,  0.5f,  0.0f,   0.0f, 1.0f, //top left
-         0.5f,  0.5f,  0.0f,   1.0f, 1.0f,  //top right
-         0.5f, -0.5f,  0.0f,   1.0f, 0.0f, //bottom right
-        -0.5f, -0.5f,  0.0f,   0.0f, 0.0f, //bottom left
-    };*/ //swapped tex coords
+        -0.5f,  0.5f,  0.0f,   0.0f, 1.0f, //top left            //swapped tex coords 0.0f, 0.0f,
+         0.5f,  0.5f,  0.0f,   1.0f, 1.0f,  //top right                               1.0f, 0.0f,
+         0.5f, -0.5f,  0.0f,   1.0f, 0.0f, //bottom right                             1.0f, 1.0f,
+        -0.5f, -0.5f,  0.0f,   0.0f, 0.0f, //bottom left                              0.0f, 1.0f
+    };*/ 
+    /*float vertices[] =                                // Before Camera projection
+    {
+        -0.5f,  0.5f,  0.0f,   uvs.u,   (uvs.v + uvs.height),              // TL (0, 1)
+         0.5f,  0.5f,  0.0f,   uvs.u,   uvs.v,                             // BL (0, 0)
+         0.5f, -0.5f,  0.0f,   (uvs.u + uvs.width),   uvs.v,                // BR (1, 0)
+        - 0.5f, -0.5f,  0.0f,  (uvs.u + uvs.width), (uvs.v + uvs.height)   // TR (0, 0)
+    };*/
     float vertices[] =
     {
-        -0.5f,  0.5f,  0.0f,   0.0f, 0.0f, //top left
-         0.5f,  0.5f,  0.0f,   1.0f, 0.0f,  //top right
-         0.5f, -0.5f,  0.0f,   1.0f, 1.0f, //bottom right
-        -0.5f, -0.5f,  0.0f,   0.0f, 1.0f, //bottom left
+         10.f,  26.f,  0.0f,   uvs.u,   (uvs.v + uvs.height),              // TL (0, 1)
+         10.f,  10.f,  0.0f,   uvs.u,   uvs.v,                             // BL (0, 0)
+         26.f,  10.f,  0.0f,   (uvs.u + uvs.width),   uvs.v,                // BR (1, 0)
+         26.f,  26.f,  0.0f,  (uvs.u + uvs.width), (uvs.v + uvs.height)   // TR (0, 0)
     };
     GLuint indices[] =
     {
         0, 1, 2,
         2, 3, 0
     };
+
+    Camera2D camera{};
+    camera.SetScale(5.f);
+
     const char* vertexSource =
         "#version 460 core\n"
         "layout (location = 0) in vec3 aPosition;\n"
         "layout (location = 1) in vec2 aTexCoords;\n"
         "out vec2 fragUVs;\n"
+        "uniform mat4 uProjection;"
         "void main()\n"
         "{\n"
-        "    gl_Position = vec4(aPosition, 1.0);\n"
+        "    gl_Position = uProjection * vec4(aPosition, 1.0);\n"
         "    fragUVs = aTexCoords;\n"
         "}\0";
     GLuint vertexShader;
@@ -299,6 +384,11 @@ int main(int argc, char* argv[])
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
+
+        auto projection = camera.GetCameramatrix();
+        GLuint location = glGetUniformLocation(shaderProgram, "uProjection");
+        glUniformMatrix4fv(location, 1, GL_FALSE, &projection[0][0]);
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texID);
 
@@ -307,6 +397,8 @@ int main(int argc, char* argv[])
         glBindVertexArray(0);
 
 		SDL_GL_SwapWindow(window.GetWindow().get());
+
+        camera.Update();
 	}
 
 	return 0;
