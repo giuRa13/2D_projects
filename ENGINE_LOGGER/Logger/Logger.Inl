@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <sstream>
 
+
 constexpr WORD GREEN = 2;
 constexpr WORD RED = 4;
 constexpr WORD YELLOW = 6;
@@ -81,7 +82,7 @@ namespace ENGINE_LOGGER
 
 		std::stringstream ss;
 		ss << "ENGINE [ERROR]: " << CurrentDateTime() << " - " << std::vformat(message, std::make_format_args(std::forward<Args>(args)...)) << 
-			"\nFUNC: " <<location.function_name() <<  //<source_location>
+			"\nFUNC: " <<location.function_name() <<  
 			"\nLINE: " <<location.line() <<"\n\n";
 
 		if (m_bConsoleLog)

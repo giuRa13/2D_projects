@@ -64,7 +64,7 @@ namespace ENGINE_RENDERING
 
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 		
-		if(status != GL_TRUE)
+		if (status != GL_TRUE)
 		{
 			GLint maxLength;
 			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
@@ -72,7 +72,7 @@ namespace ENGINE_RENDERING
 			std::string errorLog(maxLength, ' ');
 
 			glGetShaderInfoLog(shader, maxLength, &maxLength, errorLog.data());
-			std::cout << "Shader Compilation Failed: " << std::string(errorLog) << std::endl;
+			std::cout << "Shader Compilation Failed: " << std::string{errorLog} << std::endl;
 			glDeleteShader(shader);
 			return false;
 		}
@@ -94,7 +94,9 @@ namespace ENGINE_RENDERING
 			std::string errorLog(maxLength, ' ');
 
 			glGetProgramInfoLog(program, maxLength, &maxLength, errorLog.data());
-			std::cout << "Shaders Failed to Link: " << std::string(errorLog) << std::endl;
+			
+			std::cout << "Shaders Failed to Link: " << std::string{ errorLog } << std::endl;
+			
 			return false;
 		}
 
@@ -107,7 +109,7 @@ namespace ENGINE_RENDERING
 		glAttachShader(program, fragmentShader);
 		glLinkProgram(program);
 
-		if (!IsProgramValid)
+		if (!IsProgramValid(program))
 		{
 			glDeleteProgram(program);
 			glDeleteShader(vertexShader);
@@ -122,7 +124,7 @@ namespace ENGINE_RENDERING
 		return true;
 	}
 
-	std::shared_ptr<Shader> ShaderLoader::Create(const std::string& vertexShaderPath, const std::string fragmentShaderPath)
+	std::shared_ptr<Shader> ShaderLoader::Create(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
 		GLuint program = CreateProgram(vertexShaderPath, fragmentShaderPath);
 

@@ -18,7 +18,7 @@ namespace ENGINE_RENDERING
 
 	public:
 		ShaderLoader() = delete;
-		static std::shared_ptr<Shader> Create(const std::string& vertexShaderPath, const std::string fragmentShaderPath);
+		static std::shared_ptr<Shader> Create(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 	};
 
 }

@@ -11,6 +11,7 @@
 #define ENGINE_ERROR(x, ...) ENGINE_LOGGER::Logger::GetInstance().Error(std::source_location::current(), x, __VA_ARGS__);
 #define ENGINE_INIT_LOGS(console, retain) ENGINE_LOGGER::Logger::GetInstance().Init(console, retain);
 
+
 namespace ENGINE_LOGGER
 {
 	struct LogEntry

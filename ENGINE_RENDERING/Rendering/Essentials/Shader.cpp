@@ -1,11 +1,12 @@
 #include "Shader.hpp"
 #include <iostream>
+#include <Logger/Logger.hpp>
 
 
 namespace ENGINE_RENDERING
 {
 
-	GLuint Shader::GetUniformLocation(const std::string & uniformName)
+	GLuint Shader::GetUniformLocation(const std::string& uniformName)
 	{
 		auto uniformItr = m_UniformLocationMap.find(uniformName);
 		if (uniformItr != m_UniformLocationMap.end())
@@ -14,7 +15,7 @@ namespace ENGINE_RENDERING
 		GLuint location = glGetUniformLocation(m_ShaderProgramID, uniformName.c_str());
 		if (location == GL_INVALID_INDEX)
 		{
-			std::cout<<"Uniform [" << uniformName << "] not found in the shader!" << std::endl;
+			ENGINE_ERROR("Uniform [{0}] not found in the shader!", uniformName);
 			return -1;
 		}
 
@@ -23,7 +24,7 @@ namespace ENGINE_RENDERING
 		return location;
 	}
 
-	Shader::Shader(GLuint program, const std::string vertexPath, const std::string & fragmentPath)
+	Shader::Shader(GLuint program, const std::string vertexPath, const std::string& fragmentPath)
 		: m_ShaderProgramID{program}, m_sVertexPath{vertexPath}, m_sFragmentPath{fragmentPath}
 	{
 

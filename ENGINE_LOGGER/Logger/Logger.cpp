@@ -19,7 +19,7 @@ namespace ENGINE_LOGGER
 		ctime_s(buf, sizeof(buf), &time); //put time in buf array
 
 		LogTime logTime{ std::string{buf} };
-		return std::format("{0}-{1}-{2}-{3}", logTime.year, logTime.month, logTime.dayNumber, logTime.time);
+		return std::format("{0}-{1}-{2} {3}", logTime.year, logTime.month, logTime.dayNumber, logTime.time);
 	}
 
 	Logger& Logger::GetInstance()

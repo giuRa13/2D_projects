@@ -71,16 +71,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\ENGINE_LOGGER;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\ENGINE_LOGGER;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\ENGINE_LOGGER;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\SOIL\include;$(SolutionDir).\Glad\src\include;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\ENGINE_LOGGER;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -143,6 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ENGINE_LOGGER\ENGINE_LOGGER.vcxproj">
+      <Project>{7e900998-6481-4ab0-93c6-33e76e736f03}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Glad\Glad.vcxproj">
       <Project>{97266f30-6d1b-4aa7-b966-10ca7e3fcf66}</Project>
     </ProjectReference>
@@ -153,10 +156,14 @@
   <ItemGroup>
     <ClInclude Include="Rendering\Essentials\Shader.hpp" />
     <ClInclude Include="Rendering\Essentials\ShaderLoader.hpp" />
+    <ClInclude Include="Rendering\Essentials\Texture.hpp" />
+    <ClInclude Include="Rendering\Essentials\TextureLoader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rendering\Essentials\Shader.cpp" />
     <ClCompile Include="Rendering\Essentials\ShaderLoader.cpp" />
+    <ClCompile Include="Rendering\Essentials\Texture.cpp" />
+    <ClCompile Include="Rendering\Essentials\TextureLoader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

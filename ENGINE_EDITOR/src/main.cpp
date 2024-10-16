@@ -1,6 +1,7 @@
 #define SDL_MAIN_HANDLED 1;
 
 #include <Windowing/Window/Window.hpp>
+#include <Logger/Logger.hpp>
 #include <SDL.h>
 #include <glad/glad.h>
 #include <SOIL/SOIL.h>
@@ -8,7 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <Rendering/Essentials/ShaderLoader.hpp>
-#include <Logger/Logger.hpp>
+#include <Rendering/Essentials/TextureLoader.hpp>
+
 
 class Camera2D
 {
@@ -77,65 +79,8 @@ void GetOpenGLVersionInfo()
 }
 
 
-bool LoadTexture(const std::string& filepath, int& width, int& height, bool blended)
-{
-    int channels = 0;
 
-    unsigned char* image = SOIL_load_image(
-        filepath.c_str(),
-        &width, &height,
-        &channels,
-        SOIL_LOAD_AUTO
-    );
-
-    if (!image)
-    {
-        std::cout << "failed to load image [" << filepath << "]" << SOIL_last_result() << std::endl;
-        return false;
-    }
-
-    GLint format = GL_RGBA;
-
-    switch (channels)
-    {
-    case 3: format = GL_RGB; break;
-    case 4: format = GL_RGBA; break;
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    if (!blended)
-    {
-        //more pixelated
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    }
-    else
-    {
-        //more smooth (blend pixel toghether)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    }
-
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,               // level of detail (0=base image level)
-        format,          // internal format ( number of color components)
-        width, height,
-        0,               // border
-        format,          // format of the pixel data
-        GL_UNSIGNED_BYTE,
-        image
-    );
-
-    SOIL_free_image_data(image);
-
-    return true;
-}
-
-
-int main(int argc, char* argv[])
+int main(int argc, char* argv[]) //int argc, char* argv[]
 {
     ENGINE_INIT_LOGS(true, true);
 
@@ -199,26 +144,21 @@ int main(int argc, char* argv[])
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     /////////////////////////////////////////////////////////////////////////////////////////////
-    GLuint texID;
-    glGenTextures(1, &texID);
-    glBindTexture(GL_TEXTURE_2D, texID);
-
-    int width{ 0 }, height{ 0 };
-
-    if (!LoadTexture("assets/textures/16map.png", width, height, false))
-    {
-        ENGINE_ERROR("Failed to load Texture");
+    
+    auto texture = ENGINE_RENDERING::TextureLoader::Create(ENGINE_RENDERING::Texture::TextureType::PIXEL, "./assets/textures/16map.png");
+    if(!texture)
+    { 
+        ENGINE_ERROR("Failed to create Texture");
         return -1;
     }
-    ENGINE_LOG("Loaded Texture: [width = {0}, height{1}]", width, height);
-
 
     UVs uvs{};
+    ENGINE_LOG("Loaded Texture: [width = {0}, height = {1}]", texture->GetWidth(), texture->GetHeight());
 
     auto generateUVs = [&](float startX, float startY, float spriteWidth, float spriteHeight)
     {
-            uvs.width = spriteWidth / width;
-            uvs.height = spriteHeight / height;
+            uvs.width = spriteWidth / texture->GetWidth();
+            uvs.height = spriteHeight / texture->GetHeight();
             
             uvs.u = startX * uvs.width;
             uvs.v = startY * uvs.height;
@@ -334,7 +274,7 @@ int main(int argc, char* argv[])
         shader->SetUniformMat4("uProjection", projection);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texID);
+        glBindTexture(GL_TEXTURE_2D, texture->GetID());
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
