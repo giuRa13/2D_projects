@@ -1,4 +1,5 @@
 #define SDL_MAIN_HANDLED 1;
+#define NOMINMAX
 
 #include <Windowing/Window/Window.hpp>
 #include <SDL.h>
@@ -12,15 +13,9 @@
 #include <Rendering/Essentials/TextureLoader.hpp>
 #include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Essentials/Vertex.hpp>
+#include <entt.hpp>
 
 
-
-struct UVs
-{
-    float u, v, width, height;
-    UVs(): u{ 0.0f }, v{ 0.0f }, width{ 0.0f }, height{ 0.0f }
-    { }
-};
 
 void GetOpenGLVersionInfo()
 {
@@ -30,6 +25,37 @@ void GetOpenGLVersionInfo()
     std::cout << "Shadong Language: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
     std::cout << "\n";
 }
+
+struct UVs
+{
+    float u{ 0.f }, v{ 0.f }, uv_width{ 0.f }, uv_height{ 0.f };
+};
+
+struct TransformComponent
+{
+    glm::vec2 position{ glm::vec2{0.f} };
+    glm::vec2 scale{ glm::vec2{1.f} };
+    float rotation{ 0.f };
+};
+
+struct SpriteComponent
+{
+    float width{ 0.f }, height{ 0.f };
+
+    UVs uvs{ .u = 0.f, .v = 0.f, .uv_width = 0.f, .uv_height = 0.f };
+    ENGINE_RENDERING::Color color{ .r = 255, .g = 255, .b = 255, .a = 255 };
+
+    int start_x{ 0 }, start_y{ 0 };
+
+    void generate_uvs( int textureWidth, int textureHeight )
+    {
+        uvs.uv_width = width / textureWidth;
+        uvs.uv_height = height / textureHeight;
+
+        uvs.u = start_x * uvs.uv_width;
+        uvs.v = start_y * uvs.uv_height;
+    };
+};
 
 
 
@@ -96,44 +122,47 @@ int main(int argc, char* argv[]) //int argc, char* argv[]
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
     /////////////////////////////////////////////////////////////////////////////////////////////
     
+    // "Registry" holds and controls all entity
+    auto pRegistry = std::make_unique<entt::registry>();
+    if (!pRegistry)
+    {
+        ENGINE_ERROR("Failed to create entt Registry");
+        return -1;
+    }
+
     auto texture = ENGINE_RENDERING::TextureLoader::Create(ENGINE_RENDERING::Texture::TextureType::PIXEL, "./assets/textures/16map.png");
     if(!texture)
     { 
         ENGINE_ERROR("Failed to create Texture");
         return -1;
     }
-
-    UVs uVs{};
     ENGINE_LOG("Loaded Texture: [width = {0}, height = {1}]", texture->GetWidth(), texture->GetHeight());
 
-    auto generateUVs = [&](float startX, float startY, float spriteWidth, float spriteHeight)
-    {
-            uVs.width = spriteWidth / texture->GetWidth();
-            uVs.height = spriteHeight / texture->GetHeight();
-            
-            uVs.u = startX * uVs.width;
-            uVs.v = startY * uVs.height;
-    };
+    UVs uVs{};
 
-    generateUVs(13, 10, 16, 16);
+    auto ent1 = pRegistry->create();
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /*float vertices[] =
-    {
-        -0.5f,  0.5f,  0.0f,   0.0f, 1.0f, //top left            //swapped tex coords 0.0f, 0.0f,
-         0.5f,  0.5f,  0.0f,   1.0f, 1.0f,  //top right                               1.0f, 0.0f,
-         0.5f, -0.5f,  0.0f,   1.0f, 0.0f, //bottom right                             1.0f, 1.0f,
-        -0.5f, -0.5f,  0.0f,   0.0f, 0.0f, //bottom left                              0.0f, 1.0f
-    };*/ 
-    /*float vertices[] =                                // Before Camera projection
-    {
-        -0.5f,  0.5f,  0.0f,   uvs.u,   (uvs.v + uvs.height),              // TL (0, 1)
-         0.5f,  0.5f,  0.0f,   uvs.u,   uvs.v,                             // BL (0, 0)
-         0.5f, -0.5f,  0.0f,   (uvs.u + uvs.width),   uvs.v,                // BR (1, 0)
-        - 0.5f, -0.5f,  0.0f,  (uvs.u + uvs.width), (uvs.v + uvs.height)   // TR (0, 0)
-    };*/
+    auto& transform = pRegistry->emplace<TransformComponent>(ent1, TransformComponent{
+            .position = glm::vec2{10.f, 10.f},
+            .scale = glm::vec2{1.f, 1.f},
+            .rotation = 0.f
+        }
+    );
+
+    auto& sprite = pRegistry->emplace<SpriteComponent>(ent1, SpriteComponent{
+            .width = 16.f,
+            .height = 16.f,
+            //.color = ENGINE_RENDERING::Color{.r = 255, .g = 0, .b = 255, .a = 255},
+            .start_x = 13,
+            .start_y = 13,
+        }
+    );
+
+    sprite.generate_uvs(texture->GetWidth(), texture->GetHeight());
+
     /*float vertices[] =
     {
          10.f,  26.f,  0.0f,   uvs.u,   (uvs.v + uvs.height),              // TL (0, 1)
@@ -144,22 +173,22 @@ int main(int argc, char* argv[]) //int argc, char* argv[]
     std::vector<ENGINE_RENDERING::Vertex> vertices{};
     ENGINE_RENDERING::Vertex vTL{}, vTR{}, vBL{}, vBR{};
 
-    vTL.position = glm::vec2{10.f, 26.f};
-    vTL.uvs = glm::vec2{ uVs.u,   (uVs.v + uVs.height) };
+    vTL.position = glm::vec2{transform.position.x,    transform.position.y + sprite.height};
+    vTL.uvs = glm::vec2{ sprite.uvs.u,   sprite.uvs.v + sprite.uvs.uv_height};
 
-    vTR.position = glm::vec2{ 10.f, 10.f };
-    vTR.uvs = glm::vec2{ uVs.u,   uVs.v };
+    vTR.position = glm::vec2{ transform.position.x + sprite.width,    transform.position.y + sprite.height };
+    vTR.uvs = glm::vec2{ sprite.uvs.u + sprite.uvs.uv_width,   sprite.uvs.v + sprite.uvs.uv_height };
     
-    vBL.position = glm::vec2{ 26.f, 10.f };
-    vBL.uvs = glm::vec2{ (uVs.u + uVs.width),  uVs.v };
+    vBL.position = glm::vec2{ transform.position.x,    transform.position.y };
+    vBL.uvs = glm::vec2{ sprite.uvs.u,    sprite.uvs.v };
     
-    vBR.position = glm::vec2{ 26.f, 26.f };
-    vBR.uvs = glm::vec2{ (uVs.u + uVs.width), (uVs.v + uVs.height) };
+    vBR.position = glm::vec2{ transform.position.x + sprite.width,    transform.position.y };
+    vBR.uvs = glm::vec2{ sprite.uvs.u + sprite.uvs.uv_width,    sprite.uvs.v };
 
     vertices.push_back(vTL);
-    vertices.push_back(vTR);
     vertices.push_back(vBL);
     vertices.push_back(vBR);
+    vertices.push_back(vTR);
 
     GLuint indices[] =
     {
