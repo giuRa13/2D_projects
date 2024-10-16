@@ -154,12 +154,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Rendering\Core\Camera2D.hpp" />
     <ClInclude Include="Rendering\Essentials\Shader.hpp" />
     <ClInclude Include="Rendering\Essentials\ShaderLoader.hpp" />
     <ClInclude Include="Rendering\Essentials\Texture.hpp" />
     <ClInclude Include="Rendering\Essentials\TextureLoader.hpp" />
+    <ClInclude Include="Rendering\Essentials\Vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Rendering\Core\Camera2D.cpp" />
     <ClCompile Include="Rendering\Essentials\Shader.cpp" />
     <ClCompile Include="Rendering\Essentials\ShaderLoader.cpp" />
     <ClCompile Include="Rendering\Essentials\Texture.cpp" />
