@@ -71,16 +71,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\Glad\src\include;$(SolutionDir).\SOIL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\Glad\src\include;$(SolutionDir).\SOIL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\Glad\src\include;$(SolutionDir).\SOIL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir).\ENGINE_LOGGER;$(SolutionDir).\ENGINE_RENDERING;$(SolutionDir).\Dependencies\glm;$(SolutionDir).\Dependencies\entt;$(SolutionDir).\Glad\src\include;$(SolutionDir).\SOIL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -149,6 +149,12 @@
     <ProjectReference Include="..\ENGINE_RENDERING\ENGINE_RENDERING.vcxproj">
       <Project>{2ee10373-32dd-4eb9-9097-a4528a080358}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Glad\Glad.vcxproj">
+      <Project>{97266f30-6d1b-4aa7-b966-10ca7e3fcf66}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SOIL\SOIL.vcxproj">
+      <Project>{8aa25d01-a436-43bf-a522-cdf42458fba1}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\ECS\Components\Identification.hpp" />
@@ -156,10 +162,12 @@
     <ClInclude Include="Core\ECS\Components\TransformConponent.hpp" />
     <ClInclude Include="Core\ECS\Entity.hpp" />
     <ClInclude Include="Core\ECS\Registry.hpp" />
+    <ClInclude Include="Core\Resources\AssetManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\ECS\Entity.cpp" />
     <ClCompile Include="Core\ECS\Registry.cpp" />
+    <ClCompile Include="Core\Resources\AssetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Core\ECS\Entity.inl" />

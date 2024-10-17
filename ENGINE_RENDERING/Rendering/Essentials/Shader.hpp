@@ -19,6 +19,7 @@ namespace ENGINE_RENDERING
 
 
 	public:
+		Shader();
 		Shader(GLuint program, const std::string vertexPath, const std::string& fragmentPath);
 		
 		~Shader();

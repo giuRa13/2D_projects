@@ -17,6 +17,7 @@
 #include <Core/ECS/Components/TransformConponent.hpp>
 #include <Core/ECS/Components/SpriteComponent.hpp>
 #include <Core/ECS/Components/Identification.hpp>
+#include <Core/Resources/AssetManager.hpp>
 
 
 
@@ -97,13 +98,22 @@ int main(int argc, char* argv[]) //int argc, char* argv[]
 
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto texture = ENGINE_RENDERING::TextureLoader::Create(ENGINE_RENDERING::Texture::TextureType::PIXEL, "./assets/textures/16map.png");
-    if(!texture)
-    { 
-        ENGINE_ERROR("Failed to create Texture");
+    auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
+    if (!assetManager)
+    {
+        ENGINE_ERROR("Failet to create AssetManager");
         return -1;
     }
-    ENGINE_LOG("Loaded Texture: [width = {0}, height = {1}]", texture->GetWidth(), texture->GetHeight());
+
+    if (!assetManager->AddTexture("16map", "./assets/textures/16map.png", true))
+    {
+        ENGINE_ERROR("Failed to create and add texture");
+        return -1;
+    }
+
+    auto texture = assetManager->GetTexture("16map");
+
+    ENGINE_LOG("Loaded Texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
 
     auto pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
@@ -125,7 +135,7 @@ int main(int argc, char* argv[]) //int argc, char* argv[]
         }
     );
 
-    sprite.generate_uvs(texture->GetWidth(), texture->GetHeight());
+    sprite.generate_uvs(texture.GetWidth(), texture.GetHeight());
 
     /*float vertices[] =
     {
@@ -166,12 +176,17 @@ int main(int argc, char* argv[]) //int argc, char* argv[]
     ENGINE_RENDERING::Camera2D camera{};
     camera.SetScale(5.f);
 
-    auto shader = ENGINE_RENDERING::ShaderLoader::Create(
-        "assets/shaders/basicShader.vert", 
-        "assets/shaders/basicShader.frag");
-    if (!shader)
+
+    if (!assetManager->AddShader("basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag"))
     {
-        ENGINE_ERROR("Failete to Create shaders");
+        ENGINE_ERROR("Failed yo add Shaders to Asset Manager");
+        return -1;
+    }
+
+    auto shader = assetManager->GetShader("basic");
+    if (shader.ShaderProgramID() == 0)
+    {
+        ENGINE_ERROR("Failete to Create the Shaders");
         return -1;
     }
 
@@ -252,14 +267,14 @@ int main(int argc, char* argv[]) //int argc, char* argv[]
 		glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-        shader->Enable();
+        shader.Enable();
         glBindVertexArray(VAO);
 
         auto projection = camera.GetCameraMatrix();
-        shader->SetUniformMat4("uProjection", projection);
+        shader.SetUniformMat4("uProjection", projection);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture->GetID());
+        glBindTexture(GL_TEXTURE_2D, texture.GetID());
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
@@ -268,7 +283,7 @@ int main(int argc, char* argv[]) //int argc, char* argv[]
 		SDL_GL_SwapWindow(window.GetWindow().get());
 
         camera.Update();
-        shader->Disable();
+        shader.Disable();
 	}
 
 	return 0;
