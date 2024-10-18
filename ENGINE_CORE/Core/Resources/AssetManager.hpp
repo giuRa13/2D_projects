@@ -26,7 +26,7 @@ namespace ENGINE_RESOURCES
 		const ENGINE_RENDERING::Texture& GetTexture(const std::string& textureName);
 
 		bool AddShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath);
-		const ENGINE_RENDERING::Shader& GetShader(const std::string& shaderName);
+		ENGINE_RENDERING::Shader& GetShader(const std::string& shaderName);
 	};
 
 }

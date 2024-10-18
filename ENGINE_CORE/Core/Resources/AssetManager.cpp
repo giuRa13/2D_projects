@@ -63,7 +63,7 @@ namespace ENGINE_RESOURCES
 		return true;
 	}
 
-	const ENGINE_RENDERING::Shader& AssetManager::GetShader(const std::string& shaderName)
+	ENGINE_RENDERING::Shader& AssetManager::GetShader(const std::string& shaderName)
 	{
 		auto shaderItr = m_mapShaders.find(shaderName);
 		if (shaderItr == m_mapShaders.end())

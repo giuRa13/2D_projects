@@ -15,7 +15,7 @@ namespace ENGINE_RENDERING
 
 		std::unordered_map<std::string, GLuint> m_UniformLocationMap;
 
-		GLuint GetUniformLocation(const std::string& uniformmName);
+		GLuint GetUniformLocation(const std::string& uniformName);
 
 
 	public:
@@ -27,10 +27,10 @@ namespace ENGINE_RENDERING
 		void SetUniformInt(const std::string& name, int value);
 
 
-		void SetUniformMat4(const std::string& name, glm::mat4& mat);
+		void SetUniformMat4(const std::string& name, const glm::mat4& mat);
 
-		void Enable();
-		void Disable();
+		void Enable() const;
+		void Disable() const;
 
 		inline const GLuint ShaderProgramID() const { return m_ShaderProgramID; }
 	};

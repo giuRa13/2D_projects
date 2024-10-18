@@ -43,17 +43,17 @@ namespace ENGINE_RENDERING
 		glUniform1i(GetUniformLocation(name), value);
 	}
 
-	void Shader::SetUniformMat4(const std::string & name, glm::mat4 & mat)
+	void Shader::SetUniformMat4(const std::string& name, const glm::mat4& mat)
 	{
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]);
 	}
 
-	void Shader::Enable()
+	void Shader::Enable() const
 	{
 		glUseProgram(m_ShaderProgramID);
 	}
 
-	void Shader::Disable()
+	void Shader::Disable() const
 	{
 		glUseProgram(0);
 	}

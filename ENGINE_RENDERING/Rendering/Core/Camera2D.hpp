@@ -26,13 +26,21 @@ namespace ENGINE_RENDERING
 
         void Update();
 
-        inline void SetPosition(glm::vec2 newPosition) { m_Position = newPosition; m_bNeedsUpdate = true; }
-        inline void SetScale(float scale) { m_Scale = scale; m_bNeedsUpdate = true; }
+        inline void SetPosition(glm::vec2 newPosition) 
+        { 
+            m_Position = newPosition; 
+            m_bNeedsUpdate = true; 
+        }
+        inline void SetScale(float scale) 
+        { 
+            m_Scale = scale; 
+            m_bNeedsUpdate = true; 
+        }
 
         inline const glm::vec2 GetPosition() const { return m_Position; }
         inline const float GetScale() const { return m_Scale; }
 
-        inline glm::mat4 GetCameraMatrix() { return m_CameraMatrix; }
+        inline glm::mat4 GetCameraMatrix() const { return m_CameraMatrix; }
         
     };
 
