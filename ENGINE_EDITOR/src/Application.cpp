@@ -4,6 +4,7 @@
 #include <SOIL/SOIL.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <sol/sol.hpp>
 #include <iostream>
 #include <Logger/Logger.hpp>
 #include <Rendering/Essentials/ShaderLoader.hpp>
@@ -15,6 +16,9 @@
 #include <Core/ECS/Components/SpriteComponent.hpp>
 #include <Core/ECS/Components/Identification.hpp>
 #include <Core/Resources/AssetManager.hpp>
+#include <Core/Systems/ScriptingSystem.hpp>
+#include <memory>
+
 
 
 namespace ENGINE_EDITOR
@@ -31,9 +35,6 @@ namespace ENGINE_EDITOR
         static Application app{};
         return app;
     }
-	
-    Application::~Application()
-	{ }
 
 
     bool Application::Initialize()
@@ -106,14 +107,14 @@ namespace ENGINE_EDITOR
         if(!assetManager)
         {
             ENGINE_ERROR("Failed to create the Asset manager");
-            return -1;
+            return false;
         }
 
-        // Texture
+        // Texture //////////////////////
         if(!assetManager->AddTexture("16map", "./assets/textures/16map.png", true))
         {
             ENGINE_ERROR("Failed to Create and Add Texture");
-            return -1;
+            return false;
         }
         
         auto texture = assetManager->GetTexture("16map");
@@ -121,7 +122,7 @@ namespace ENGINE_EDITOR
         ENGINE_LOG("Loaded texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
         ENGINE_WARN("Loaded texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
 
-        // Entity
+        // Entity //////////////////////
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
         ENGINE_CORE::ECS::Entity entity1{*m_pRegistry, "Ent1", "Test"};
@@ -136,7 +137,7 @@ namespace ENGINE_EDITOR
         auto& sprite = entity1.AddComponent<ENGINE_CORE::ECS::SpriteComponent>(ENGINE_CORE::ECS::SpriteComponent{
                 .width = 16.f,
                 .height = 16.f,
-                //.color = ENGINE_RENDERING::Color{.r = 255, .g = 0, .b = 255, .a = 255},
+                .color = ENGINE_RENDERING::Color{.r = 255, .g = 0, .b = 255, .a = 255},
                 .start_x = 13,
                 .start_y = 13,
             }
@@ -186,7 +187,42 @@ namespace ENGINE_EDITOR
             2, 3, 0
         };
 
-        // Camera
+        // Lua state //////////////////////
+        auto lua = std::make_shared<sol::state>();
+
+        if(!lua)
+        {
+            ENGINE_ERROR("Failed to create the Lua State");
+            return false;
+        }
+        lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string);
+
+        if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
+        {
+            ENGINE_ERROR("Failed to add the sol::state to Registry Context");
+            //return false;
+        }
+
+        auto scriptSystem = std::make_shared<ENGINE_CORE::Systems::ScriptingSystem>(*m_pRegistry);
+        if(!scriptSystem)
+        {
+            ENGINE_ERROR("Failed to acreate the Scripting System");
+            return false;   
+        }
+
+        if(!scriptSystem->LoadMainScript(*lua))
+        {
+            ENGINE_ERROR("Failed to load the Main Lua Script");
+            return false; 
+        }
+
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>(scriptSystem))
+        {
+            ENGINE_ERROR("Failed to add the ScriptingSystem to Registry Context");
+            return false;
+        }
+
+        // Camera //////////////////////
         auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
         camera->SetScale(5.f);
 
@@ -308,6 +344,8 @@ namespace ENGINE_EDITOR
         }
         
         camera->Update();
+        auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
+        scriptSystem->Update();
     }
 
 
@@ -335,6 +373,9 @@ namespace ENGINE_EDITOR
         glActiveTexture(GL_TEXTURE0);
         const auto& texture = assetManager->GetTexture("16map");
         glBindTexture(GL_TEXTURE_2D, texture.GetID());
+
+        auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
+        scriptSystem->Render();
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 

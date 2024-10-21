@@ -8,7 +8,7 @@ target_include_directories(
     
 target_link_libraries(ENGINE_EDITOR 
     PRIVATE ENGINE_WINDOW ENGINE_RENDERING ENGINE_LOGGER ENGINE_CORE
-    PUBLIC glm::glm glad::glad soil2 EnTT::EnTT )
+    PUBLIC glm::glm glad::glad soil2 EnTT::EnTT sol2 )
 
 add_resources(TARGET Assets IN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets OUT_DIR assets)
 add_dependencies(ENGINE_EDITOR Copy-Assets)

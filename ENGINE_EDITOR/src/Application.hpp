@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <Windowing/Window/Window.hpp>
 #include <Core/ECS/Registry.hpp>
+#include <memory>
 
 
 namespace ENGINE_EDITOR
@@ -29,11 +30,13 @@ namespace ENGINE_EDITOR
 		void CleanUp();
 
 		Application();
+		~Application() = default;
+		Application( const Application& ) = delete;
+		Application& operator=( const Application& ) = delete;
 
 
     public:
 		static Application& GetInstance();
-		~Application();
 		
         void Run();
 

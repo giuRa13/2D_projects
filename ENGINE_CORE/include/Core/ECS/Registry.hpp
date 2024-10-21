@@ -1,6 +1,7 @@
 #pragma once
 
 #include <entt/entt.hpp>
+#include <sol/sol.hpp>
 
 
  namespace ENGINE_CORE::ECS

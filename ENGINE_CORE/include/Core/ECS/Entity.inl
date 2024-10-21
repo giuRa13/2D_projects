@@ -6,15 +6,15 @@
 namespace ENGINE_CORE::ECS
 {
 
-    template <typename TComponent, typename ...Args>
-	TComponent& Entity::AddComponent(Args&& ...args)
+    template <typename TComponent, typename... Args>
+	TComponent& Entity::AddComponent(Args&&... args)
 	{
 		auto& registry = m_Registry.GetRegistry();		
 		return registry.emplace<TComponent>(m_Entity, std::forward<Args>(args)...);
 	}
 	
     
-    template <typename TComponent, typename ...Args>
+    template <typename TComponent, typename... Args>
 	TComponent& Entity::ReplaceComponent(Args&& ...args)
 	{
 		auto& registry = m_Registry.GetRegistry();
