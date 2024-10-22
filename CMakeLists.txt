@@ -23,7 +23,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 include(cmake/CompilerSettings.cmake)
-include(cmake/Options.cmake)
+#include(cmake/Options.cmake)
 
 set(BUILD_SHARED_LIBS OFF)
 

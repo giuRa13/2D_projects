@@ -22,6 +22,8 @@ namespace ENGINE_CORE::Systems
         void Update();
         void Render();
 
+        static void RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
+
     };
 
 }

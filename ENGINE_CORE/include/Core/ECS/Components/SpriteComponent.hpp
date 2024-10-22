@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Rendering/Essentials/Vertex.hpp>
+#include <Core/ECS/Registry.hpp>
+#include <sol/sol.hpp>
 
 
 namespace ENGINE_CORE::ECS
@@ -28,6 +30,9 @@ namespace ENGINE_CORE::ECS
             uvs.u = start_x * uvs.uv_width;
             uvs.v = start_y * uvs.uv_height;
         };
+
+        static void CreateSpriteLuaBind(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
+        
     };
 
 }

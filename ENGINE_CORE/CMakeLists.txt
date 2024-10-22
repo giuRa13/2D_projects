@@ -5,14 +5,16 @@ add_library(ENGINE_CORE
     "include/Core/ECS/Registry.hpp"
     #"include/Core/ECS/Registry.inl"
     "src/ECS/Registry.cpp"
+    "include/Core/ECS/MetaUtilities.hpp"
+    "src/ECS/MetaUtilities.cpp"
     
     # Components
     "include/Core/ECS/Components/Identification.hpp"
     #"include/Core/ECS/Components/ScriptComponent.hpp"
     "include/Core/ECS/Components/SpriteComponent.hpp"
-    #"src/ECS/Components/SpriteComponent.cpp"
+    "src/ECS/Components/SpriteComponent.cpp"
     "include/Core/ECS/Components/TransformComponent.hpp"
-    #"src/ECS/Components/TransformComponent.cpp"
+    "src/ECS/Components/TransformComponent.cpp"
     "include/Core/ECS/Components/ScriptComponent.hpp"
     
     # Resources

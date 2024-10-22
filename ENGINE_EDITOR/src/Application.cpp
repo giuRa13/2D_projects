@@ -116,39 +116,8 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
         }
-        
-        auto texture = assetManager->GetTexture("16map");
-
-        ENGINE_LOG("Loaded texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
-        ENGINE_WARN("Loaded texture: [width = {0}, height = {1}]", texture.GetWidth(), texture.GetHeight());
-
-        // Entity //////////////////////
+  
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
-
-        ENGINE_CORE::ECS::Entity entity1{*m_pRegistry, "Ent1", "Test"};
-
-        auto& transform = entity1.AddComponent<ENGINE_CORE::ECS::TransformComponent>(ENGINE_CORE::ECS::TransformComponent{
-                .position = glm::vec2{10.f, 10.f},
-                .scale = glm::vec2{5.f, 5.f},
-                .rotation = 0.f
-            }
-        );
-
-        auto& sprite = entity1.AddComponent<ENGINE_CORE::ECS::SpriteComponent>(ENGINE_CORE::ECS::SpriteComponent{
-                .width = 16.f,
-                .height = 16.f,
-                .color = ENGINE_RENDERING::Color{.r = 255, .g = 0, .b = 255, .a = 255},
-                .start_x = 13,
-                .start_y = 13,
-                .layer = 0,
-                .texture_name = "16map"
-            }
-        );
-        sprite.generate_uvs(texture.GetWidth(), texture.GetHeight());
-
-        auto& id = entity1.GetComponent<ENGINE_CORE::ECS::Identification>();
-        ENGINE_LOG("Name: {0}, Group: {1}, ID: {2}", id.name, id.group, id.entity_id);
-
 
         // Lua state //////////////////////
         auto lua = std::make_shared<sol::state>();
@@ -172,11 +141,6 @@ namespace ENGINE_EDITOR
         {
             ENGINE_ERROR("Failed to create the Scripting System");
             return false;   
-        }
-        if(!scriptSystem->LoadMainScript(*lua))
-        {
-            ENGINE_ERROR("Failed to load the Main Lua Script");
-            return false; 
         }
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>(scriptSystem))
         {
@@ -216,6 +180,14 @@ namespace ENGINE_EDITOR
         {
             ENGINE_ERROR("Failed to load the Shaders");
             return false;
+        }
+
+        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaBinding(*lua, *m_pRegistry);
+
+        if(!scriptSystem->LoadMainScript(*lua))
+        {
+            ENGINE_ERROR("Failed to load the Main Lua Script");
+            return false; 
         }
 
         return true;
@@ -273,7 +245,7 @@ namespace ENGINE_EDITOR
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Update();
 
-        auto view = m_pRegistry->GetRegistry().view<ENGINE_CORE::ECS::TransformComponent, ENGINE_CORE::ECS::SpriteComponent>();
+        /*auto view = m_pRegistry->GetRegistry().view<ENGINE_CORE::ECS::TransformComponent, ENGINE_CORE::ECS::SpriteComponent>();
         static float rotation{0.f};
         static float x_pos{10.f};
         static bool bMoveRight{true};
@@ -299,7 +271,7 @@ namespace ENGINE_EDITOR
             transform.position.x = x_pos;
         }
 
-        rotation += bMoveRight ? 9 : -9;
+        rotation += bMoveRight ? 9 : -9;*/
     }
 
 

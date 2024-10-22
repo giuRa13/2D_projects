@@ -1,8 +1,12 @@
 #include "Core/Systems/ScriptingSystem.hpp"
 #include "Core/ECS/Components/ScriptComponent.hpp"
+#include "Core/ECS/Components/TransformComponent.hpp"
+#include "Core/ECS/Components/SpriteComponent.hpp"
 #include "Core/ECS/Entity.hpp"
 #include <Logger/Logger.hpp>
 
+
+using namespace ENGINE_CORE::ECS;
 
 namespace ENGINE_CORE::Systems
 {
@@ -108,6 +112,17 @@ namespace ENGINE_CORE::Systems
                 ENGINE_ERROR("Error running the Render Script: {0}", err.what());
             }
         }
+    }
+
+
+    void ScriptingSystem::RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
+    {
+        Entity::CreateLuaEntityBinding(lua, registry);
+        TransformComponent::CreateLuaTransformBind(lua);
+        SpriteComponent::CreateSpriteLuaBind(lua, registry);
+
+        Entity::RegisterMetaComponent<TransformComponent>();
+        Entity::RegisterMetaComponent<SpriteComponent>();
     }
 
 }

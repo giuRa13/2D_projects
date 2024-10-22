@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "Registry.hpp"
+#include <sol/sol.hpp>
 
 
 namespace ENGINE_CORE::ECS
@@ -30,6 +31,13 @@ namespace ENGINE_CORE::ECS
 
     	inline entt::entity& GetEntity() { return m_Entity; }
 		inline entt::registry& GetRegistry() { return m_Registry.GetRegistry(); }
+
+		//////////////////////////////////
+		static void CreateLuaEntityBinding(sol::state& lua, Registry& registry);
+
+		template <typename TComponent>
+		static void RegisterMetaComponent();
+		//////////////////////////////////
 		
         template <typename TComponent, typename... Args>
 		TComponent& AddComponent(Args&&... args);
@@ -46,6 +54,9 @@ namespace ENGINE_CORE::ECS
         template <typename TComponent>
 		void RemoveComponent();
     };
+
+	template <typename TCopmonent>
+	auto add_component(Entity&, const sol::table& comp, sol::this_state s);
 
 }
 
