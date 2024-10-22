@@ -29,18 +29,20 @@
 		// entt provides: TContext
 		// object map that takes any type of variable (each Registry have one)
 		// TContext has to be movable and constructable
+
+		
+		static void CreateLuaRegistryBind(sol::state& lua, Registry& registry);
+
+		template <typename TComponent>
+		static void RegistryMetaComponent();
 	};
 
-    template <typename TContext>
-	inline TContext Registry::AddToContext(TContext context)
-	{
-		return m_pRegistry->ctx().emplace<TContext>(context);
-	}
+	template <typename TComponent>
+	entt::runtime_view& add_component_to_view(Registry* registry, entt::runtime_view& view);
 
-	template <typename TContext>
-	inline TContext& Registry::GetContext()
-	{
-		return m_pRegistry->ctx().get<TContext>();
-	}
+	template <typename TComponent>
+	entt::runtime_view& exclude_component_from_view(Registry* registry, entt::runtime_view& view);
 
  }
+
+ #include "Registry.inl"

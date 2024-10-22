@@ -117,12 +117,16 @@ namespace ENGINE_CORE::Systems
 
     void ScriptingSystem::RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
+        Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);
         TransformComponent::CreateLuaTransformBind(lua);
         SpriteComponent::CreateSpriteLuaBind(lua, registry);
 
         Entity::RegisterMetaComponent<TransformComponent>();
         Entity::RegisterMetaComponent<SpriteComponent>();
+
+        Registry::RegistryMetaComponent<TransformComponent>();
+        Registry::RegistryMetaComponent<SpriteComponent>();
     }
 
 }

@@ -1,9 +1,14 @@
 -- Main Lua Script
 
 gEntity = Entity("TestEntity", "Groupy")
+gEntity2 = Entity("TestEntity2", "Groupy")
 
 local transform = gEntity:add_component(
     Transform(100, 100, 5, 5, 0)
+)
+
+gEntity2:add_component(
+    Transform(250, 100, 5, 5, 0)
 )
 
 local sprite = gEntity:add_component(
@@ -16,6 +21,15 @@ local scale = 1.0
 local move_right = true
 local value = 0
 
+
+local view = Registry.get_entities(Transform)
+view:exclude(Sprite)
+
+view:for_each(
+    function(entity)
+        print(entity:name())
+    end
+)
 
 sprite:generate_uvs()
 
@@ -66,6 +80,9 @@ main = {
             end
 
             transform:set_scale(scale, scale)
+
+            local sprite2 = gEntity:get_component(Sprite)
+            --print("Texture name: " ..sprite2.texture_name)
 
         end
     },

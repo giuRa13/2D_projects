@@ -52,11 +52,20 @@ namespace ENGINE_CORE::ECS
 		bool HasComponent();
 		
         template <typename TComponent>
-		void RemoveComponent();
+		auto RemoveComponent();
     };
 
-	template <typename TCopmonent>
+	template <typename TComponent>
 	auto add_component(Entity&, const sol::table& comp, sol::this_state s);
+
+	template <typename TComponent>
+	bool has_component(Entity& entity);
+
+	template <typename TComponent>
+	auto get_component(Entity& entity, sol::this_state s);
+
+	template <typename TComponent>
+	auto remove_component(Entity& entity);
 
 }
 

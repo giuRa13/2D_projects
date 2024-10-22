@@ -3,7 +3,7 @@ add_library(ENGINE_CORE
     "include/Core/ECS/Entity.inl"
     "src/ECS/Entity.cpp"
     "include/Core/ECS/Registry.hpp"
-    #"include/Core/ECS/Registry.inl"
+    "include/Core/ECS/Registry.inl"
     "src/ECS/Registry.cpp"
     "include/Core/ECS/MetaUtilities.hpp"
     "src/ECS/MetaUtilities.cpp"

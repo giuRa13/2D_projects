@@ -51,7 +51,8 @@ namespace ENGINE_CORE::ECS
 					return Entity{registry, name, group};
 				}
 			),
-			"add_component", [&](Entity& entity, const sol::table& comp, sol::this_state s) -> sol::object{
+			"add_component", 
+			[](Entity& entity, const sol::table& comp, sol::this_state s) -> sol::object{
 				if(!comp.valid())
 					return sol::lua_nil_t{};
 
@@ -60,9 +61,43 @@ namespace ENGINE_CORE::ECS
 					"add_component"_hs,
 					entity, comp, s	
 				);
-
 				return component ? component.cast<sol::reference>() : sol::lua_nil_t{};
-			}
+			},
+			"has_component", 
+			[](Entity& entity, const sol::table& comp) {
+				const auto has_comp = InvokeMetaFunction(
+					GetIdType(comp),
+					"has_component"_hs,
+					entity
+				);
+				return has_comp ? has_comp.cast<bool>() : false;
+			},
+			"get_component", 
+			[](Entity& entity, const sol::table& comp, sol::this_state s) {
+				const auto component = InvokeMetaFunction(
+					GetIdType(comp),
+					"get_component"_hs,
+					entity, s
+				);
+				return component ? component.cast<sol::reference>() : sol::lua_nil_t{};
+			},
+			"remove_component", 
+			[](Entity& entity, const sol::table& comp) {
+				const auto component = InvokeMetaFunction(
+					GetIdType(comp),
+					"remove_component"_hs,
+					entity
+				);
+				return component ? component.cast<sol::reference>() : sol::lua_nil_t{};
+			},
+			"name", 
+			&Entity::GetName,
+			"group", 
+			&Entity::GetGroup,
+			"kill", 
+			&Entity::Kill,
+			"id", 
+			[](Entity& entity){ return static_cast<int32_t>(entity.GetEntity()); }
 		);
 	}
 
