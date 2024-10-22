@@ -10,6 +10,9 @@ add_library(ENGINE_RENDERING
     "include/Rendering/Essentials/TextureLoader.hpp"
     "src/TextureLoader.cpp"
     "include/Rendering/Essentials/Vertex.hpp"
+
+    "include/Rendering/Core/BatchRenderer.hpp"
+    "src/BatchRenderer.cpp"
     )
 
 

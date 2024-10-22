@@ -17,6 +17,7 @@
 #include <Core/ECS/Components/Identification.hpp>
 #include <Core/Resources/AssetManager.hpp>
 #include <Core/Systems/ScriptingSystem.hpp>
+#include <Core/Systems/RenderSystem.hpp>
 #include <memory>
 
 
@@ -25,8 +26,7 @@ namespace ENGINE_EDITOR
 {
 
     Application::Application()
-		: m_pWindow{nullptr}, m_pRegistry{nullptr}, m_Event{}, m_bIsRunning{true},
-		VAO{0}, VBO{0}, IBO{0} //to remove later
+		: m_pWindow{nullptr}, m_pRegistry{nullptr}, m_Event{}, m_bIsRunning{true}
 	{ }
 
     Application& Application::GetInstance()
@@ -129,7 +129,7 @@ namespace ENGINE_EDITOR
 
         auto& transform = entity1.AddComponent<ENGINE_CORE::ECS::TransformComponent>(ENGINE_CORE::ECS::TransformComponent{
                 .position = glm::vec2{10.f, 10.f},
-                .scale = glm::vec2{1.f, 1.f},
+                .scale = glm::vec2{5.f, 5.f},
                 .rotation = 0.f
             }
         );
@@ -140,52 +140,15 @@ namespace ENGINE_EDITOR
                 .color = ENGINE_RENDERING::Color{.r = 255, .g = 0, .b = 255, .a = 255},
                 .start_x = 13,
                 .start_y = 13,
+                .layer = 0,
+                .texture_name = "16map"
             }
         );
         sprite.generate_uvs(texture.GetWidth(), texture.GetHeight());
 
-         /*float vertices[] =
-        {
-            -0.5f,  0.5f,  0.0f,   0.0f, 0.0f, //top left
-            0.5f,  0.5f,  0.0f,   1.0f, 0.0f,  //top right
-            0.5f, -0.5f,  0.0f,   1.0f, 1.0f, //bottom right
-            -0.5f, -0.5f,  0.0f,   0.0f, 1.0f, //bottom left
-        };*/
-        /*float vertices[] =
-            {
-            10.f,  26.f,  0.0f,     uvs.u,              (uvs.v + uvs.height),   // TL (0, 1)
-            10.f,  10.f,  0.0f,     uvs.u,                uvs.v,                // BL (0, 0)
-            26.f,  10.f,  0.0f,    (uvs.u + uvs.width),   uvs.v,                // BR (1, 0)
-            26.f,  26.f,  0.0f,    (uvs.u + uvs.width), (uvs.v + uvs.height)    // TR (0, 0)
-        };*/
-        std::vector<ENGINE_RENDERING::Vertex> vertices{};
-        ENGINE_RENDERING::Vertex vTL{}, vTR{}, vBL{}, vBR{};
-
-        vTL.position = glm::vec2{transform.position.x,    transform.position.y + sprite.height};
-        vTL.uvs = glm::vec2{ sprite.uvs.u,   sprite.uvs.v + sprite.uvs.uv_height };
-        
-        vTR.position = glm::vec2{ transform.position.x + sprite.width,    transform.position.y + sprite.height};
-        vTR.uvs = glm::vec2{ sprite.uvs.u + sprite.uvs.uv_width,   sprite.uvs.v + sprite.uvs.uv_height };
-        
-        vBL.position = glm::vec2{ transform.position.x,    transform.position.y};
-        vBL.uvs = glm::vec2{sprite.uvs.u,    sprite.uvs.v };
-        
-        vBR.position = glm::vec2{ transform.position.x + sprite.width,    transform.position.y  };
-        vBR.uvs = glm::vec2{  sprite.uvs.u + sprite.uvs.uv_width,    sprite.uvs.v };
-        
-        vertices.push_back(vTL);
-        vertices.push_back(vBL);
-        vertices.push_back(vBR);
-        vertices.push_back(vTR);
-
         auto& id = entity1.GetComponent<ENGINE_CORE::ECS::Identification>();
         ENGINE_LOG("Name: {0}, Group: {1}, ID: {2}", id.name, id.group, id.entity_id);
 
-        GLuint indices[] =
-        {
-            0, 1, 2,
-            2, 3, 0
-        };
 
         // Lua state //////////////////////
         auto lua = std::make_shared<sol::state>();
@@ -197,34 +160,44 @@ namespace ENGINE_EDITOR
         }
         lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string);
 
+        m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua);
         if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
         {
             ENGINE_ERROR("Failed to add the sol::state to Registry Context");
             //return false;
         }
-
+        // Script System
         auto scriptSystem = std::make_shared<ENGINE_CORE::Systems::ScriptingSystem>(*m_pRegistry);
         if(!scriptSystem)
         {
-            ENGINE_ERROR("Failed to acreate the Scripting System");
+            ENGINE_ERROR("Failed to create the Scripting System");
             return false;   
         }
-
         if(!scriptSystem->LoadMainScript(*lua))
         {
             ENGINE_ERROR("Failed to load the Main Lua Script");
             return false; 
         }
-
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>(scriptSystem))
         {
             ENGINE_ERROR("Failed to add the ScriptingSystem to Registry Context");
             return false;
         }
+        // Render System
+        auto renderSystem = std::make_shared<ENGINE_CORE::Systems::RenderSystem>(*m_pRegistry);
+        if(!renderSystem)
+        {
+            ENGINE_ERROR("Failed to create the Render System");
+            return false;   
+        }
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>(renderSystem))
+        {
+            ENGINE_ERROR("Failed to add the RenderSystem to Registry Context");
+            return false;
+        }
 
         // Camera //////////////////////
         auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
-        camera->SetScale(5.f);
 
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>(assetManager))
         {
@@ -244,53 +217,6 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to load the Shaders");
             return false;
         }
-
-
-        // VAO VBO EBO
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(ENGINE_RENDERING::Vertex), vertices.data(), GL_STATIC_DRAW);
-        
-        glGenBuffers(1, &IBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLuint), indices, GL_STATIC_DRAW);
-
-        // Vertices
-        glVertexAttribPointer(
-            0, //layout 0 
-            2, //2 components
-            GL_FLOAT,
-            GL_FALSE, //normalized false
-            sizeof(ENGINE_RENDERING::Vertex),
-            (void*)offsetof(ENGINE_RENDERING::Vertex, position) //offset of the first component 
-            ); 
-        glEnableVertexAttribArray(0);
-
-        // UVs
-        glVertexAttribPointer(
-            1, 
-            2, 
-            GL_FLOAT, 
-            GL_FALSE, 
-            sizeof(ENGINE_RENDERING::Vertex),
-            (void*)offsetof(ENGINE_RENDERING::Vertex, uvs)
-        );
-        glEnableVertexAttribArray(1);
-
-        // Colors
-            glVertexAttribPointer(
-            2, 
-            4, 
-            GL_UNSIGNED_BYTE, 
-            GL_TRUE, //Normalize = true cause of Bytes 
-            sizeof(ENGINE_RENDERING::Vertex),
-            (void*)offsetof(ENGINE_RENDERING::Vertex, color)
-        );
-        glEnableVertexAttribArray(2);
-
-        glBindVertexArray(0);
 
         return true;
     }
@@ -346,42 +272,50 @@ namespace ENGINE_EDITOR
         camera->Update();
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Update();
+
+        auto view = m_pRegistry->GetRegistry().view<ENGINE_CORE::ECS::TransformComponent, ENGINE_CORE::ECS::SpriteComponent>();
+        static float rotation{0.f};
+        static float x_pos{10.f};
+        static bool bMoveRight{true};
+        if(rotation >= 360.f)
+            rotation = 0.f;
+
+        if(bMoveRight && x_pos < 300)
+            x_pos += 3; 
+        else if (bMoveRight && x_pos >= 300.f)
+            bMoveRight = false;
+
+        if(!bMoveRight && x_pos > 10.f)
+            x_pos -= 3;
+        else if (!bMoveRight && x_pos <= 10.f)
+            bMoveRight = true;
+
+        for(const auto& entity : view)
+        {
+            ENGINE_CORE::ECS::Entity ent{*m_pRegistry, entity};
+            auto& transform = ent.GetComponent<ENGINE_CORE::ECS::TransformComponent>();
+
+            transform.rotation = rotation;
+            transform.position.x = x_pos;
+        }
+
+        rotation += bMoveRight ? 9 : -9;
     }
 
 
     void Application::Render()
 	{
-        auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
-        auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
-        auto& shader = assetManager->GetShader("basic");
-        auto projection = camera->GetCameraMatrix();
-
-        if (shader.ShaderProgramID() == 0)
-        {
-            ENGINE_ERROR("Shader Program has not be created correctly");
-            return;
-        }
+        auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>();
 
         glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
         glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.Enable();
-        glBindVertexArray(VAO);
-        shader.SetUniformMat4("uProjection", projection); 
-
-        glActiveTexture(GL_TEXTURE0);
-        const auto& texture = assetManager->GetTexture("16map");
-        glBindTexture(GL_TEXTURE_2D, texture.GetID());
-
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Render();
+        renderSystem->Update();
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-        glBindVertexArray(0);
         SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
-        shader.Disable();
 	}
 
 

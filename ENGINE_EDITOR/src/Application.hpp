@@ -17,8 +17,6 @@ namespace ENGINE_EDITOR
 		std::unique_ptr<ENGINE_CORE::ECS::Registry> m_pRegistry;
 		SDL_Event m_Event;
 		bool m_bIsRunning;
-		// temporary
-		GLuint VAO, VBO, IBO;
 	
     private:
 		bool Initialize();

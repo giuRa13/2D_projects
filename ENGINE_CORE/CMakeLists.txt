@@ -22,6 +22,8 @@ add_library(ENGINE_CORE
     #Systems
     "include/Core/Systems/ScriptingSystem.hpp"
     "src/Systems/ScriptingSystem.cpp"
+    "include/Core/Systems/RenderSystem.hpp"
+    "src/Systems/RenderSystem.cpp"
     )
 
 
