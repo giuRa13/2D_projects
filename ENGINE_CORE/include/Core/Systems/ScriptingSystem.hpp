@@ -24,6 +24,8 @@ namespace ENGINE_CORE::Systems
 
         static void RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
 
+        static void RegisterLuaFunctions(sol::state& lua);
+
     };
 
 }

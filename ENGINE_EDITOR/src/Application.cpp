@@ -115,19 +115,17 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to create the Asset manager");
             return false;
         }
-
         // Texture //////////////////////
-        if(!assetManager->AddTexture("16map", "./assets/textures/16map.png", true))
+        /*if(!assetManager->AddTexture("robot", "./assets/textures/16map.png", true))
         {
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
-        }
-        
-        if(!assetManager->AddTexture("robot", "./assets/textures/robotSprite.png", true))
+        }*/
+        /*if(!assetManager->AddTexture("robot", "./assets/textures/robotSprite.png", true))
         {
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
-        }
+        }*/
   
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
@@ -207,6 +205,8 @@ namespace ENGINE_EDITOR
         }
 
         ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaBinding(*lua, *m_pRegistry);
+
+        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua);
 
         if(!scriptSystem->LoadMainScript(*lua))
         {

@@ -6,6 +6,7 @@
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include "Core/Scripting/InputManager.hpp"
+#include "Core/Resources/AssetManager.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -122,6 +123,7 @@ namespace ENGINE_CORE::Systems
     {
         ENGINE_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
         ENGINE_CORE::InputManager::CreateLuaInputBindings(lua);
+        ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
 
         Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);
@@ -138,4 +140,25 @@ namespace ENGINE_CORE::Systems
         Registry::RegistryMetaComponent<AnimationComponent>();
     }
 
+
+    void ScriptingSystem::RegisterLuaFunctions(sol::state& lua)
+    {
+        lua.set_function(
+            "run_script", [&](const std::string& path)
+            {
+                try
+                {
+                    lua.safe_script_file(path);
+                }
+                catch(const sol::error& error)
+                {
+                    ENGINE_ERROR("Error loading Lua Script: {}", error.what());
+                    return false;
+                }
+
+                return true;
+                
+            }
+        );
+    }
 }
