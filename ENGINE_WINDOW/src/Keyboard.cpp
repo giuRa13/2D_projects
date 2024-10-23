@@ -11,7 +11,7 @@ namespace ENGINE_WINDOWING::Inputs
         {ENGINE_KEY_EXCLAIM, Button{}}, {ENGINE_KEY_QUOTEDBL, Button{}}, {ENGINE_KEY_HASH, Button{}}, {ENGINE_KEY_DOLLAR, Button{}},
         {ENGINE_KEY_AMPERSAND, Button{}}, {ENGINE_KEY_QUOTE, Button{}}, {ENGINE_KEY_LEFTPAREN, Button{}}, {ENGINE_KEY_RIGHTPAREN, Button{}},
         {ENGINE_KEY_ASTERISK, Button{}}, {ENGINE_KEY_PLUS, Button{}}, {ENGINE_KEY_COMMA, Button{}}, {ENGINE_KEY_PERIOD, Button{}},
-        {ENGINE_KEY_SLASH, Button{}}, {ENGINE_KEY_0, Button{}}, {ENGINE_KEY_2, Button{}}, {ENGINE_KEY_3, Button{}},
+        {ENGINE_KEY_SLASH, Button{}}, {ENGINE_KEY_0, Button{}},{ENGINE_KEY_1, Button{}}, {ENGINE_KEY_2, Button{}}, {ENGINE_KEY_3, Button{}},
         {ENGINE_KEY_4, Button{}}, {ENGINE_KEY_5, Button{}}, {ENGINE_KEY_6, Button{}}, {ENGINE_KEY_7, Button{}},
         {ENGINE_KEY_8, Button{}}, {ENGINE_KEY_9, Button{}}, {ENGINE_KEY_COLON, Button{}}, {ENGINE_KEY_SEMICOLON, Button{}},
         {ENGINE_KEY_LESS, Button{}}, {ENGINE_KEY_EQUALS, Button{}}, {ENGINE_KEY_GREATER, Button{}}, {ENGINE_KEY_QUESTION, Button{}},
@@ -62,7 +62,7 @@ namespace ENGINE_WINDOWING::Inputs
             return;
         }
         
-        return keyItr->second.Update(true);
+        keyItr->second.Update(true);
     }
 
     void Keyboard::OnKeyReleased(int key)
@@ -80,7 +80,7 @@ namespace ENGINE_WINDOWING::Inputs
             return;
         }
         
-        return keyItr->second.Update(false);
+        keyItr->second.Update(false);
     }
 
 

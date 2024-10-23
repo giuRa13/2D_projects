@@ -5,9 +5,9 @@ namespace ENGINE_CORE
 {
 
     InputManager::InputManager()
-        : m_pKeyboard{ std::make_unique<Keyboard>() }
+        : m_pKeyboard{ std::make_unique<Keyboard>() }, m_pMouse{ std::make_unique<Mouse>() }
     {
-        //m_pKeyboard = std::make_unique<Keyboard>();
+        
     }
 
     void InputManager::RegisterLuaKeyNames(sol::state& lua)
@@ -91,6 +91,12 @@ namespace ENGINE_CORE
         lua.set("KP_KEY_ENTER", ENGINE_KEY_KP_ENTER);
     }
 
+    void InputManager::RegisterLuaMouseBtnames(sol::state& lua)
+    {
+        lua.set("LEFT_BTN", ENGINE_MOUSE_LEFT);
+        lua.set("MIDDLE_BTN", ENGINE_MOUSE_MIDDLE);
+        lua.set("RIGHT_BTN", ENGINE_MOUSE_RIGHT);
+    }
 
     InputManager& InputManager::GetInstance()
     {
@@ -102,6 +108,7 @@ namespace ENGINE_CORE
     void InputManager::CreateLuaInputBindings(sol::state& lua)
     {
         RegisterLuaKeyNames(lua);
+        RegisterLuaMouseBtnames(lua);
         
         auto& inputManager = GetInstance();
         auto& keyboard = inputManager.GetKeyboard();
@@ -112,6 +119,19 @@ namespace ENGINE_CORE
             "just_pressed", [&](int key) { return keyboard.IsKeyJustPressed(key); },
             "just_released", [&](int key) { return keyboard.IsKeyJustReleased(key); },
             "pressed", [&](int key) { return keyboard.IsKeyPressed(key); }
+        );
+
+        auto& mouse = inputManager.GetMouse();
+
+        lua.new_usertype<Mouse>(
+            "Mouse",
+            sol::no_constructor,
+            "just_pressed", [&](int btn) { return mouse.IsBtnJustPressed(btn); },
+            "just_released", [&](int btn) { return mouse.IsBtnJustReleased(btn); },
+            "pressed", [&](int btn) { return mouse.IsBtnPressed(btn); },
+            "screen_position", [&]() { return mouse.GetMouseScreeenPosition(); },
+            "wheel_x", [&]() { return mouse.GetMouseWheelX(); },
+            "wheel_y", [&]() { return mouse.GetMouseWheelY(); }
         );
     }
 

@@ -24,6 +24,7 @@
 
 #include <Core/Scripting/InputManager.hpp>
 #include <Windowing/Inputs/Keyboard.hpp>
+#include <Windowing/Inputs/Mouse.hpp>
 
 
 
@@ -241,6 +242,7 @@ namespace ENGINE_EDITOR
     {
         auto& inputManager = ENGINE_CORE::InputManager::GetInstance();
         auto& keyboard = inputManager.GetKeyboard();
+        auto& mouse = inputManager.GetMouse();
 
         while(SDL_PollEvent(&m_Event))
         {
@@ -256,6 +258,18 @@ namespace ENGINE_EDITOR
                 case SDL_KEYUP:
                     keyboard.OnKeyReleased(m_Event.key.keysym.sym);
                     break;
+                case SDL_MOUSEBUTTONDOWN:
+                    mouse.OnBtnPressed(m_Event.button.button);
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    mouse.OnBtnReleased(m_Event.button.button);
+                    break;
+                case SDL_MOUSEWHEEL:
+                    mouse.SetMouseWheelX(m_Event.wheel.x);
+                    mouse.SetMouseWheelX(m_Event.wheel.y);
+                    break;
+                case SDL_MOUSEMOTION:
+                    mouse.SetMouseMoving(true);
                 default:
                     break;
             }
@@ -283,6 +297,8 @@ namespace ENGINE_EDITOR
         auto& inputManager = ENGINE_CORE::InputManager::GetInstance();
         auto& keyboard = inputManager.GetKeyboard();
         keyboard.Update();
+        auto& mouse = inputManager.GetMouse();
+        mouse.Update();
 
         /*auto view = m_pRegistry->GetRegistry().view<ENGINE_CORE::ECS::TransformComponent, ENGINE_CORE::ECS::SpriteComponent>();
         static float rotation{0.f};

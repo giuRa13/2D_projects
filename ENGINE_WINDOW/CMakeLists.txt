@@ -1,11 +1,15 @@
 add_library(ENGINE_WINDOW
-    "include/Windowing/Inputs/Keyboard.hpp"
-    "src/Keyboard.cpp"
     "include/Windowing/Inputs/Keys.hpp"
     "include/Windowing/Inputs/Button.hpp"
     "src/Button.cpp"
     "include/Windowing/Window/Window.hpp"
-    "src/Window.cpp")
+    "src/Window.cpp"
+    "include/Windowing/Inputs/Keyboard.hpp"
+    "src/Keyboard.cpp"
+    "include/Windowing/Inputs/MouseButton.hpp"
+    "include/Windowing/Inputs/Mouse.hpp"
+    "src/Mouse.cpp"
+    )
 
 target_include_directories(
     ENGINE_WINDOW PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
