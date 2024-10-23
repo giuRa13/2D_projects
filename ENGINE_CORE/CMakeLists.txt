@@ -26,6 +26,8 @@ add_library(ENGINE_CORE
     #Scripting
     "include/Core/Scripting/GlmLuaBindings.hpp"
     "src/Scripting/GlmLuaBindings.cpp"
+    "include/Core/Scripting/InputManager.hpp"
+    "src/Scripting/InputManager.cpp"
 
     #Systems
     "include/Core/Systems/ScriptingSystem.hpp"

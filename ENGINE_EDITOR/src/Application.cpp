@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <sol/sol.hpp>
 #include <iostream>
+
 #include <Logger/Logger.hpp>
 #include <Rendering/Essentials/ShaderLoader.hpp>
 #include <Rendering/Essentials/TextureLoader.hpp>
@@ -20,7 +21,9 @@
 #include <Core/Systems/ScriptingSystem.hpp>
 #include <Core/Systems/RenderSystem.hpp>
 #include <Core/Systems/AnimationSystem.hpp>
-//#include <memory>
+
+#include <Core/Scripting/InputManager.hpp>
+#include <Windowing/Inputs/Keyboard.hpp>
 
 
 
@@ -236,6 +239,9 @@ namespace ENGINE_EDITOR
 
     void Application::ProcessEvents()
     {
+        auto& inputManager = ENGINE_CORE::InputManager::GetInstance();
+        auto& keyboard = inputManager.GetKeyboard();
+
         while(SDL_PollEvent(&m_Event))
         {
             switch(m_Event.type)
@@ -245,6 +251,11 @@ namespace ENGINE_EDITOR
                 case SDL_KEYDOWN:
                     if(m_Event.key.keysym.sym == SDLK_ESCAPE)
                         m_bIsRunning = false;
+                    keyboard.OnKeyPressed(m_Event.key.keysym.sym);
+                    break;
+                case SDL_KEYUP:
+                    keyboard.OnKeyReleased(m_Event.key.keysym.sym);
+                    break;
                 default:
                     break;
             }
@@ -268,6 +279,10 @@ namespace ENGINE_EDITOR
         auto& animationSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::AnimationSystem>>();
         animationSystem->Update();
 
+        // Update inputs
+        auto& inputManager = ENGINE_CORE::InputManager::GetInstance();
+        auto& keyboard = inputManager.GetKeyboard();
+        keyboard.Update();
 
         /*auto view = m_pRegistry->GetRegistry().view<ENGINE_CORE::ECS::TransformComponent, ENGINE_CORE::ECS::SpriteComponent>();
         static float rotation{0.f};

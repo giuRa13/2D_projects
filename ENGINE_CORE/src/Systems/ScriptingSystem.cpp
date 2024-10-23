@@ -5,6 +5,7 @@
 #include "Core/ECS/Components/AnimationComponent.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/GlmLuaBindings.hpp"
+#include "Core/Scripting/InputManager.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -120,6 +121,7 @@ namespace ENGINE_CORE::Systems
     void ScriptingSystem::RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
         ENGINE_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
+        ENGINE_CORE::InputManager::CreateLuaInputBindings(lua);
 
         Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);
