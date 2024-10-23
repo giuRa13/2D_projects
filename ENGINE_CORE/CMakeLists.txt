@@ -15,6 +15,9 @@ add_library(ENGINE_CORE
     "include/Core/ECS/Components/TransformComponent.hpp"
     "src/ECS/Components/TransformComponent.cpp"
     "include/Core/ECS/Components/ScriptComponent.hpp"
+    "src/ECS/Components/AnimationComponent.cpp"
+    "include/Core/ECS/Components/AnimationComponent.hpp"
+
     
     # Resources
     "include/Core/Resources/AssetManager.hpp"
@@ -29,6 +32,8 @@ add_library(ENGINE_CORE
     "src/Systems/ScriptingSystem.cpp"
     "include/Core/Systems/RenderSystem.hpp"
     "src/Systems/RenderSystem.cpp"
+    "include/Core/Systems/AnimationSystem.hpp"
+    "src/Systems/AnimationSystem.cpp"
     )
 
 

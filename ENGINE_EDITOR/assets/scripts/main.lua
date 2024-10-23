@@ -3,17 +3,14 @@
 gEntity = Entity("TestEntity", "Groupy")
 gEntity2 = Entity("TestEntity2", "Groupy")
 
-local transform = gEntity:add_component(
-    Transform(vec2(100, 100), vec2(5, 5), 0)
-)
+local transform = gEntity:add_component( Transform(vec2(100, 100), vec2(5, 5), 0) )
+local sprite = gEntity:add_component(Sprite("16map", 16.0, 16.0, 13, 13, 0) )
+sprite:generate_uvs()
 
---gEntity2:add_component(
---    Transform(250, 100, 5, 5, 0)
---)
-
-local sprite = gEntity:add_component(
-    Sprite("16map", 16.0, 16.0, 13, 13, 0)
-)
+gEntity2:add_component( Transform(250, 100, 5, 5, 0) )
+local sprite2 = gEntity2:add_component(Sprite("robot", 32.0, 32.0, 0, 2, 0))
+sprite2:generate_uvs()
+gEntity2:add_component(Animation(4, 10, 0, false))
 
 local rotation = 0.0
 local x_pos = 10.0

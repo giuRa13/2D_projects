@@ -16,9 +16,11 @@
 #include <Core/ECS/Components/SpriteComponent.hpp>
 #include <Core/ECS/Components/Identification.hpp>
 #include <Core/Resources/AssetManager.hpp>
+
 #include <Core/Systems/ScriptingSystem.hpp>
 #include <Core/Systems/RenderSystem.hpp>
-#include <memory>
+#include <Core/Systems/AnimationSystem.hpp>
+//#include <memory>
 
 
 
@@ -116,6 +118,12 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
         }
+        
+        if(!assetManager->AddTexture("robot", "./assets/textures/robotSprite.png", true))
+        {
+            ENGINE_ERROR("Failed to Create and Add Texture");
+            return false;
+        }
   
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
@@ -157,6 +165,18 @@ namespace ENGINE_EDITOR
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>(renderSystem))
         {
             ENGINE_ERROR("Failed to add the RenderSystem to Registry Context");
+            return false;
+        }
+        // Animation System
+        auto animationSystem = std::make_shared<ENGINE_CORE::Systems::AnimationSystem>(*m_pRegistry);
+        if(!animationSystem)
+        {
+            ENGINE_ERROR("Failed to create the Animation System");
+            return false;   
+        }
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::AnimationSystem>>(animationSystem))
+        {
+            ENGINE_ERROR("Failed to add the AnimationSystem to Registry Context");
             return false;
         }
 
@@ -244,6 +264,10 @@ namespace ENGINE_EDITOR
         camera->Update();
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Update();
+
+        auto& animationSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::AnimationSystem>>();
+        animationSystem->Update();
+
 
         /*auto view = m_pRegistry->GetRegistry().view<ENGINE_CORE::ECS::TransformComponent, ENGINE_CORE::ECS::SpriteComponent>();
         static float rotation{0.f};

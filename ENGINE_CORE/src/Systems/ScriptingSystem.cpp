@@ -2,6 +2,7 @@
 #include "Core/ECS/Components/ScriptComponent.hpp"
 #include "Core/ECS/Components/TransformComponent.hpp"
 #include "Core/ECS/Components/SpriteComponent.hpp"
+#include "Core/ECS/Components/AnimationComponent.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include <Logger/Logger.hpp>
@@ -124,12 +125,15 @@ namespace ENGINE_CORE::Systems
         Entity::CreateLuaEntityBinding(lua, registry);
         TransformComponent::CreateLuaTransformBind(lua);
         SpriteComponent::CreateSpriteLuaBind(lua, registry);
+        AnimationComponent::CreateAnimationLuaBind(lua);
 
         Entity::RegisterMetaComponent<TransformComponent>();
         Entity::RegisterMetaComponent<SpriteComponent>();
+        Entity::RegisterMetaComponent<AnimationComponent>();
 
         Registry::RegistryMetaComponent<TransformComponent>();
         Registry::RegistryMetaComponent<SpriteComponent>();
+        Registry::RegistryMetaComponent<AnimationComponent>();
     }
 
 }
