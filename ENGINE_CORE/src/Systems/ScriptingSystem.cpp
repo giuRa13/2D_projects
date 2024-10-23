@@ -3,6 +3,7 @@
 #include "Core/ECS/Components/TransformComponent.hpp"
 #include "Core/ECS/Components/SpriteComponent.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/Scripting/GlmLuaBindings.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -117,6 +118,8 @@ namespace ENGINE_CORE::Systems
 
     void ScriptingSystem::RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
+        ENGINE_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
+
         Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);
         TransformComponent::CreateLuaTransformBind(lua);

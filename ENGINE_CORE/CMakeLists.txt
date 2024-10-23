@@ -10,7 +10,6 @@ add_library(ENGINE_CORE
     
     # Components
     "include/Core/ECS/Components/Identification.hpp"
-    #"include/Core/ECS/Components/ScriptComponent.hpp"
     "include/Core/ECS/Components/SpriteComponent.hpp"
     "src/ECS/Components/SpriteComponent.cpp"
     "include/Core/ECS/Components/TransformComponent.hpp"
@@ -20,6 +19,10 @@ add_library(ENGINE_CORE
     # Resources
     "include/Core/Resources/AssetManager.hpp"
     "src/Resources/AssetManager.cpp"
+
+    #Scripting
+    "include/Core/Scripting/GlmLuaBindings.hpp"
+    "src/Scripting/GlmLuaBindings.cpp"
 
     #Systems
     "include/Core/Systems/ScriptingSystem.hpp"
