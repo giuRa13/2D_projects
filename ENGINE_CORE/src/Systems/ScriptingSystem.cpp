@@ -3,6 +3,8 @@
 #include "Core/ECS/Components/TransformComponent.hpp"
 #include "Core/ECS/Components/SpriteComponent.hpp"
 #include "Core/ECS/Components/AnimationComponent.hpp"
+#include "Core/ECS/Components/BoxColliderComponent.hpp"
+#include "Core/ECS/Components/CircleColliderComponent.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include "Core/Scripting/InputManager.hpp"
@@ -156,14 +158,20 @@ namespace ENGINE_CORE::Systems
         TransformComponent::CreateLuaTransformBind(lua);
         SpriteComponent::CreateSpriteLuaBind(lua, registry);
         AnimationComponent::CreateAnimationLuaBind(lua);
+        BoxColliderComponent::CreateLuaBoxColliderBind(lua);
+        CircleColliderComponent::CreateLuaCircleColliderBind(lua);
 
         Entity::RegisterMetaComponent<TransformComponent>();
         Entity::RegisterMetaComponent<SpriteComponent>();
         Entity::RegisterMetaComponent<AnimationComponent>();
+        Entity::RegisterMetaComponent<BoxColliderComponent>();
+        Entity::RegisterMetaComponent<CircleColliderComponent>();
 
         Registry::RegistryMetaComponent<TransformComponent>();
         Registry::RegistryMetaComponent<SpriteComponent>();
         Registry::RegistryMetaComponent<AnimationComponent>();
+        Registry::RegistryMetaComponent<BoxColliderComponent>();
+        Registry::RegistryMetaComponent<CircleColliderComponent>();
     }
 
 

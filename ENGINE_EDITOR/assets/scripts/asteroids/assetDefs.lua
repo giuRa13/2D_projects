@@ -13,9 +13,9 @@ AssetDefs =
 function LoadAssets()
     for k, v in pairs(AssetDefs.textures) do
         if not AssetManager.add_texture(v.name, v.path, v.pixel_art) then
-            print("Failed to load texture [" ..v.name .."] at path [" ..v.path .."]" )
+            print("Failed to load texture [ " ..v.name .. " ] at path [ " ..v.path .." ]" )
         else
-            print("Loaded texture [" ..v.name .."]")
+            print("Loaded texture [ " ..v.name .." ]")
         end
     end
 

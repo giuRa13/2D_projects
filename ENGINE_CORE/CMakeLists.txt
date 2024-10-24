@@ -17,8 +17,11 @@ add_library(ENGINE_CORE
     "include/Core/ECS/Components/ScriptComponent.hpp"
     "src/ECS/Components/AnimationComponent.cpp"
     "include/Core/ECS/Components/AnimationComponent.hpp"
+    "include/Core/ECS/Components/BoxColliderComponent.hpp"
+    "src/ECS/Components/BoxColliderComponent.cpp"
+    "include/Core/ECS/Components/CircleColliderComponent.hpp"
+    "src/ECS/Components/CircleColliderComponent.cpp"
 
-    
     # Resources
     "include/Core/Resources/AssetManager.hpp"
     "src/Resources/AssetManager.cpp"

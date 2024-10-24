@@ -1,5 +1,7 @@
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
 
 
 namespace ENGINE_CORE::Scripting
@@ -41,7 +43,9 @@ namespace ENGINE_CORE::Scripting
             sol::meta_function::multiplication, vec2_multiply_overloads,
             sol::meta_function::division, vec2_divide_overloads,
             sol::meta_function::addition, vec2_addition_overloads,
-            sol::meta_function::subtraction, vec2_subtraction_overloads
+            sol::meta_function::subtraction, vec2_subtraction_overloads,
+            "lenght", [](const glm::vec2& v) { return glm::length(v); },
+            "lenghtSq", [](const glm::vec2& v) { return glm::length2(v); }
         );
     }
 
