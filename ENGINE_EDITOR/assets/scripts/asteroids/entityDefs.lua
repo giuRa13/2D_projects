@@ -54,8 +54,8 @@ ShipDefs =
             },
             sprite = {
                 asset_name = "ship",
-                width = 99,
-                height = 75,
+                width = 75,
+                height = 99,
                 start_x = 0, start_y = 0,
                 layer = 2
             }

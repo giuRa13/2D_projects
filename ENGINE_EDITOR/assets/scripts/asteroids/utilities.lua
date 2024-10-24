@@ -49,3 +49,25 @@ function LoadEntity(def)
 end
 
 
+WINDOW_WIDTH = 640
+WINDOW_HEIGHT = 480
+
+-- position = vec2, width/height = float
+function CheckPos(position, width, height)
+    local min_x = 0
+    local min_y = 0
+    local max_x = WINDOW_WIDTH
+    local max_y = WINDOW_HEIGHT
+
+    if position.x + width < min_x then
+        position.x = position.x + WINDOW_WIDTH + width
+    elseif position.x > max_x + width then
+        position.x = -width
+    end
+
+    if position.y + width < min_y then
+        position.y = position.y + WINDOW_HEIGHT + height
+    elseif position.y > max_y + height then
+        position.y = -height
+    end
+end 
