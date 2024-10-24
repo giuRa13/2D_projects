@@ -108,6 +108,7 @@ function GetRandomPosition()
 end
 
 
+--------------------------
 Asteroids = {}
 
 function AddAsteroid(asteroid)
@@ -119,6 +120,7 @@ function UpdateAsteroids()
         v:Update()
     end
 end
+--------------------------
 
 
 gSpawnTimer = Timer()
@@ -141,3 +143,23 @@ function SpawnAsteroid()
         gSpawnTimer:stop()
     end
 end
+
+
+-----------------------------
+Projectiles = {} 
+
+function AddProjectile(projectile)
+    table.insert(Projectiles, projectile)
+end
+
+function UpdateProjectiles()
+    for k, v in pairs(Projectiles) do
+        if v:TimesUp() then
+            v:Destroy()
+            Projectiles[k] = nil
+        else
+            v:Update()
+        end
+    end
+end
+--------------------------------

@@ -42,5 +42,20 @@ function Ship:UpdateShip()
         transform.position = transform.position + self.m_DriftAngle * self.m_DriftSpeed
     end
 
+    if Keyboard.just_pressed(KEY_SPACE) then
+        local projectile = Projectile:Create(
+            {
+                def = "proj_1",
+                dir = forward,
+                start_pos = vec2(
+                    transform.position.x + sprite.width/2,
+                    transform.position.y + sprite.height/2
+                ),
+                rotation = transform.rotation
+            }
+        )
+        AddProjectile(projectile)
+    end
+
     CheckPos(transform.position, sprite.width, sprite.height)
 end

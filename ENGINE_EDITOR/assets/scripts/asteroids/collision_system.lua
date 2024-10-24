@@ -19,6 +19,7 @@ end
 
 function CollisionSystem:UpdateCircleCollision()
     local entities = Registry.get_entities(CircleCollider)
+    local entitiesToDestroy = {}
 
     entities:for_each(
         function(entity_a)
@@ -44,15 +45,37 @@ function CollisionSystem:UpdateCircleCollision()
                     end
 
                     if self:Intersect(entity_a, entity_b) then
-                        print("ID: " ..entity_a:id() ..", is colliding with ID: " ..entity_b:id())
+                        if group_a == "projectiles" and group_b == "asteroids" then
+                            collider_a.bColliding = true
+                            collider_b.bColliding = true
+                            table.insert(entitiesToDestroy, entity_b:id())
+                        elseif group_b == "projectiles" and group_a == "asteroids" then
+                            collider_a.bColliding = true
+                            collider_b.bColliding = true
+                            table.insert(entitiesToDestroy, entity_a:id())
+                        elseif group_b == "ship" and group_a == "asteroids" then
+                            collider_a.bColliding = true
+                            table.insert(entitiesToDestroy, entity_a:id())
+                        elseif group_a == "ship" and group_b == "asteroids" then
+                            collider_b.bColliding = true
+                            table.insert(entitiesToDestroy, entity_b:id())
+                        end
+                        --print("ID: " ..entity_a:id() ..", is colliding with ID: " ..entity_b:id())
                     end
-
 
                     ::continue::
                 end
             )
         end
     )
+    for k, v in pairs(entitiesToDestroy) do
+        local entity = Entity(v)
+        if entity:group() == "asteroids" then
+            --
+        elseif entity:name() == "ship" then
+            --
+        end
+    end
 end
 
 
