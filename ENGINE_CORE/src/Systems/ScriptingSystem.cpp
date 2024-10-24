@@ -7,6 +7,7 @@
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include "Core/Scripting/InputManager.hpp"
 #include "Core/Resources/AssetManager.hpp"
+#include <Timer.hpp>
 #include <Logger/Logger.hpp>
 
 
@@ -119,11 +120,36 @@ namespace ENGINE_CORE::Systems
     }
 
 
+    auto create_timer = [](sol::state& lua) {
+        using namespace ENGINE_UTIL;
+        lua.new_usertype<Timer>(
+            "Timer",
+            sol::call_constructor,
+            sol::factories([]() { return Timer{}; }),
+            "start", &Timer::Start,
+            "stop", &Timer::Stop,
+            "pause", &Timer::Pause,
+            "resume", &Timer::Resume,
+            "is_paused", &Timer::IsPaused,
+            "is_running", &Timer::IsRunning,
+            "elapsed_ms", &Timer::ElapsedMS,
+            "elapsed_sec", &Timer::ElapsedSec,
+            "restart", [](Timer& timer) {
+                if(timer.IsRunning())
+                    timer.Stop();
+                timer.Start();
+            }
+        );
+    };
+
+
     void ScriptingSystem::RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
         ENGINE_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
         ENGINE_CORE::InputManager::CreateLuaInputBindings(lua);
         ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
+
+        create_timer(lua);
 
         Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);

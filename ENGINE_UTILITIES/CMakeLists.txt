@@ -1,6 +1,9 @@
 add_library(ENGINE_UTILITIES
 "include/SDL_Wrappers.hpp"
-"src/SDL_Wrappers.cpp")
+"src/SDL_Wrappers.cpp"
+"include/Timer.hpp"
+"src/Timer.cpp"
+)
 
 target_include_directories(
     ENGINE_UTILITIES PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

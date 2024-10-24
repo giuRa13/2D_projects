@@ -16,9 +16,13 @@ AsteroidDefs =
                 height = 98,
                 start_x = 0, start_y = 0,
                 layer = 2
-            }
-        }
+            }     
+        },
+        type = "big",
+        min_speed = -2,
+        max_speed = 5
     },
+
     asteroid_small =
     {
         group = "asteroids",
@@ -36,9 +40,13 @@ AsteroidDefs =
                 start_x = 0, start_y = 0,
                 layer = 2
             }
-        }
+        },
+        type = "small",
+        min_speed = -5,
+        max_speed = 5
     },
 }
+
 
 ShipDefs = 
 {
@@ -58,7 +66,7 @@ ShipDefs =
                 height = 99,
                 start_x = 0, start_y = 0,
                 layer = 2
-            }
+            },
         }   
     }
 }

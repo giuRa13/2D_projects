@@ -49,9 +49,20 @@ function LoadEntity(def)
 end
 
 
+function LoadBackground()
+    for i = 0, 2 do
+        for j = 0, 3 do
+            local bgTile = Entity("", "bg")
+            bgTile:add_component(Transform(vec2(j * 256, i * 256), vec2(1, 1), 0))
+            local sprite = bgTile:add_component(Sprite("bg", 256.0, 256.0, 0, 0, 0))
+            sprite:generate_uvs()
+        end
+    end
+end
+
+
 WINDOW_WIDTH = 640
 WINDOW_HEIGHT = 480
-
 -- position = vec2, width/height = float
 function CheckPos(position, width, height)
     local min_x = 0
@@ -71,3 +82,54 @@ function CheckPos(position, width, height)
         position.y = -height
     end
 end 
+
+
+function GetRandomVelocity(min_speed, max_speed)
+    return vec2(
+        math.random(min_speed, max_speed),
+        math.random(min_speed, max_speed)
+    )
+end
+
+
+function GetRandomPosition()
+    return vec2(
+        math.random(WINDOW_WIDTH) + WINDOW_WIDTH,
+        math.random(WINDOW_HEIGHT) + WINDOW_HEIGHT
+    )
+end
+
+
+Asteroids = {}
+
+function AddAsteroid(asteroid)
+    table.insert(Asteroids, asteroid)
+end
+
+function UpdateAsteroids()
+    for k, v in pairs(Asteroids) do
+        v:Update()
+    end
+end
+
+
+gSpawnTimer = Timer()
+function SpawnAsteroid()
+    if not gSpawnTimer:is_running() then
+        gSpawnTimer:start()
+    end
+
+    if gSpawnTimer:elapsed_sec() > 2 then
+        local val = math.random(1, 3)
+        if val == 1 then
+            local asteroid = Asteroid:Create("asteroid_big")
+            AddAsteroid(asteroid)
+        elseif val == 2 then
+            local asteroid = Asteroid:Create("asteroid_small")
+            AddAsteroid(asteroid)
+        elseif val == 3 then
+            -- create enemy
+        end
+        gSpawnTimer:stop()
+    end
+end

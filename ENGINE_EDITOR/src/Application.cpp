@@ -250,6 +250,7 @@ namespace ENGINE_EDITOR
             {
                 case SDL_QUIT:
                     m_bIsRunning = false;
+                    break;
                 case SDL_KEYDOWN:
                     if(m_Event.key.keysym.sym == SDLK_ESCAPE)
                         m_bIsRunning = false;
