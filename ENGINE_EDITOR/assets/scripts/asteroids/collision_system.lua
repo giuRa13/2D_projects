@@ -53,10 +53,10 @@ function CollisionSystem:UpdateCircleCollision()
                             collider_a.bColliding = true
                             collider_b.bColliding = true
                             table.insert(entitiesToDestroy, entity_a:id())
-                        elseif group_b == "ship" and group_a == "asteroids" then
+                        elseif name_a == "ship" and group_b == "asteroids" then
                             collider_a.bColliding = true
                             table.insert(entitiesToDestroy, entity_a:id())
-                        elseif group_a == "ship" and group_b == "asteroids" then
+                        elseif name_b == "ship" and group_a == "asteroids" then
                             collider_b.bColliding = true
                             table.insert(entitiesToDestroy, entity_b:id())
                         end
@@ -71,7 +71,7 @@ function CollisionSystem:UpdateCircleCollision()
     for k, v in pairs(entitiesToDestroy) do
         local entity = Entity(v)
         if entity:group() == "asteroids" then
-            --
+            RemoveAsteroid(entity:id())
         elseif entity:name() == "ship" then
             --
         end

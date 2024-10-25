@@ -84,7 +84,7 @@ function CheckPos(position, width, height)
         position.x = -width
     end
 
-    if position.y + width < min_y then
+    if position.y + height < min_y then
         position.y = position.y + WINDOW_HEIGHT + height
     elseif position.y > max_y + height then
         position.y = -height
@@ -121,6 +121,34 @@ function UpdateAsteroids()
     end
 end
 --------------------------
+
+function RemoveAsteroid(asteroid_id)
+    for k, v in pairs(Asteroids) do
+        if v.m_EntityID == asteroid_id then
+            if v.m_Type == "big" then
+                CreateSmallFromBig(v)
+                --add score
+            elseif v.m_Type == " small" then
+                --add score
+            end
+
+            local asteroid = Entity(v.m_EntityID)
+            asteroid:kill()
+            Asteroids[k] = nil
+        end    
+    end
+end
+
+
+function CreateSmallFromBig(asteroid)
+    local tramsform = Entity(asteroid.m_EntityID):get_component(Transform)
+    for i = 1, 2 do
+        local small = Asteroid:Create("asteroid_small")
+        local small_transform = Entity(small.m_EntityID):get_component(Transform)
+        small_transform.position = tramsform.position
+        AddAsteroid(small)
+    end
+end
 
 
 gSpawnTimer = Timer()

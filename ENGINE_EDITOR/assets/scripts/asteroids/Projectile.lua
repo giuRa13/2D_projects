@@ -16,7 +16,7 @@ function Projectile:Create(params)
     this.m_EntityID = LoadEntity(projectile)
 
     this.m_ProjectileLifetime = projectile.life_time or 2000
-    this.m_Speed = projectile.proj_speed or 10
+    this.m_Speed = projectile.proj_speed or 15
     this.m_LifeTimer = Timer()
 
     local projectEnt = Entity(this.m_EntityID)

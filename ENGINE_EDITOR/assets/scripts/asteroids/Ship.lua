@@ -11,7 +11,9 @@ function Ship:Create(def)
         m_DriftAngle = vec2(
             math.cos(0),
             math.sin(0)
-        )
+        ),
+        m_CoolDown = def.cool_down or 0, -- time between shot
+        m_CoolDownTimer = Timer()
     }
 
     setmetatable(this, self)
@@ -42,19 +44,24 @@ function Ship:UpdateShip()
         transform.position = transform.position + self.m_DriftAngle * self.m_DriftSpeed
     end
 
-    if Keyboard.just_pressed(KEY_SPACE) then
-        local projectile = Projectile:Create(
-            {
-                def = "proj_1",
-                dir = forward,
-                start_pos = vec2(
-                    transform.position.x + sprite.width/2,
-                    transform.position.y + sprite.height/2
-                ),
-                rotation = transform.rotation
-            }
-        )
-        AddProjectile(projectile)
+    if not self.m_CoolDownTimer:is_running() then
+        if Keyboard.just_pressed(KEY_SPACE) then
+            local projectile = Projectile:Create(
+                {
+                    def = "proj_1",
+                    dir = forward,
+                    start_pos = vec2(
+                        transform.position.x + sprite.width/2,
+                        transform.position.y + sprite.height/2
+                    ),
+                    rotation = transform.rotation
+                }
+            )
+            self.m_CoolDownTimer:start()
+            AddProjectile(projectile)
+        end
+    elseif self.m_CoolDownTimer:elapsed_ms() >= self.m_CoolDown then
+        self.m_CoolDownTimer:stop()
     end
 
     CheckPos(transform.position, sprite.width, sprite.height)

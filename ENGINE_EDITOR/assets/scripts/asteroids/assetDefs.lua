@@ -2,7 +2,7 @@ AssetDefs =
 {
     textures = 
     {
-        { name = "ship", path = "assets/textures/ship_red.png", pixel_art = true},
+        { name = "ship", path = "assets/textures/ship_blue.png", pixel_art = true},
         { name = "ast_1", path = "assets/textures/ast_1.png", pixel_art = true},
         { name = "ast_2", path = "assets/textures/ast_2.png", pixel_art = true},
         { name = "bg", path = "assets/textures/darkPurple.png", pixel_art = true},
