@@ -54,6 +54,18 @@ function LoadEntity(def)
         )
     end
 
+    if def.components.animation then
+        newEntity:add_component(
+            Animation(
+                def.components.animation.num_frames,
+                def.components.animation.frame_rate,
+                def.components.animation.frame_offset,
+                def.components.animation.bVertical,
+                def.components.animation.bLooped
+            )
+        )
+    end
+
     return newEntity:id()
 end
 
@@ -121,7 +133,6 @@ function UpdateAsteroids()
         v:Update()
     end
 end
---------------------------
 
 function RemoveAsteroid(asteroid_id)
     for k, v in pairs(Asteroids) do
@@ -174,7 +185,16 @@ function SpawnAsteroid()
 end
 
 
+function ResetAsteroids()
+	for k, v in pairs(Asteroids) do 
+		local asteroid = Entity(v.m_EntityID)
+		asteroid:kill()
+		Asteroids[k] = nil
+	end
+end
 -----------------------------
+
+
 Projectiles = {} 
 
 function AddProjectile(projectile)
@@ -190,6 +210,15 @@ function UpdateProjectiles()
             v:Update()
         end
     end
+end
+
+
+function ResetProjectiles()
+	for k, v in pairs(Projectiles) do 
+		local projectile  = Entity(v.m_EntityID)
+		projectile:kill()
+		Projectiles[k] = nil
+	end
 end
 --------------------------------
 

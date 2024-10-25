@@ -133,7 +133,7 @@ end
 function Hud:Reset()
 	self.m_bGameOver = false 
 	self.m_bShowGameOver = false 
-	self.m_Score = 0
+	self:SetScore(0)
 
 	-- Hide the game_over Sprite
 	local sprite = Entity(self.m_GameOverID):get_component(Sprite)

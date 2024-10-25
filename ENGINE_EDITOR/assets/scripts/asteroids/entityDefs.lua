@@ -75,6 +75,13 @@ ShipDefs =
             },
             circle_collider = {
                 radius = 42 --half of smaller value 75
+            },
+            animation = {
+                num_frames = 0,
+                frame_rate = 0,
+                frame_offset = 0,
+                bVertical = false,
+                bLooped = false
             }
         }   
     }
@@ -116,7 +123,7 @@ HudDefs =
         components =
         {
             transform = {
-                position = { x = 0, y = 0},
+                position = { x = 0, y = 10},
                 scale = { x = 1, y = 1},
                 rotation = 0
             },
@@ -136,7 +143,7 @@ HudDefs =
         components =
         {
             transform = {
-                position = { x = 200, y = 0},
+                position = { x = 150, y = 5},
                 scale = { x = 2, y = 2},
                 rotation = 0
             },
@@ -156,7 +163,7 @@ HudDefs =
         components =
         {
             transform = {
-                position = { x = 380, y = 0},
+                position = { x = 330, y = 5},
                 scale = { x = 2, y = 2},
                 rotation = 0
             },

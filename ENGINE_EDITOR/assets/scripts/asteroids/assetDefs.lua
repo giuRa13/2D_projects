@@ -10,7 +10,8 @@ AssetDefs =
         { name = "lives", path = "assets/textures/yellow_star.png", pixel_art = true},
         { name = "game_over", path = "assets/textures/gameover.png", pixel_art = true},
         { name = "score", path = "assets/textures/score.png", pixel_art = true},
-        { name = "numbers", path = "assets/textures/numbers.png", pixel_art = true}
+        { name = "numbers", path = "assets/textures/numbers.png", pixel_art = true},
+        { name = "ship_explosion", path = "assets/textures/explosion.png", pixel_art = true}
     }
 }
 

@@ -26,10 +26,22 @@ main = {
             UpdateAsteroids()
             UpdateProjectiles()
             gCollisionSystem:Update()
-            SpawnAsteroid()
+            --SpawnAsteroid()
             --print("LIVES: " ..gData:NumLives())
             --print("SCORE: " ..gData:GetScore())
             gHud:Update()
+
+            if not gData:IsGameOver() then
+                SpawnAsteroid()
+            else
+                if Keyboard.just_pressed(KEY_ENTER) then
+                    gData:Reset()
+                    gHud:Reset()
+                    gShip:Reset()
+                    ResetAsteroids()
+                    ResetProjectiles()
+                end
+            end
         end
     },
     [2] = {
