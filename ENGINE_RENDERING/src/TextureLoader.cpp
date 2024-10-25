@@ -20,7 +20,6 @@ namespace ENGINE_RENDERING
 
         if (!image)
         {
-            //ENGINE_ERROR("SOIL Failed to load image [{0}] -- {1}" , filepath, SOIL_last_result());
             ENGINE_ERROR("SOIL Failed to load image [{0}] -- {1}", filepath, SOIL_last_result());
             return false;
         }

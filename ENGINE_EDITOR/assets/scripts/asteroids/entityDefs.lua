@@ -74,7 +74,7 @@ ShipDefs =
                 layer = 2
             },
             circle_collider = {
-                radius = 38 --half of smaller value 75
+                radius = 42 --half of smaller value 75
             }
         }   
     }
@@ -103,6 +103,92 @@ ProjectileDefs =
             circle_collider = {
                 radius = 10
             }              
+        }
+    }
+}
+
+
+HudDefs =
+{
+    lives = 
+    {
+        group = "lives",
+        components =
+        {
+            transform = {
+                position = { x = 0, y = 0},
+                scale = { x = 1, y = 1},
+                rotation = 0
+            },
+            sprite = {
+                asset_name = "lives",
+                width = 34.0,
+                height = 33.0,
+                start_x = 0, start_y = 0,
+                layer = 10
+            },
+        }
+    },
+
+    score = 
+    {
+        tag = "score",
+        components =
+        {
+            transform = {
+                position = { x = 200, y = 0},
+                scale = { x = 2, y = 2},
+                rotation = 0
+            },
+            sprite = {
+                asset_name = "score",
+                width = 80.0,
+                height = 16.0,
+                start_x = 0, start_y = 0,
+                layer = 10
+            },
+        }
+    },
+
+    number = 
+    {
+        group = "numbers",
+        components =
+        {
+            transform = {
+                position = { x = 380, y = 0},
+                scale = { x = 2, y = 2},
+                rotation = 0
+            },
+            sprite = {
+                asset_name = "numbers",
+                width = 16,
+                height = 16.0,
+                start_x = 0, start_y = 0,
+                layer = 10
+            },
+        }
+    },
+
+    game_over = 
+    {
+        tag = "game_over",
+        components =
+        {
+            transform = {
+                position = { x = (WINDOW_WIDTH/2) - 216, y = (WINDOW_HEIGHT / 2) - 40}, --216 = 144-Width * 3-Scale / 2
+                scale = { x = 3, y = 3},
+                rotation = 0
+            },
+            sprite = {
+                asset_name = "game_over",
+                width = 144,
+                height = 16.0,
+                start_x = 0, start_y = 0,
+                layer = 10,
+                bHidden = true
+
+            },
         }
     }
 }

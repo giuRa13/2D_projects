@@ -13,7 +13,13 @@ function Ship:Create(def)
             math.sin(0)
         ),
         m_CoolDown = def.cool_down or 0, -- time between shot
-        m_CoolDownTimer = Timer()
+        
+        m_CoolDownTimer = Timer(),
+        m_DeathTimer = Timer(),
+        m_InvincibleTimer = Timer(),
+
+        m_bDead = false,
+        m_NumLives = gData:NumLives(),
     }
 
     setmetatable(this, self)
@@ -22,6 +28,10 @@ end
 
 
 function Ship:UpdateShip()
+    if self.m_bDead then
+        return
+    end
+
     local ship = Entity(self.m_EntityID)
     local transform = ship:get_component(Transform)
     local sprite = ship:get_component(Sprite)
@@ -64,5 +74,29 @@ function Ship:UpdateShip()
         self.m_CoolDownTimer:stop()
     end
 
+    self:CheckDeath()
+
     CheckPos(transform.position, sprite.width, sprite.height)
+end
+
+
+function Ship:CheckDeath()
+
+    if self.m_NumLives ~= gData:NumLives() then
+        self.m_NumLives = gData:NumLives()
+        self.m_InvincibleTimer:start()
+    end
+
+    if self.m_InvincibleTimer:is_running() then
+        local ship = Entity(self.m_EntityID)
+        local sprite = ship:get_component(Sprite)
+        sprite.color.a = 150
+
+        if self.m_InvincibleTimer:elapsed_ms() > 3000 then
+            local collider = ship:get_component(CircleCollider)
+            collider.bColliding = false
+            self.m_InvincibleTimer:stop()
+            sprite.color.a = 255
+        end
+    end
 end

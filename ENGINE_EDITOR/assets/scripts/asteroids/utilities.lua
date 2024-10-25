@@ -43,6 +43,7 @@ function LoadEntity(def)
             )
         )
         sprite:generate_uvs()
+        sprite.bHidden = def.components.sprite.bHidden or false
     end
 
     if def.components.circle_collider then
@@ -127,9 +128,9 @@ function RemoveAsteroid(asteroid_id)
         if v.m_EntityID == asteroid_id then
             if v.m_Type == "big" then
                 CreateSmallFromBig(v)
-                --add score
-            elseif v.m_Type == " small" then
-                --add score
+                gData:AddToScore(LARGE_ASTEROID_SCORE)
+            elseif v.m_Type == "small" then
+                gData:AddToScore(SMALL_ASTEROID_SCORE)
             end
 
             local asteroid = Entity(v.m_EntityID)
@@ -191,3 +192,11 @@ function UpdateProjectiles()
     end
 end
 --------------------------------
+
+
+-- get Value at that Digit
+function GetDigit(num, digit)
+    local n = 10 ^ digit
+    local n1 = 10 ^ (digit - 1)
+	return math.floor((num % n) / n1)
+end
