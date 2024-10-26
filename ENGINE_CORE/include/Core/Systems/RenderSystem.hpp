@@ -12,7 +12,7 @@ namespace ENGINE_CORE::Systems
     
     private:
         ENGINE_CORE::ECS::Registry& m_Registry;
-        std::unique_ptr<ENGINE_RENDERING::BatchRenderer> m_pBatchRenderer;
+        std::unique_ptr<ENGINE_RENDERING::SpriteBatchRenderer> m_pBatchRenderer;
     
 
     public:

@@ -1,44 +1,26 @@
 #pragma once
 
-#include "../Essentials/Vertex.hpp"
-#include <vector>
-#include <memory>
+#include "Rendering/Core/Batcher.hpp"
+#include "Rendering/Essentials/BatchTypes.hpp"
 
 
 namespace ENGINE_RENDERING
 {
 
-    class BatchRenderer
+    class SpriteBatchRenderer : public Batcher<Batch, SpriteGlyph>
     {
 
     private:
-        struct Batch
-        {
-            GLuint numIndices{0}, offset{0}, textureID{0};
-        };
-
-        struct Sprite
-        {
-            Vertex topLeft, bottomLeft, topRight, bottomRight;
-            int layer;
-            GLuint textureID;
-        };
-
-        GLuint m_VAO, m_VBO, m_IBO;
-        std::vector<std::shared_ptr<Sprite>> m_Sprites;
-        std::vector<std::shared_ptr<Batch>> m_Batches;
-
         void Initialize();
-        void GenerateBatches();
+        virtual void GenerateBatches() override;
 
     
     public:
-        BatchRenderer();
-        ~BatchRenderer();
+        SpriteBatchRenderer();
+        ~SpriteBatchRenderer() = default;
 
-        void Begin();
-        void End();
-        void Render();
+        virtual void End() override;
+        virtual void Render() override;
 
         void AddSprite(
             const glm::vec4& spriteRect, 
