@@ -4,6 +4,7 @@
 #include <Logger/Logger.hpp>
 
 
+
 namespace ENGINE_RESOURCES
 {
 
@@ -15,10 +16,10 @@ namespace ENGINE_RESOURCES
 			return false;
 		}
 
-		auto texture = std::move(ENGINE_RENDERING::TextureLoader::Create(
+		auto texture = ENGINE_RENDERING::TextureLoader::Create(
 			pixelArt ? ENGINE_RENDERING::Texture::TextureType::PIXEL : ENGINE_RENDERING::Texture::TextureType::BLENDED,
 			texturePath
-		));
+		);
 
 		if (!texture)
 		{
@@ -30,17 +31,17 @@ namespace ENGINE_RESOURCES
 		return true;
 	}
 
-    const ENGINE_RENDERING::Texture& AssetManager::GetTexture(const std::string& textureName)
+    std::shared_ptr<ENGINE_RENDERING::Texture> AssetManager::GetTexture(const std::string& textureName)
 	{
 		auto texItr = m_mapTextures.find(textureName);
 
 		if (texItr == m_mapTextures.end())
 		{
 			ENGINE_ERROR("Failed to add Texture [{0}] -- does not exists", textureName);
-			return ENGINE_RENDERING::Texture();
+			return nullptr;
 		}
 
-		return *texItr->second;//Dereferece Itr and get the second that is the Shared_Pointer
+		return texItr->second;//Dereferece Itr and get the second that is the Shared_Pointer
 	}
 
 
@@ -63,7 +64,7 @@ namespace ENGINE_RESOURCES
 		return true;
 	}
 
-    ENGINE_RENDERING::Shader& AssetManager::GetShader(const std::string& shaderName)
+    std::shared_ptr<ENGINE_RENDERING::Shader> AssetManager::GetShader(const std::string& shaderName)
 	{
 		auto shaderItr = m_mapShaders.find(shaderName);
 
@@ -71,10 +72,59 @@ namespace ENGINE_RESOURCES
 		{
 			ENGINE_ERROR("Failed to add Shader [{0}] -- does not exists", shaderName);
 			ENGINE_RENDERING::Shader shader{};
-			return shader;
+			return nullptr;
 		}
         
-		return *shaderItr->second;
+		return shaderItr->second;
+	}
+
+
+	bool AssetManager::AddMusic(const std::string& musicName, const std::string& filepath)
+	{
+		if(m_mapMusic.find(musicName) != m_mapMusic.end())
+		{
+			ENGINE_ERROR("Failed to add music [{}] -- Already exists", musicName);
+			return false;
+		}
+
+		Mix_Music* music = Mix_LoadMUS(filepath.c_str());
+
+		if(!music)
+		{
+			std::string error{Mix_GetError()};
+			ENGINE_ERROR("Failed to load [{}] at path [{}] -- Mixer_Error: {}", musicName, filepath, error);
+			return false;
+		}
+
+		ENGINE_SOUNDS::SoundParams params{
+			.name = musicName,
+			.filename = filepath,
+			.duration = Mix_MusicDuration(music)
+		};
+		
+		auto musicPtr = std::make_shared<ENGINE_SOUNDS::Music>(params, MusicPtr{ music});
+		if(!musicPtr)
+		{
+			ENGINE_ERROR("Failed to create the music ptr for [{}]", musicName);
+			return false;
+		}
+
+		m_mapMusic.emplace(musicName, std::move(musicPtr));
+		return true;
+		//auto [ itr, bSuccess ] = m_mapMusic.emplace( musicName, std::move( musicPtr ) );
+		//return bSuccess;
+	}
+
+	std::shared_ptr<ENGINE_SOUNDS::Music> AssetManager::GetMusic(const std::string& musicName)
+	{
+		auto musicItr = m_mapMusic.find(musicName);
+		if(musicItr == m_mapMusic.end())
+		{
+			ENGINE_ERROR("Failed to get [{}] -- Does not exists", musicName);
+			return nullptr;
+		}
+
+		return musicItr->second;
 	}
 
 
@@ -90,9 +140,15 @@ namespace ENGINE_RESOURCES
 		lua.new_usertype<AssetManager>(
 			"AssetManager",
 			sol::no_constructor,
-			"add_texture", [&](const std::string& assetName, const std::string& filepath, bool pixel_art)
+			"add_texture", 
+			[&](const std::string& assetName, const std::string& filepath, bool pixel_art)
 			{
 				return asset_manager->AddTexture(assetName, filepath, pixel_art);
+			},
+			"add_music", 
+			[&](const std::string& musicName, const std::string& filepath)
+			{
+				return asset_manager->AddMusic(musicName, filepath);
 			}
 		);
 	}

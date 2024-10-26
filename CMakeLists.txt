@@ -40,6 +40,7 @@ find_package(OpenGL REQUIRED)
 find_package(soil2 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL2_mixer CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(box2d CONFIG REQUIRED)
@@ -55,12 +56,14 @@ add_subdirectory(ENGINE_UTILITIES)
 add_subdirectory(ENGINE_RENDERING)
 add_subdirectory(ENGINE_WINDOW)
 add_subdirectory(ENGINE_CORE)
+add_subdirectory(ENGINE_SOUNDS)
 set_target_properties(
     ENGINE_LOGGER 
     ENGINE_UTILITIES 
     ENGINE_RENDERING 
     ENGINE_WINDOW 
     ENGINE_CORE
+    ENGINE_SOUNDS
     PROPERTIES FOLDER "Engine")
 
 include(cmake/AddResources.cmake)

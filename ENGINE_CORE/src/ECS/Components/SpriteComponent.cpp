@@ -63,15 +63,15 @@ void ENGINE_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua, ENG
         "color", &SpriteComponent::color,
         "generate_uvs", [&](SpriteComponent& sprite) {
             auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
-            auto& texture = assetManager->GetTexture(sprite.texture_name);
+            auto pTexture = assetManager->GetTexture(sprite.texture_name);
 
-            if(texture.GetID() == 0)
+            if(!pTexture)
             {
                 ENGINE_ERROR("Failet to generate uvs -- Texture [{}] -- Does not exists or invalid", sprite.texture_name);
                 return;
             }
 
-            sprite.generate_uvs(texture.GetWidth(), texture.GetHeight());
+            sprite.generate_uvs(pTexture->GetWidth(), pTexture->GetHeight());
         }
     );
 }

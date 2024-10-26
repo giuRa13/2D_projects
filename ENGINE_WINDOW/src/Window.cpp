@@ -1,5 +1,6 @@
 #include "Windowing/Window/Window.hpp"
 #include <iostream>
+#include <Logger/Logger.hpp>
 
 
 namespace ENGINE_WINDOWING
@@ -9,11 +10,11 @@ namespace ENGINE_WINDOWING
     {
         m_pWindow = WindowPtr( SDL_CreateWindow( m_sTitle.c_str(), m_XPos, m_YPos, m_Width, m_Height, flags ) );
 
-        // Check to see if the window was created correctly
         if ( !m_pWindow )
         {
             std::string error = SDL_GetError();
-            std::cout <<"Failed to create the Window" <<error <<std::endl;
+            //std::cout <<"Failed to create the Window" <<error <<std::endl;
+            ENGINE_ERROR("Failed to create SDL Window: {}", error);
         }
     }
 
@@ -34,10 +35,12 @@ namespace ENGINE_WINDOWING
         if ( v_sync )
         {
             if ( !SDL_SetHint( SDL_HINT_RENDER_VSYNC, "1" ) )
-                std::cout <<"Failed to enable VSYNC!\n";
+                //std::cout <<"Failed to enable VSYNC!\n";
+                ENGINE_ERROR("Failed to enable VSYNC");
         }
 
-	    std::cout <<"Window Created Successfully!\n" ;
+        std::cout <<"\n";
+	    ENGINE_LOG("Window Created Successfully!") ;
     }
 
 

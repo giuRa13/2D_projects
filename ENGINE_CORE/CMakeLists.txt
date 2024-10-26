@@ -31,6 +31,8 @@ add_library(ENGINE_CORE
     "src/Scripting/GlmLuaBindings.cpp"
     "include/Core/Scripting/InputManager.hpp"
     "src/Scripting/InputManager.cpp"
+    "include/Core/Scripting/SoundBindings.hpp"
+    "src/Scripting/SoundBindings.cpp"
 
     #Systems
     "include/Core/Systems/ScriptingSystem.hpp"
@@ -47,11 +49,11 @@ target_include_directories(
     ENGINE_CORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(ENGINE_CORE PUBLIC
-    glm::glm EnTT::EnTT sol2 glad::glad SDL2::SDL2
+    glm::glm EnTT::EnTT sol2 glad::glad SDL2::SDL2 
     #$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     #$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     ENGINE_LOGGER ENGINE_UTILITIES 
-	ENGINE_RENDERING ENGINE_WINDOW)
+	ENGINE_RENDERING ENGINE_WINDOW ENGINE_SOUNDS)
 
 target_compile_options(
     ENGINE_CORE PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

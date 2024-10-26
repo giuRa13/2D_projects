@@ -25,6 +25,7 @@
 #include <Core/Scripting/InputManager.hpp>
 #include <Windowing/Inputs/Keyboard.hpp>
 #include <Windowing/Inputs/Mouse.hpp>
+#include <Sounds/MusicPlayer/MusicPlayer.hpp>
 
 
 
@@ -116,12 +117,12 @@ namespace ENGINE_EDITOR
             return false;
         }
         // Texture //////////////////////
-        /*if(!assetManager->AddTexture("robot", "./assets/textures/16map.png", true))
+        /*if(!assetManager->AddTexture("16map", "./assets/textures/16map.png", true))
         {
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
-        }*/
-        /*if(!assetManager->AddTexture("robot", "./assets/textures/robotSprite.png", true))
+        }
+        if(!assetManager->AddTexture("robot", "./assets/textures/robotSprite.png", true))
         {
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
@@ -182,6 +183,19 @@ namespace ENGINE_EDITOR
             return false;
         }
 
+        // Sound ///////////////////////
+        auto musicPlayer = std::make_shared<ENGINE_SOUNDS::MusicPlayer>();
+        if(!musicPlayer)
+        {
+            ENGINE_ERROR("Failed to create the Music Player");
+            return false;   
+        }
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_SOUNDS::MusicPlayer>>(musicPlayer))
+        {
+            ENGINE_ERROR("Failed to add the Music player to Registry Context");
+            return false;
+        }
+
         // Camera //////////////////////
         auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
 
@@ -197,7 +211,6 @@ namespace ENGINE_EDITOR
             return false;
         }
 
-        // Shaders ( Application::LoadShaders())
         if(!LoadShaders())
         {
             ENGINE_ERROR("Failed to load the Shaders");
