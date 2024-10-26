@@ -21,11 +21,11 @@ void ENGINE_UTIL::SDL_Destroyer::operator()( SDL_Cursor* cursor ) const
 
 }
 
-/*void ENGINE_UTIL::SDL_Destroyer::operator()(Mix_Chunk* chunk) const
+void ENGINE_UTIL::SDL_Destroyer::operator()(Mix_Chunk* chunk) const
 {
 	Mix_FreeChunk(chunk);
 	std::cout <<"Freed SDL Mix_Chunk\n";
-}*/
+}
     
 void ENGINE_UTIL::SDL_Destroyer::operator()(Mix_Music* music) const
 {
@@ -36,9 +36,9 @@ void ENGINE_UTIL::SDL_Destroyer::operator()(Mix_Music* music) const
 /*Controller make_shared_controller(SDL_GameController* controller)
 {
     return Controller();
-}*/
+}
 
 Cursor make_shared_cursor(SDL_Cursor* cursor)
 {
 	
-}
+}*/

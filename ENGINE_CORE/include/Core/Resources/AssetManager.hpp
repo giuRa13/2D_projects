@@ -7,6 +7,7 @@
 #include <Rendering/Essentials/Texture.hpp>
 #include <Core/ECS/Registry.hpp>
 #include <Sounds/Essentials/Music.hpp>
+#include <Sounds/Essentials/SoundFX.hpp>
 #include <sol/sol.hpp>
 
 
@@ -21,6 +22,7 @@ namespace ENGINE_RESOURCES
 		std::map<std::string, std::shared_ptr<ENGINE_RENDERING::Shader>> m_mapShaders{};
 
 		std::map<std::string, std::shared_ptr<ENGINE_SOUNDS::Music>> m_mapMusic{};
+		std::map<std::string, std::shared_ptr<ENGINE_SOUNDS::SoundFX>> m_mapSoundFX{};
 	
     
     public:
@@ -35,6 +37,9 @@ namespace ENGINE_RESOURCES
 
 		bool AddMusic(const std::string& musicName, const std::string& filepath);
 		std::shared_ptr<ENGINE_SOUNDS::Music> GetMusic(const std::string& musicName);
+
+		bool AddSoundFx(const std::string& soundFxName, const std::string& filepath);
+		std::shared_ptr<ENGINE_SOUNDS::SoundFX> GetSoundFx(const std::string& soundFxName);
 
 		static void CreateLuaAssetManager(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
 	};

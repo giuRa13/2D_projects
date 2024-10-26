@@ -4,6 +4,10 @@ add_library(ENGINE_SOUNDS
     "src/Music.cpp"
     "include/Sounds/MusicPlayer/MusicPlayer.hpp"
     "src/MusicPlayer.cpp"
+    "include/Sounds/Essentials/SoundFX.hpp"
+    "src/SoundFX.cpp"
+    "include/Sounds/SoundPlayer/SoundFxPlayer.hpp"
+    "src/SoundFxPlayer.cpp"
 )
 
 target_include_directories(

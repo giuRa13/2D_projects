@@ -44,27 +44,36 @@ namespace ENGINE_SOUNDS
 
     void MusicPlayer::Pause()
     {
-
+        Mix_PausedMusic();
     }
 
     void MusicPlayer::Resume()
     {
-
+        Mix_ResumeMusic();
     }
 
     void MusicPlayer::Stop()
     {
-
+        Mix_HaltMusic();
     }
 
     void MusicPlayer::SetVolume(int volume)
     {
+        if(volume < 0 || volume > 100)
+        {
+            ENGINE_ERROR("Failed to set volume. Must be betweeb 0 - 100 -- Input [{}]", volume);
+            return;
+        }
 
+        int volume_changed = static_cast<int>((volume / 100.f) * 128);
+        Mix_VolumeMusic(volume_changed);
     }
 
     bool MusicPlayer::IsPlaying()
     {
-
+        return Mix_PlayingMusic();
+        // 1 if Music playing
+        // 0 if its not
     }
 
 }

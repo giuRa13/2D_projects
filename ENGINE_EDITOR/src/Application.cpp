@@ -26,6 +26,7 @@
 #include <Windowing/Inputs/Keyboard.hpp>
 #include <Windowing/Inputs/Mouse.hpp>
 #include <Sounds/MusicPlayer/MusicPlayer.hpp>
+#include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
 
 
 
@@ -192,7 +193,19 @@ namespace ENGINE_EDITOR
         }
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_SOUNDS::MusicPlayer>>(musicPlayer))
         {
-            ENGINE_ERROR("Failed to add the Music player to Registry Context");
+            ENGINE_ERROR("Failed to add the Music Player to Registry Context");
+            return false;
+        }
+
+        auto soundPlayer = std::make_shared<ENGINE_SOUNDS::SoundFxPlayer>();
+        if(!soundPlayer)
+        {
+            ENGINE_ERROR("Failed to create the SoundFX Player");
+            return false;   
+        }
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_SOUNDS::SoundFxPlayer>>(soundPlayer))
+        {
+            ENGINE_ERROR("Failed to add the SoundFX Player to Registry Context");
             return false;
         }
 
