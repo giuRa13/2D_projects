@@ -1,0 +1,273 @@
+function CreateTestMap()
+
+return {
+  version = "1.10",
+  luaversion = "5.1",
+  tiledversion = "1.11.0",
+  class = "",
+  orientation = "orthogonal",
+  renderorder = "right-down",
+  width = 20,
+  height = 15,
+  tilewidth = 16,
+  tileheight = 16,
+  nextlayerid = 4,
+  nextobjectid = 1,
+  properties = {},
+  tilesets = {
+    {
+      name = "collider",
+      firstgid = 1,
+      class = "",
+      tilewidth = 16,
+      tileheight = 16,
+      spacing = 0,
+      margin = 0,
+      columns = 1,
+      image = "../../textures/collider.png",
+      imagewidth = 16,
+      imageheight = 16,
+      objectalignment = "unspecified",
+      tilerendersize = "tile",
+      fillmode = "stretch",
+      tileoffset = {
+        x = 0,
+        y = 0
+      },
+      grid = {
+        orientation = "orthogonal",
+        width = 16,
+        height = 16
+      },
+      properties = {},
+      wangsets = {},
+      tilecount = 1,
+      tiles = {}
+    },
+    {
+      name = "gras",
+      firstgid = 2,
+      class = "",
+      tilewidth = 16,
+      tileheight = 16,
+      spacing = 0,
+      margin = 0,
+      columns = 6,
+      image = "../../textures/gras.png",
+      imagewidth = 96,
+      imageheight = 128,
+      objectalignment = "unspecified",
+      tilerendersize = "tile",
+      fillmode = "stretch",
+      tileoffset = {
+        x = 0,
+        y = 0
+      },
+      grid = {
+        orientation = "orthogonal",
+        width = 16,
+        height = 16
+      },
+      properties = {},
+      wangsets = {},
+      tilecount = 48,
+      tiles = {}
+    },
+    {
+      name = "gras_b",
+      firstgid = 50,
+      class = "",
+      tilewidth = 16,
+      tileheight = 16,
+      spacing = 0,
+      margin = 0,
+      columns = 6,
+      image = "../../textures/gras_b.png",
+      imagewidth = 96,
+      imageheight = 128,
+      objectalignment = "unspecified",
+      tilerendersize = "tile",
+      fillmode = "stretch",
+      tileoffset = {
+        x = 0,
+        y = 0
+      },
+      grid = {
+        orientation = "orthogonal",
+        width = 16,
+        height = 16
+      },
+      properties = {},
+      wangsets = {},
+      tilecount = 48,
+      tiles = {}
+    },
+    {
+      name = "jungle_foliage",
+      firstgid = 98,
+      class = "",
+      tilewidth = 16,
+      tileheight = 16,
+      spacing = 0,
+      margin = 0,
+      columns = 6,
+      image = "../../textures/jungle_foliage.png",
+      imagewidth = 96,
+      imageheight = 128,
+      objectalignment = "unspecified",
+      tilerendersize = "tile",
+      fillmode = "stretch",
+      tileoffset = {
+        x = 0,
+        y = 0
+      },
+      grid = {
+        orientation = "orthogonal",
+        width = 16,
+        height = 16
+      },
+      properties = {},
+      wangsets = {},
+      tilecount = 48,
+      tiles = {}
+    },
+    {
+      name = "jungle_ruins",
+      firstgid = 146,
+      class = "",
+      tilewidth = 16,
+      tileheight = 16,
+      spacing = 0,
+      margin = 0,
+      columns = 16,
+      image = "../../textures/jungle_ruins.png",
+      imagewidth = 256,
+      imageheight = 3392,
+      objectalignment = "unspecified",
+      tilerendersize = "tile",
+      fillmode = "stretch",
+      tileoffset = {
+        x = 0,
+        y = 0
+      },
+      grid = {
+        orientation = "orthogonal",
+        width = 16,
+        height = 16
+      },
+      properties = {},
+      wangsets = {},
+      tilecount = 3392,
+      tiles = {}
+    }
+  },
+  layers = {
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 20,
+      height = 15,
+      id = 1,
+      name = "Tile Layer 1",
+      class = "",
+      visible = true,
+      opacity = 0.9,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      encoding = "lua",
+      data = {
+        62, 63, 64, 65, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 64, 65, 66, 66, 67,
+        68, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 70, 71, 72, 72, 73,
+        74, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 69, 70, 71, 72, 78, 73,
+        68, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 69, 70, 71, 72, 84, 79,
+        68, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 87, 69, 70, 71, 72, 90, 85,
+        74, 87, 88, 89, 90, 78, 72, 71, 72, 72, 72, 69, 70, 71, 72, 69, 69, 70, 71, 73,
+        80, 87, 88, 89, 90, 84, 78, 72, 72, 78, 69, 70, 71, 72, 61, 94, 75, 98, 99, 79,
+        86, 87, 88, 89, 90, 90, 84, 98, 78, 84, 69, 70, 71, 72, 508, 105, 15, 104, 105, 55,
+        68, 2, 3, 71, 72, 14, 15, 508, 509, 3, 111, 508, 509, 112, 109, 525, 508, 509, 114, 115,
+        54, 8, 9, 14, 111, 508, 508, 524, 525, 508, 509, 524, 525, 508, 509, 509, 524, 508, 509, 525,
+        508, 509, 508, 508, 105, 508, 509, 524, 508, 524, 525, 524, 524, 524, 525, 525, 508, 524, 525, 509,
+        524, 525, 524, 508, 509, 524, 525, 508, 524, 525, 525, 509, 509, 508, 509, 509, 508, 509, 524, 525,
+        143, 525, 524, 524, 105, 524, 524, 143, 143, 144, 524, 525, 525, 524, 525, 525, 524, 525, 105, 111,
+        60, 140, 87, 87, 87, 87, 87, 87, 87, 88, 89, 87, 98, 508, 508, 509, 105, 90, 90, 91,
+        92, 93, 94, 95, 96, 94, 93, 94, 95, 94, 93, 94, 60, 524, 524, 525, 61, 95, 96, 97
+      }
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 20,
+      height = 15,
+      id = 2,
+      name = "Tile Layer 2",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      encoding = "lua",
+      data = {
+        1958, 1959, 468, 728, 731, 731, 732, 473, 474, 475, 0, 1850, 1851, 1852, 1853, 0, 0, 1958, 1959, 0,
+        482, 483, 484, 744, 747, 747, 748, 489, 490, 491, 0, 1866, 1867, 1868, 1869, 0, 0, 0, 0, 0,
+        498, 499, 500, 501, 731, 732, 504, 505, 506, 507, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        514, 515, 516, 517, 747, 744, 744, 521, 522, 523, 0, 0, 0, 0, 0, 0, 1880, 1881, 1882, 1883,
+        530, 531, 532, 728, 534, 535, 536, 537, 538, 539, 1942, 1943, 0, 0, 0, 0, 1896, 1897, 1898, 1899,
+        546, 547, 548, 549, 550, 551, 745, 553, 554, 555, 1958, 1959, 0, 0, 0, 0, 1912, 1913, 1914, 1915,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1928, 1929, 1930, 1931,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1938, 1939, 1940, 1941,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1954, 1955, 1956, 1957,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1938, 1939, 1940, 1941, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1954, 1955, 1956, 1957, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      }
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 20,
+      height = 15,
+      id = 3,
+      name = "Tile Layer 3",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      encoding = "lua",
+      data = {
+        0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0,
+        0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      }
+    }
+  }
+}
+
+end

@@ -20,13 +20,13 @@ namespace ENGINE_UTIL
 
 }
 
+using WindowPtr = std::unique_ptr<SDL_Window, ENGINE_UTIL::SDL_Destroyer>;
+using SoundFxPtr = std::unique_ptr<Mix_Chunk, ENGINE_UTIL::SDL_Destroyer>;
+using MusicPtr = std::unique_ptr<Mix_Music, ENGINE_UTIL::SDL_Destroyer>;
 //typedef std::shared_ptr<SDL_GameController> Controller;
 //static Controller make_shared_controller(SDL_GameController* controller);
-
 //typedef std::shared_ptr<SDL_Cursor> Cursor;
 //static Cursor make_shared_cursor(SDL_Cursor* cursor);
-
-typedef std::unique_ptr<SDL_Window, ENGINE_UTIL::SDL_Destroyer> WindowPtr;
-
-typedef std::unique_ptr<Mix_Chunk, ENGINE_UTIL::SDL_Destroyer> SoundFxPtr;
-typedef std::unique_ptr<Mix_Music, ENGINE_UTIL::SDL_Destroyer> MusicPtr;
+//typedef std::unique_ptr<SDL_Window, ENGINE_UTIL::SDL_Destroyer> WindowPtr;
+//typedef std::unique_ptr<Mix_Chunk, ENGINE_UTIL::SDL_Destroyer> SoundFxPtr;
+//typedef std::unique_ptr<Mix_Music, ENGINE_UTIL::SDL_Destroyer> MusicPtr;

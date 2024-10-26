@@ -10,16 +10,14 @@ void ENGINE_UTIL::SDL_Destroyer::operator()( SDL_Window* window ) const
 	ENGINE_LOG("Destoyed SDL Window");
 }
 
-void ENGINE_UTIL::SDL_Destroyer::operator()( SDL_GameController* controller ) const
+/*void ENGINE_UTIL::SDL_Destroyer::operator()( SDL_GameController* controller ) const
 {
 
 }
-
-
 void ENGINE_UTIL::SDL_Destroyer::operator()( SDL_Cursor* cursor ) const
 {
 
-}
+}*/
 
 void ENGINE_UTIL::SDL_Destroyer::operator()(Mix_Chunk* chunk) const
 {

@@ -28,7 +28,7 @@ namespace ENGINE_WINDOWING
         Window( const std::string title, int width, int height, int x_pos, int y_pos, bool v_sync = true,
                 Uint32 flags = ( SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE ) );
                 
-        ~Window();
+        ~Window() = default;
 
         inline void SetGLContext( SDL_GLContext gl_context ) { m_GLContext = gl_context; }
         inline SDL_GLContext& GetGLContext() { return m_GLContext; }
@@ -36,9 +36,13 @@ namespace ENGINE_WINDOWING
         inline const std::string& GetWindowName() const { return m_sTitle; }
 
         inline const int GetXPos() const { return m_XPos; }
-        inline const int SetXPos(int x_pos) { m_XPos = x_pos; }
+        //inline const int SetXPos(int x_pos) { m_XPos = x_pos; }
         inline const int GetYPos() const { return m_YPos; }
-        inline const int SetYPos(int y_pos) { m_YPos = y_pos; }
+        //inline const int SetYPos(int y_pos) { m_YPos = y_pos; }
+
+        void SetPosition(int x, int y);
+        inline void SetWidth(int width) { m_Width = width; }
+        inline void SetHeight(int height) { m_Height = height; }
 
         inline const int GetWidth() const { return m_Width; }
         inline const int GetHeight() const { return m_Height; }
