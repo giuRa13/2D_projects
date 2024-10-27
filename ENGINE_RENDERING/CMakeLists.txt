@@ -16,10 +16,17 @@ add_library(ENGINE_RENDERING
     "include/Rendering/Core/Batcher.hpp"
     "include/Rendering/Core/Renderer.hpp"
     "src/Renderer.cpp"
+    "include/Rendering/Essentials/Primitives.hpp"
     "include/Rendering/Core/LineBatchRenderer.hpp"
     "src/LineBatchRenderer.cpp"
-    "include/Rendering/Essentials/Primitives.hpp"
-
+    "include/Rendering/Core/RectBatchRenderer.hpp"
+    "src/RectBatchRenderer.cpp"
+    "include/Rendering/Core/CircleBatchRenderer.hpp"
+    "src/CircleBatchRenderer.cpp"
+    "include/Rendering/Essentials/Font.hpp"
+    "src/Font.cpp"
+    "include/Rendering/Essentials/FontLoader.hpp"
+    "src/FontLoader.cpp"
     )
 
 

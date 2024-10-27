@@ -94,6 +94,9 @@ namespace ENGINE_CORE::Systems
                 ENGINE_ERROR("Error running the Update Script: {0}", err.what());
             }
         }
+
+        auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
+		lua->collect_garbage();
     }
 
 
@@ -121,6 +124,9 @@ namespace ENGINE_CORE::Systems
                 ENGINE_ERROR("Error running the Render Script: {0}", err.what());
             }
         }
+
+        auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
+		lua->collect_garbage();
     }
 
 

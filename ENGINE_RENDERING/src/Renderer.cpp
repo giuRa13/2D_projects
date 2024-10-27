@@ -5,7 +5,12 @@ namespace ENGINE_RENDERING
 {
 
     Renderer::Renderer()
-        : m_pLineBatch{nullptr}, m_pSpriteBatch{nullptr}
+        : m_Lines{}, m_Rects{}, m_Circles{}
+		, m_pLineBatch{ std::make_unique<LineBatchRenderer>() }
+		, m_pRectBatch{ std::make_unique<RectBatchRenderer>() }
+		, m_pCircleBatch{ std::make_unique<CircleBatchRenderer>() }
+		, m_pSpriteBatch{ std::make_unique<SpriteBatchRenderer>() }
+
     {
         m_pLineBatch = std::make_unique<LineBatchRenderer>();
         m_pSpriteBatch = std::make_unique<SpriteBatchRenderer>();
@@ -101,17 +106,17 @@ namespace ENGINE_RENDERING
 
     void Renderer::DrawFilledRect(const Rect& rect)
     {
-
+        m_Rects.push_back( rect );
     }
 
     void Renderer::DrawCircle(const Circle& circle)
     {
-
+        m_Circles.push_back( circle );
     }
 
     void Renderer::DrawCircle(const glm::vec2& position, float radius, const Color& color, float thickness)
     {
-
+	    m_Circles.push_back( Circle{ .position = position, .lineThickness = thickness, .radius = radius, .color = color } );
     }
 
     void Renderer::DrawLines(Shader& shader, Camera2D& camera)
@@ -134,12 +139,43 @@ namespace ENGINE_RENDERING
 
     void Renderer::DrawFilledRects(class Shader& shader, class Camera2D& camera)
     {
+        if ( m_Rects.empty() )
+            return;
 
+        auto cam_mat = camera.GetCameraMatrix();
+        shader.Enable();
+        shader.SetUniformMat4( "uProjection", cam_mat );
+
+        m_pRectBatch->Begin();
+
+        for ( const auto& rect : m_Rects )
+        {
+            m_pRectBatch->AddRect( rect );
+        }
+        m_pRectBatch->End();
+        m_pRectBatch->Render();
+        shader.Disable();
     }
 
     void Renderer::DrawCircles(class Shader& shader, class Camera2D& camera)
     {
+        if ( m_Circles.empty() )
+            return;
 
+        auto cam_mat = camera.GetCameraMatrix();
+        shader.Enable();
+        shader.SetUniformMat4( "uProjection", cam_mat );
+
+        m_pCircleBatch->Begin();
+
+        for ( const auto& circle : m_Circles )
+        {
+            m_pCircleBatch->AddCircle( circle );
+        }
+
+        m_pCircleBatch->End();
+        m_pCircleBatch->Render();
+        shader.Disable();
     }
 
     void Renderer::ClearPrimitives()

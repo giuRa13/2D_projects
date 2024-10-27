@@ -14,10 +14,6 @@ LoadMap(tilemap)
 
 --Music.play("music1")
 
-DrawLine(Line( vec2(50),  vec2(200),  Color(255, 0, 0, 255) ))
-DrawLine(Line( vec2(200, 50),  vec2(50, 200),  Color(0, 255, 0, 255) ))
-DrawRect(Rect( vec2(300, 300),  100,  100,  Color(0, 0, 255, 255) ));
-
 main = {
     [1] = {
         update = function()
@@ -27,6 +23,10 @@ main = {
             --if Keyboard.just_pressed(KEY_M) then
                --Music.stop()
             --end
+            DrawLine(Line( vec2(50),  vec2(200),  Color(255, 0, 0, 255) ))
+            DrawLine(Line( vec2(200, 50),  vec2(50, 200),  Color(0, 255, 0, 255) ))
+            DrawRect(Rect( vec2(300, 300),  100,  100,  Color(0, 0, 255, 255) ))
+            DrawCircle(vec2(150, 150), 1.0, 200.0, Color(255, 255, 0, 255))
 
         end
     },

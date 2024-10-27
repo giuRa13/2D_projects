@@ -23,7 +23,7 @@ namespace ENGINE_RENDERING
     struct Circle
     {
         glm::vec2 position{0.f}, p2{0.f};
-        float thickness{1.f}, radius{0.f};
+        float lineThickness{1.f}, radius{0.f};
         Color color{};
     };
 

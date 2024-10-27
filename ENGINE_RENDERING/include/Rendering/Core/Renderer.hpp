@@ -6,6 +6,8 @@
 #include "Rendering/Essentials/Primitives.hpp"
 #include "Rendering/Core/BatchRenderer.hpp"
 #include "Rendering/Core/LineBatchRenderer.hpp"
+#include "Rendering/Core/RectBatchRenderer.hpp"
+#include "Rendering/Core/CircleBatchRenderer.hpp"
 #include "Rendering/Essentials/Shader.hpp"
 #include "Rendering/Core/Camera2D.hpp"
 
@@ -40,7 +42,8 @@ namespace ENGINE_RENDERING
         std::vector<Circle> m_Circles;
 
         std::unique_ptr<LineBatchRenderer> m_pLineBatch;
-        //std::unique_ptr<CircleBatchRenderer> m_pCircleBatch;
+        std::unique_ptr<RectBatchRenderer> m_pRectBatch;
+        std::unique_ptr<CircleBatchRenderer> m_pCircleBatch;
         std::unique_ptr<SpriteBatchRenderer> m_pSpriteBatch;
 
 
@@ -57,6 +60,8 @@ namespace ENGINE_RENDERING
 
         void SetCapability(GLCapability capability, bool enable);
         bool IsCapabilityEnabled(GLCapability capability) const;
+
+        void SetLineWidth(GLfloat lineWidth);
 
         // Draw calls
         void DrawLine(const Line& line);
