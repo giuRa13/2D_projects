@@ -3,10 +3,33 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "testmap1.tmx",
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "testmap1.tmx": {
+            "scale": 3.313125,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 159.96981701565744,
+                "y": 119.97736276174308
+            }
+        },
+        "testmap1.tmx#collider": {
+            "scaleInDock": 1
+        },
+        "testmap1.tmx#gras": {
+            "scaleInDock": 1
+        },
+        "testmap1.tmx#gras_b": {
+            "scaleInDock": 1
+        },
+        "testmap1.tmx#jungle_foliage": {
+            "scaleInDock": 1
+        },
+        "testmap1.tmx#jungle_ruins": {
+            "scaleInDock": 1
+        }
     },
     "last.exportedFilePath": "/home/giuli/testdev/2DProjects/2DEngine/ENGINE_EDITOR/assets/scripts/TestProject",
     "last.imagePath": "/home/giuli/testdev/2DProjects/2DEngine/ENGINE_EDITOR/assets/textures",
@@ -17,9 +40,11 @@
     "map.tileWidth": 16,
     "map.width": 20,
     "openFiles": [
+        "testmap1.tmx"
     ],
     "project": "testmap1-project.tiled-project",
     "recentFiles": [
+        "testmap1.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {

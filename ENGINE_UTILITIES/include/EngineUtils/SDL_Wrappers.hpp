@@ -10,11 +10,11 @@ namespace ENGINE_UTIL
 
     struct SDL_Destroyer
     {
-		void operator()(SDL_Window* window) const;
-		void operator()(SDL_GameController* controller) const;
-    void operator()(Mix_Chunk* chunk) const;
-    void operator()(Mix_Music* music) const;
-		void operator()(SDL_Cursor* cursor) const;
+        void operator()(SDL_Window* window) const;
+        //void operator()(SDL_GameController* controller) const;
+        void operator()(Mix_Chunk* chunk) const;
+        void operator()(Mix_Music* music) const;
+        //void operator()(SDL_Cursor* cursor) const;
     };
 
 

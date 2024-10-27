@@ -81,7 +81,8 @@ namespace ENGINE_RESOURCES
 
 	bool AssetManager::AddMusic(const std::string& musicName, const std::string& filepath)
 	{
-		if(m_mapMusic.find(musicName) != m_mapMusic.end())
+		//if(m_mapMusic.find(musicName) != m_mapMusic.end())
+		if ( m_mapMusic.contains( musicName ) )
 		{
 			ENGINE_ERROR("Failed to add music [{}] -- Already exists", musicName);
 			return false;
@@ -130,13 +131,14 @@ namespace ENGINE_RESOURCES
 
 	bool AssetManager::AddSoundFx(const std::string& soundFxName, const std::string& filepath)
 	{
-		if(m_mapSoundFX.find(soundFxName) != m_mapSoundFX.end())
+		//if(m_mapSoundFX.find(soundFxName) != m_mapSoundFX.end())
+		if ( m_mapSoundFX.contains( soundFxName ) )
 		{
 			ENGINE_ERROR("Failed to add SoundFX [{}] -- Already exists", soundFxName);
 			return false;
 		}
 
-		Mix_Chunk* chunk = Mix_LoadWAV(filepath.c_str());
+		Mix_Chunk* chunk = Mix_LoadWAV(filepath.c_str()); 
 
 		if(!chunk)
 		{

@@ -1,6 +1,7 @@
 #include <Core/Scripting/SoundBindings.hpp>
 #include <Core/ECS/Registry.hpp>
 #include <Core/Resources/AssetManager.hpp>
+#include <Sounds/Essentials/Music.hpp>
 #include <Sounds/MusicPlayer/MusicPlayer.hpp>
 #include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
 #include <Logger/Logger.hpp>
@@ -15,6 +16,13 @@ void ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, ENGIN
     if(!musicPlayer)
     {
         ENGINE_ERROR("Failed to Bind the Music Player to Lua -- not in the Registry");
+        return;
+    }
+
+    auto& soundFxPlayer = registry.GetContext<std::shared_ptr<SoundFxPlayer>>();
+    if(!soundFxPlayer)
+    {
+        ENGINE_ERROR("Failed to Bind the Sound Player to Lua -- not in the Registry");
         return;
     }
 
@@ -33,7 +41,7 @@ void ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, ENGIN
                 auto music = assetManager->GetMusic(musicName);
                 if(!music)
                 {
-                    ENGINE_ERROR("Failet to get Music [{}] froom the asset Manager", musicName);
+                    ENGINE_ERROR("Failed to get Music [{}] froom the asset Manager", musicName);
                     return;
                 }
                 musicPlayer->Play(*music, loops);
@@ -42,7 +50,7 @@ void ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, ENGIN
                 auto music = assetManager->GetMusic(musicName);
                 if(!music)
                 {
-                    ENGINE_ERROR("Failet to get Music [{}] froom the asset Manager", musicName);
+                    ENGINE_ERROR("Failed to get Music [{}] froom the asset Manager", musicName);
                     return;
                 }
                 musicPlayer->Play(*music, -1);
@@ -64,13 +72,6 @@ void ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(sol::state& lua, ENGIN
             return musicPlayer->IsPlaying();
         }
     );
-
-    auto& soundFxPlayer = registry.GetContext<std::shared_ptr<SoundFxPlayer>>();
-    if(!soundFxPlayer)
-    {
-        ENGINE_ERROR("Failed to Bind the Sound Player to Lua -- not in the Registry");
-        return;
-    }
 
     lua.new_usertype<SoundFxPlayer>(
         "Sound",

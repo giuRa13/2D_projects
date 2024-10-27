@@ -11,6 +11,7 @@
 #include <Rendering/Essentials/ShaderLoader.hpp>
 #include <Rendering/Essentials/TextureLoader.hpp>
 #include <Rendering/Core/Camera2D.hpp>
+#include <Rendering/Core/Renderer.hpp>
 #include <Rendering/Essentials/Vertex.hpp>
 #include <Core/ECS/Entity.hpp>
 #include <Core/ECS/Components/TransformComponent.hpp>
@@ -74,12 +75,15 @@ namespace ENGINE_EDITOR
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); //1=hardware accelleration, 0=software rendering
 
+        //SDL_DisplayMode displayMode;
+	    //SDL_GetCurrentDisplayMode( 0, &displayMode );
+
         m_pWindow = std::make_unique<ENGINE_WINDOWING::Window>(
             "Test window", 
             640, 480, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             true, 
-            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE //| SDL_WINDOW_MAXIMIZED 
         );
     
         if ( !m_pWindow->GetWindow() )
@@ -89,6 +93,13 @@ namespace ENGINE_EDITOR
         }
 
         m_pWindow->SetGLContext(SDL_GL_CreateContext(m_pWindow->GetWindow().get()));
+        
+        if ( gladLoadGLLoader( SDL_GL_GetProcAddress ) == 0 )
+        {
+            ENGINE_ERROR("Failed to Initialize Glad");
+            return false;
+        }
+        
         if (!m_pWindow->GetGLContext())
         {
             std::string error = SDL_GetError();
@@ -99,18 +110,17 @@ namespace ENGINE_EDITOR
         SDL_GL_MakeCurrent(m_pWindow->GetWindow().get(), m_pWindow->GetGLContext());
         SDL_GL_SetSwapInterval( 1 );
 
-        if ( gladLoadGLLoader( SDL_GL_GetProcAddress ) == 0 )
-        {
-            ENGINE_ERROR("Failed to Initialize Glad");
-            return false;
-        }
+
+
+        // Renderer
+        auto renderer = std::make_shared<ENGINE_RENDERING::Renderer>();
 
         // Enable Alpha Blending
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GetOpenGLVersionInfo();
     
-        /////////////////////////////////////////////////////////////////
+
         auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
         if(!assetManager)
         {
@@ -130,6 +140,12 @@ namespace ENGINE_EDITOR
         }*/
   
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
+
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>(renderer));
+        {
+            ENGINE_ERROR("Failed to add the Renderer to Registry Context");
+            //return false;
+        }
 
         // Lua state //////////////////////
         auto lua = std::make_shared<sol::state>();
@@ -231,7 +247,6 @@ namespace ENGINE_EDITOR
         }
 
         ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaBinding(*lua, *m_pRegistry);
-
         ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua);
 
         if(!scriptSystem->LoadMainScript(*lua))
@@ -239,6 +254,26 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to load the Main Lua Script");
             return false; 
         }
+
+        glLineWidth(4.f);
+        /*renderer->DrawLine(ENGINE_RENDERING::Line{
+            .p1 = glm::vec2{50.f}, 
+            .p2 = glm::vec2{200.f}, 
+            .color = ENGINE_RENDERING::Color{255, 0, 0, 255}
+        });
+
+        renderer->DrawLine(ENGINE_RENDERING::Line{
+            .p1 = glm::vec2{200.f, 50.f}, 
+            .p2 = glm::vec2{50.f, 200.f}, 
+            .color = ENGINE_RENDERING::Color{0, 255, 0, 255}
+        });
+
+        renderer->DrawRect(ENGINE_RENDERING::Rect{
+            .position = glm::vec2{300, 300},
+            .width = 100,
+            .height = 100,
+            .color = ENGINE_RENDERING::Color{0, 0, 255, 255}
+        });*/
 
         return true;
     }
@@ -253,8 +288,13 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to get Asset Manager from the Registry Context");
             return false;
         }
-
         if (!assetManager->AddShader("basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag"))
+        {
+            ENGINE_ERROR("Failed to add Shaders to Asset Manager");
+            return false;
+        }
+
+        if (!assetManager->AddShader("color", "assets/shaders/colorShader.vert", "assets/shaders/colorShader.frag"))
         {
             ENGINE_ERROR("Failed to add Shaders to Asset Manager");
             return false;
@@ -371,6 +411,11 @@ namespace ENGINE_EDITOR
 	{
         auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>();
 
+        auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
+        auto& renderer = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>();
+        auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
+        auto shader = assetManager->GetShader("color");
+
         glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
         glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -378,6 +423,7 @@ namespace ENGINE_EDITOR
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Render();
         renderSystem->Update();
+        renderer->DrawLines(*shader, *camera);
 
         SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
 	}

@@ -8,8 +8,8 @@ namespace ENGINE_SOUNDS
     {
 
     public:
-        SoundFxPlayer() = default;
-        ~SoundFxPlayer() = default;
+        SoundFxPlayer() ;
+        ~SoundFxPlayer();
 
         void Play(class SoundFX& soundFx);
         void Play(class SoundFX& soundFx, int loops, int channel);

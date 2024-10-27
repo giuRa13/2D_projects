@@ -65,6 +65,7 @@ namespace ENGINE_SOUNDS
             return;
         }
 
+        // set volume from 0 to 100
         int volume_changed = static_cast<int>((volume / 100.f) * 128);
         Mix_VolumeMusic(volume_changed);
     }

@@ -5,6 +5,23 @@
 
 namespace ENGINE_SOUNDS
 {
+    SoundFxPlayer::SoundFxPlayer()
+    {
+        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) == -1) // 2 for stereo(2 channels)
+        {
+            std::string error{Mix_GetError()};
+            ENGINE_ERROR("Unable to open SDL_Chunk_MIXER - {}", error);
+            return;
+        }
+        ENGINE_LOG("CHANNELS ALLOCATED [{}]", Mix_AllocateChannels(16));
+    }
+
+    SoundFxPlayer::~SoundFxPlayer()
+    {
+        Mix_CloseAudio();
+        Mix_Quit();
+        ENGINE_LOG("SoundFX Player Closed");
+    }
 
     void SoundFxPlayer::Play(SoundFX& soundFx)
     {

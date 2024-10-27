@@ -2,6 +2,7 @@
 
 --run_script("assets/ASTEROIDS/scripts/script_list.lua") 
 --run_script("assets/ASTEROIDS/scripts/main.lua") 
+
 run_script("assets/scripts/TestProject/assetDefs.lua")
 run_script("assets/scripts/TestProject/testmap1.lua")
 run_script("assets/scripts/utilities.lua")
@@ -12,6 +13,10 @@ LoadAssets(AssetDefs)
 LoadMap(tilemap)
 
 --Music.play("music1")
+
+DrawLine(Line( vec2(50),  vec2(200),  Color(255, 0, 0, 255) ))
+DrawLine(Line( vec2(200, 50),  vec2(50, 200),  Color(0, 255, 0, 255) ))
+DrawRect(Rect( vec2(300, 300),  100,  100,  Color(0, 0, 255, 255) ));
 
 main = {
     [1] = {

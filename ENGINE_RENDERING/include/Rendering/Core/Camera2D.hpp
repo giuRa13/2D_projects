@@ -22,6 +22,7 @@ namespace ENGINE_RENDERING
     public:
         Camera2D();
         Camera2D(int width, int height);
+        ~Camera2D() = default;
         
         void Update();
         

@@ -9,7 +9,7 @@ namespace  ENGINE_RENDERING
 {
     constexpr size_t NUM_SPRITE_VERTICES = 4;
     constexpr size_t NUM_SPRITE_INDICES = 6;
-    constexpr size_t MAX_SPRITES = 1000;
+    constexpr size_t MAX_SPRITES = 10000;
     constexpr size_t MAX_INDICES = MAX_SPRITES * NUM_SPRITE_INDICES;
     constexpr size_t MAX_VERTICES = MAX_SPRITES * NUM_SPRITE_VERTICES;
 
@@ -75,7 +75,8 @@ namespace  ENGINE_RENDERING
         GLuint offset{ 0 };
         GLuint indices[ NUM_SPRITE_INDICES ]{ 0, 1, 2, 2, 3, 0 };
 
-        auto indicesArr = std::make_unique_for_overwrite<GLuint[]>( MAX_INDICES );
+        //auto indicesArr = std::make_unique_for_overwrite<GLuint[]>( MAX_INDICES );
+        auto indicesArr = std::make_unique<GLuint[]>(MAX_INDICES);
 
         for ( size_t i = 0; i < MAX_INDICES; i += NUM_SPRITE_INDICES )
         {

@@ -33,6 +33,8 @@ add_library(ENGINE_CORE
     "src/Scripting/InputManager.cpp"
     "include/Core/Scripting/SoundBindings.hpp"
     "src/Scripting/SoundBindings.cpp"
+    "include/Core/Scripting/RendererBindings.hpp"
+    "src/Scripting/RendererBindings.cpp"
 
     #Systems
     "include/Core/Systems/ScriptingSystem.hpp"

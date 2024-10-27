@@ -14,6 +14,12 @@ add_library(ENGINE_RENDERING
     "include/Rendering/Core/BatchRenderer.hpp"
     "src/BatchRenderer.cpp"
     "include/Rendering/Core/Batcher.hpp"
+    "include/Rendering/Core/Renderer.hpp"
+    "src/Renderer.cpp"
+    "include/Rendering/Core/LineBatchRenderer.hpp"
+    "src/LineBatchRenderer.cpp"
+    "include/Rendering/Essentials/Primitives.hpp"
+
     )
 
 

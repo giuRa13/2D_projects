@@ -219,7 +219,7 @@ function LoadAssets(asset)
         end
     end
 
-    for k, v in pairs(asset.music) do
+    --[[for k, v in pairs(asset.music) do
         if not AssetManager.add_music(v.name, v.path) then
             print("Failed to load Music [" ..v.name .."] at path [" ..v.path .."]")
         else
@@ -233,5 +233,5 @@ function LoadAssets(asset)
         else
             print("Loaded soundFX [" ..v.name .."]")
         end
-    end
+    end ]]--
 end

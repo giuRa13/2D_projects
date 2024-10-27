@@ -8,12 +8,12 @@ AssetDefs =
         { name = "jungle_foliage", path = "assets/textures/jungle_foliage.png", pixel_art = true},
         { name = "jungle_ruins", path = "assets/textures/jungle_ruins.png", pixel_art = true}
     },
-    music = 
+    --[[music = 
     {
         
     },
     sound_fx =
     {
 
-    }
+    }--]]
 }

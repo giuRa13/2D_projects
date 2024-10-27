@@ -9,6 +9,7 @@
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include "Core/Scripting/InputManager.hpp"
 #include "Core/Scripting/SoundBindings.hpp"
+#include "Core/Scripting/RendererBindings.hpp"
 #include "Core/Resources/AssetManager.hpp"
 #include <EngineUtils/Timer.hpp>
 #include <Logger/Logger.hpp>
@@ -152,6 +153,7 @@ namespace ENGINE_CORE::Systems
         ENGINE_CORE::InputManager::CreateLuaInputBindings(lua);
         ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
         ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
+        ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
 
         create_timer(lua);
 
