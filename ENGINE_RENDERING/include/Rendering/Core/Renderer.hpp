@@ -8,6 +8,7 @@
 #include "Rendering/Core/LineBatchRenderer.hpp"
 #include "Rendering/Core/RectBatchRenderer.hpp"
 #include "Rendering/Core/CircleBatchRenderer.hpp"
+#include "Rendering/Core/TextBatchRenderer.hpp"
 #include "Rendering/Essentials/Shader.hpp"
 #include "Rendering/Core/Camera2D.hpp"
 
@@ -40,11 +41,13 @@ namespace ENGINE_RENDERING
         std::vector<Line> m_Lines;
         std::vector<Rect> m_Rects;
         std::vector<Circle> m_Circles;
+        std::vector<Text> m_Text;
 
         std::unique_ptr<LineBatchRenderer> m_pLineBatch;
         std::unique_ptr<RectBatchRenderer> m_pRectBatch;
         std::unique_ptr<CircleBatchRenderer> m_pCircleBatch;
         std::unique_ptr<SpriteBatchRenderer> m_pSpriteBatch;
+        std::unique_ptr<TextBatchRenderer> m_pTextBatch;
 
 
     public:
@@ -74,9 +77,12 @@ namespace ENGINE_RENDERING
         void DrawCircle(const Circle& circle);
         void DrawCircle(const glm::vec2& position, float radius, const Color& color, float thickness = 1.f);
 
+        void DrawText2D(const Text& text);
+
         void DrawLines(class Shader& shader, class Camera2D& camera);
         void DrawFilledRects(class Shader& shader, class Camera2D& camera);
         void DrawCircles(class Shader& shader, class Camera2D& camera);
+        void DrawAllText(class Shader& shader, class Camera2D& camera);
 
         void ClearPrimitives();
 

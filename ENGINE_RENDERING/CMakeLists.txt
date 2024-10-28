@@ -23,6 +23,8 @@ add_library(ENGINE_RENDERING
     "src/RectBatchRenderer.cpp"
     "include/Rendering/Core/CircleBatchRenderer.hpp"
     "src/CircleBatchRenderer.cpp"
+    "include/Rendering/Core/TextBatchRenderer.hpp"
+    "src/TextBatchRenderer.cpp"
     "include/Rendering/Essentials/Font.hpp"
     "src/Font.cpp"
     "include/Rendering/Essentials/FontLoader.hpp"

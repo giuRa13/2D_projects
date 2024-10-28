@@ -1,13 +1,14 @@
 #include "Core/Resources/AssetManager.hpp"
 #include <Rendering/Essentials/TextureLoader.hpp>
 #include <Rendering/Essentials/ShaderLoader.hpp>
+#include <Rendering/Essentials/FontLoader.hpp>
 #include <Logger/Logger.hpp>
 
 
 
 namespace ENGINE_RESOURCES
 {
-
+	// Texture //////////////////////////
     bool AssetManager::AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt)
 	{
 		if (m_mapTextures.find(textureName) != m_mapTextures.end()) //check if already exists
@@ -44,7 +45,7 @@ namespace ENGINE_RESOURCES
 		return texItr->second;//Dereferece Itr and get the second that is the Shared_Pointer
 	}
 
-
+	// Shaders //////////////////////////
     bool AssetManager::AddShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath)
 	{
 		if (m_mapShaders.find(shaderName) != m_mapShaders.end()) 
@@ -79,6 +80,64 @@ namespace ENGINE_RESOURCES
 	}
 
 
+	// Font //////////////////////////
+	bool AssetManager::AddFont(const std::string& fontName, const std::string& fontPath, float fontSize)
+	{
+		if ( m_mapFonts.contains( fontName ) )
+		{
+			ENGINE_ERROR( "Failed to add font [{0}] -- already exists", fontName );
+			return false;
+		}
+
+		auto pFont = ENGINE_RENDERING::FontLoader::Create( fontPath, fontSize );
+
+		if ( !pFont )
+		{
+			ENGINE_ERROR( "Failed to add Font [{}] at path [{}] -- to the Asset Manager", fontName, fontPath );
+			return false;
+		}
+
+		m_mapFonts.emplace(fontName, std::move(pFont));
+		return true;
+		//auto [ itr, bSuccess ] = m_mapFonts.emplace( fontName, std::move( pFont ) );
+		//return bSuccess;
+	}
+
+	std::shared_ptr<ENGINE_RENDERING::Font> AssetManager::GetFont(const std::string& fontName)
+	{
+		auto fontItr = m_mapFonts.find(fontName);
+
+		if (fontItr == m_mapFonts.end())
+		{
+			ENGINE_ERROR("Failed to add Font [{0}] -- does not exists", fontName);
+			return nullptr;
+		}
+
+		return fontItr->second;
+	}
+
+	bool AssetManager::AddFontFromMemory(const std::string& fontName, unsigned char* fontData, float fontSize)
+	{
+		if ( m_mapFonts.contains( fontName ) )
+		{
+			ENGINE_ERROR( "Failed to add font [{0}] -- already exists", fontName );
+			return false;
+		}
+
+		auto pFont = ENGINE_RENDERING::FontLoader::CreateFromMemory( fontData, fontSize );
+
+		if ( !pFont )
+		{
+			ENGINE_ERROR( "Failed to add Font [{}] from memory -- to the Asset Manager", fontName);
+			return false;
+		}
+
+		m_mapFonts.emplace(fontName, std::move(pFont));
+		return true;
+	}
+
+
+	// Sound //////////////////////////
 	bool AssetManager::AddMusic(const std::string& musicName, const std::string& filepath)
 	{
 		//if(m_mapMusic.find(musicName) != m_mapMusic.end())
@@ -171,6 +230,7 @@ namespace ENGINE_RESOURCES
 	}
 
 
+	// Lua /////////////////
 	void AssetManager::CreateLuaAssetManager(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
 	{
 		auto& asset_manager = registry.GetContext<std::shared_ptr<AssetManager>>();
@@ -197,6 +257,11 @@ namespace ENGINE_RESOURCES
 			[&](const std::string& soundFxName, const std::string& filepath)
 			{
 				return asset_manager->AddSoundFx(soundFxName, filepath);
+			},
+			"add_font",
+			[&] (const std::string& fontName, const std::string& fontPath, float fontSize)
+			{
+				return asset_manager->AddFont(fontName, fontPath, fontSize);
 			}
 		);
 	}

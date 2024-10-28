@@ -6,7 +6,7 @@ namespace ENGINE_RENDERING
 {
 
     Font::Font(GLuint fontAtlasID, int width, int height, float fontSize, void* data)
-        :m_FontAtlasID{fontAtlasID}, m_Width{width}, m_Height{height}, m_FontSize{fontSize}, m_pData{data}
+        :m_FontAtlasID{fontAtlasID}, m_Width{width}, m_Height{height}, m_FontSize{fontSize}, m_pData{std::move(data)}
     { }
 
     Font::~Font()

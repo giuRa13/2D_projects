@@ -5,15 +5,17 @@ namespace ENGINE_RENDERING
 {
 
     Renderer::Renderer()
-        : m_Lines{}, m_Rects{}, m_Circles{}
+        : m_Lines{}, m_Rects{}, m_Circles{}, m_Text{}
 		, m_pLineBatch{ std::make_unique<LineBatchRenderer>() }
 		, m_pRectBatch{ std::make_unique<RectBatchRenderer>() }
 		, m_pCircleBatch{ std::make_unique<CircleBatchRenderer>() }
 		, m_pSpriteBatch{ std::make_unique<SpriteBatchRenderer>() }
+        , m_pTextBatch{ std::make_unique<TextBatchRenderer>() }
 
     {
-        m_pLineBatch = std::make_unique<LineBatchRenderer>();
-        m_pSpriteBatch = std::make_unique<SpriteBatchRenderer>();
+        //m_pLineBatch = std::make_unique<LineBatchRenderer>();
+        //m_pSpriteBatch = std::make_unique<SpriteBatchRenderer>();
+        //m_pTextBatch = std::make_unique<TextBatchRenderer>();
     }
 
     // OpenGL wrappers
@@ -58,6 +60,10 @@ namespace ENGINE_RENDERING
         glViewport(x, y, width, height);
     }
 
+    void Renderer::SetLineWidth(GLfloat lineWidth)
+    {
+        glLineWidth(lineWidth);
+    }
 
     // Draw calls /////////////////////////////////////////////////////////////////////
 
@@ -68,7 +74,7 @@ namespace ENGINE_RENDERING
 
     void Renderer::DrawLine(const glm::vec2& p1, const glm::vec2& p2, const Color& color, float lineWidth)
     {
-        m_Lines.push_back(Line{.p1 = p1, .p2 = p2, .lineWidth = lineWidth, .color = color});
+        m_Lines.emplace_back(Line{.p1 = p1, .p2 = p2, .lineWidth = lineWidth, .color = color});
     }
 
     void Renderer::DrawRect(const Rect& rect)
@@ -117,6 +123,11 @@ namespace ENGINE_RENDERING
     void Renderer::DrawCircle(const glm::vec2& position, float radius, const Color& color, float thickness)
     {
 	    m_Circles.push_back( Circle{ .position = position, .lineThickness = thickness, .radius = radius, .color = color } );
+    }
+
+    void Renderer::DrawText2D(const Text& text)
+    {
+        m_Text.push_back(text);
     }
 
     void Renderer::DrawLines(Shader& shader, Camera2D& camera)
@@ -178,11 +189,34 @@ namespace ENGINE_RENDERING
         shader.Disable();
     }
 
+
+    void Renderer::DrawAllText(class Shader& shader, class Camera2D& camera)
+    {
+        if ( m_Text.empty() )
+            return;
+
+        auto cam_mat = camera.GetCameraMatrix();
+        shader.Enable();
+        shader.SetUniformMat4( "uProjection", cam_mat );
+
+        m_pTextBatch->Begin();
+
+        for ( const auto& text : m_Text )
+        {
+            m_pTextBatch->AddText( text.textStr, text.pfont, text.position, 4, text.wrap, text.color);
+        }
+
+        m_pTextBatch->End();
+        m_pTextBatch->Render();
+        shader.Disable();
+    }
+
     void Renderer::ClearPrimitives()
     {
         m_Lines.clear();
         m_Rects.clear();
         m_Circles.clear();
+        //m_Text.clear();
     }
 
 }

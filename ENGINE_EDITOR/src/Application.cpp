@@ -255,7 +255,7 @@ namespace ENGINE_EDITOR
             return false; 
         }
 
-        glLineWidth(4.f);
+        renderer->SetLineWidth(4.f);
         /*renderer->DrawLine(ENGINE_RENDERING::Line{
             .p1 = glm::vec2{50.f}, 
             .p2 = glm::vec2{200.f}, 
@@ -274,6 +274,21 @@ namespace ENGINE_EDITOR
             .height = 100,
             .color = ENGINE_RENDERING::Color{0, 0, 255, 255}
         });*/
+
+        if(!assetManager->AddFont("pixel", "./assets/fonts/retro_pixel.TTF"))
+        {
+            ENGINE_ERROR("Failed to load Pixel Font");
+            return false;
+        }
+
+        auto pFont = assetManager->GetFont("pixel");
+        renderer->DrawText2D(
+            ENGINE_RENDERING::Text{
+                .position = glm::vec2{150.f, 100.f},
+                .textStr = "This is some text",
+                .pfont = pFont
+            }
+        );
 
         return true;
     }
@@ -302,6 +317,11 @@ namespace ENGINE_EDITOR
         if (!assetManager->AddShader("circle", "assets/shaders/circleShader.vert", "assets/shaders/circleShader.frag"))
 		{
 			ENGINE_ERROR("Failed to add the Circle-Shaders to the asset manager");
+			return false;
+		}
+        if (!assetManager->AddShader("font", "assets/shaders/fontShader.vert", "assets/shaders/fontShader.frag"))
+		{
+			ENGINE_ERROR("Failed to add the Font-Shaders to the asset manager");
 			return false;
 		}
 
@@ -419,8 +439,10 @@ namespace ENGINE_EDITOR
         auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
         auto& renderer = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>();
         auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
+        
         auto shader = assetManager->GetShader("color");
         auto circleShader = assetManager->GetShader("circle");
+        auto fontShader = assetManager->GetShader("font");
 
         glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
         glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
@@ -432,6 +454,7 @@ namespace ENGINE_EDITOR
 
         renderer->DrawLines(*shader, *camera);
         renderer->DrawCircles(*circleShader, *camera);
+        renderer->DrawAllText(*fontShader, *camera);
 
         SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
 
