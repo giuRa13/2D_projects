@@ -203,7 +203,7 @@ namespace ENGINE_RENDERING
 
         for ( const auto& text : m_Text )
         {
-            m_pTextBatch->AddText( text.textStr, text.pfont, text.position, 4, text.wrap, text.color);
+            m_pTextBatch->AddText( text.textStr, text.pFont, text.position, 4, text.wrap, text.color);
         }
 
         m_pTextBatch->End();
@@ -216,7 +216,7 @@ namespace ENGINE_RENDERING
         m_Lines.clear();
         m_Rects.clear();
         m_Circles.clear();
-        //m_Text.clear();
+        m_Text.clear();
     }
 
 }

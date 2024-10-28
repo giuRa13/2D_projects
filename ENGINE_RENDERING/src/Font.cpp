@@ -56,8 +56,23 @@ namespace ENGINE_RENDERING
                 .uvs = glm::vec2{quad.s1, quad.t1}
             };
         }
-
         return glyph;
+    }
+
+
+    void Font::GetNextCharPos(char c, glm::vec2& pos)
+    {
+        if( c >= 32 && c < 128)
+        {
+            stbtt_aligned_quad quad;
+
+            stbtt_GetBakedQuad(
+                (stbtt_bakedchar*)(m_pData),
+                m_Width, m_Height, c - 32,
+                &pos.x, &pos.y,                 
+                &quad, 1
+            );
+        }
     }
 
 }

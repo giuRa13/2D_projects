@@ -31,10 +31,10 @@ namespace ENGINE_RENDERING
             std::vector<std::string> textChunks{};
             std::string text_holder{ "" };
             glm::vec2 temp_pos = textGlyph->position;
-            //auto fontSize = textGlyph->font->GetFontSize();
+            auto fontSize = textGlyph->font->GetFontSize();
 
-            if ( textGlyph->wrap > 1.f )
-            {   /*S
+            if ( textGlyph->wrap > 100.f )
+            {   
                 // Create the text chunks for each line.
                 for ( int i = 0; i < textGlyph->textStr.size(); i++ )
                 {
@@ -45,8 +45,7 @@ namespace ENGINE_RENDERING
                     // Move the temp_pos with each character
                     textGlyph->font->GetNextCharPos( character, temp_pos );
 
-                    if ( text_size > 0 &&
-                        ( temp_pos.x > ( textGlyph->wrap + textGlyph->position.x ) || character == '\0' || bNewLine ) )
+                    if ( text_size > 0 && ( temp_pos.x > ( textGlyph->wrap + textGlyph->position.x ) || character == '\0' || bNewLine ) )
                     {
                         if ( !bNewLine )
                         {
@@ -58,8 +57,9 @@ namespace ENGINE_RENDERING
                                 if ( i < 0 )
                                 {
                                     ENGINE_ERROR( "Failed to draw text [{}] - Wrap [{}] is too small for the text to wrap [{}]successfully!",
-                                                textGlyph->textStr,
-                                                textGlyph->wrap );
+                                        textGlyph->textStr,
+                                        textGlyph->wrap
+                                    );
                                     return;
                                 }
 
@@ -89,7 +89,7 @@ namespace ENGINE_RENDERING
                 {
                     textChunks.push_back( text_holder );
                     text_holder.clear();
-                }*/
+                }
             }
             else // Push back the entire string
             {

@@ -2,14 +2,17 @@
 #include <Rendering/Essentials/Primitives.hpp>
 #include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Core/Renderer.hpp>
+#include "Core/Resources/AssetManager.hpp"
 #include "Core/ECS/Registry.hpp"
 #include <Logger/Logger.hpp>
 
 using namespace ENGINE_RENDERING;
+using namespace ENGINE_RESOURCES;
 
 
 void ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
 {
+    auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
 
     lua.new_usertype<Line>( 
         "Line",
@@ -46,7 +49,7 @@ void ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua
 		sol::factories( 
             []( const glm::vec2& position, float lineThickness, float radius, const Color& color ) 
             {
-			return Circle{ .position = position, .lineThickness = lineThickness, .radius = radius, .color = color };
+			    return Circle{ .position = position, .lineThickness = lineThickness, .radius = radius, .color = color };
 		    } 
         ),
 		"position", &Circle::position,
@@ -54,9 +57,38 @@ void ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua
 		"radius", &Circle::radius,
 		"color", &Circle::color );
 
+    lua.new_usertype<Text>(
+        "Text",
+        sol::call_constructor,
+        sol::factories(
+            [&]( const glm::vec2& position, const std::string& textStr, const std::string& fontName, float wrap, const Color& color )
+            {
+                auto pFont = assetManager->GetFont(fontName);
+                if(!pFont)
+                {
+                    ENGINE_ERROR("Failed to get Font [{}] -- does not exsists in Asset Manager", fontName);
+                    return Text{};
+                }
+
+                return Text{
+                    .position = position,
+                    .textStr = textStr,
+                    .wrap = wrap,
+                    .pFont = pFont,
+                    .color = color
+                };
+            }
+        ),
+        "position", &Text::position,
+        "textStr", &Text::textStr,
+        "wrap", &Text::wrap,
+        "color", &Text::color
+    );
+
     
     // Renderer
     auto& renderer = registry.GetContext<std::shared_ptr<Renderer>>();
+
     if(!renderer)
     {
         ENGINE_ERROR("Failed to bind the Renderer to Lua, not in the Registry context");
@@ -104,9 +136,16 @@ void ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua
         } 
     );
 
+    lua.set_function("DrawText",
+        [&](const Text& text) {
+            renderer->DrawText2D(text);
+        }
+    );
+
 
     // Camera
     auto& camera = registry.GetContext<std::shared_ptr<Camera2D>>();
+
 	if ( !camera )
 	{
 		ENGINE_ERROR( "Failed to Bind the Camera to Lua - Failed to get the Camera from the Registry Context!" );

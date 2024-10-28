@@ -281,14 +281,24 @@ namespace ENGINE_EDITOR
             return false;
         }
 
-        auto pFont = assetManager->GetFont("pixel");
-        renderer->DrawText2D(
+        // comment in Renderer: m_Text.clear()
+        //auto pFont = assetManager->GetFont("pixel");
+
+        /*renderer->DrawText2D(
             ENGINE_RENDERING::Text{
-                .position = glm::vec2{150.f, 100.f},
+                .position = glm::vec2{100.f, 50.f},
                 .textStr = "This is some text",
-                .pfont = pFont
+                .pFont = pFont
             }
         );
+        renderer->DrawText2D(
+            ENGINE_RENDERING::Text{
+                .position = glm::vec2{50.f, 250.f},
+                .textStr = "testing the wrap functionality, this is some text, wrap is 550",
+                .wrap = 550.f,
+                .pFont = pFont
+            }
+        );*/
 
         return true;
     }
