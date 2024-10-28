@@ -16,12 +16,16 @@
 #include <Core/ECS/Entity.hpp>
 #include <Core/ECS/Components/TransformComponent.hpp>
 #include <Core/ECS/Components/SpriteComponent.hpp>
+#include <Core/ECS/Components/PhysicsComponent.hpp>
+#include <Core/ECS/Components/BoxColliderComponent.hpp>
+#include <Core/ECS/Components/CircleColliderComponent.hpp>
 #include <Core/ECS/Components/Identification.hpp>
 #include <Core/Resources/AssetManager.hpp>
 
 #include <Core/Systems/ScriptingSystem.hpp>
 #include <Core/Systems/RenderSystem.hpp>
 #include <Core/Systems/AnimationSystem.hpp>
+#include <Core/Systems/PhysicsSystem.hpp>
 
 #include <Core/Scripting/InputManager.hpp>
 #include <Windowing/Inputs/Keyboard.hpp>
@@ -240,6 +244,24 @@ namespace ENGINE_EDITOR
             return false;
         }
 
+        // Physics /////////////////////
+        ENGINE_PHYSICS::PhysicsWorld pPhysicsWorld = std::make_shared<b2World>(b2Vec2{0.f, 9.8f});
+
+        if(!m_pRegistry->AddToContext<ENGINE_PHYSICS::PhysicsWorld>(pPhysicsWorld))
+        {
+            ENGINE_ERROR("Failed to add the Physics World to Registry Context");
+            return false;
+        }
+
+        auto pPhysicsSystem = std::make_shared<ENGINE_CORE::Systems::PhysicsSystem>(*m_pRegistry);
+
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::PhysicsSystem>>(pPhysicsSystem))
+        {
+            ENGINE_ERROR("Failed to add the Physics System to Registry Context");
+            return false;
+        }
+
+
         if(!LoadShaders())
         {
             ENGINE_ERROR("Failed to load the Shaders");
@@ -256,24 +278,6 @@ namespace ENGINE_EDITOR
         }
 
         renderer->SetLineWidth(4.f);
-        /*renderer->DrawLine(ENGINE_RENDERING::Line{
-            .p1 = glm::vec2{50.f}, 
-            .p2 = glm::vec2{200.f}, 
-            .color = ENGINE_RENDERING::Color{255, 0, 0, 255}
-        });
-
-        renderer->DrawLine(ENGINE_RENDERING::Line{
-            .p1 = glm::vec2{200.f, 50.f}, 
-            .p2 = glm::vec2{50.f, 200.f}, 
-            .color = ENGINE_RENDERING::Color{0, 255, 0, 255}
-        });
-
-        renderer->DrawRect(ENGINE_RENDERING::Rect{
-            .position = glm::vec2{300, 300},
-            .width = 100,
-            .height = 100,
-            .color = ENGINE_RENDERING::Color{0, 0, 255, 255}
-        });*/
 
         if(!assetManager->AddFont("pixel", "./assets/fonts/retro_pixel.TTF"))
         {
@@ -281,9 +285,113 @@ namespace ENGINE_EDITOR
             return false;
         }
 
+        assetManager->AddTexture("ball", "assets/textures/ball_13.png");
+        auto pTexture = assetManager->GetTexture("ball");
+
+        using namespace ENGINE_CORE::ECS;
+        auto& reg = m_pRegistry->GetRegistry();
+
+        auto entity1 = reg.create();
+        auto& transform1 = reg.emplace<TransformComponent>(
+            entity1,
+            TransformComponent{
+                .position = glm::vec2{380.f, 0.f},
+                .scale = glm::vec2{1.f}
+            }
+        );
+        auto circle1 = reg.emplace<CircleColliderComponent>(
+            entity1,
+            CircleColliderComponent{
+                .radius = 22.f,
+            }
+        );
+        auto& physics1 = reg.emplace<PhysicsComponent>(
+            entity1,
+            PhysicsComponent{
+                pPhysicsWorld,
+                PhysicsAttributes{
+                    .eType = RigidBodyType::DYNAMIC,
+                    .density = 100.f,
+                    .friction = 0.f,
+                    .restituton = 0.4f,
+                    .radius = circle1.radius * PIXELS_TO_METERS,
+                    .gravityScale = 5.f,
+                    .position = transform1.position,
+                    .scale = transform1.scale,
+                    .bCircle = true,
+                    .bFixedRotation = false
+                }
+            }
+        );
+
+        physics1.Init(640, 480);
+        auto& sprite = reg.emplace<SpriteComponent>(
+            entity1,
+            SpriteComponent{
+                .width = 42.f,
+                .height = 42.f,
+                .start_x = 0,
+                .start_y = 0,
+                .texture_name = "ball"
+            }
+        );
+        sprite.generate_uvs(42, 42);
+
+        auto entity2 = reg.create();
+        auto& transform2 = reg.emplace<TransformComponent>(
+            entity2,
+            TransformComponent{
+                .position = glm::vec2{0.f, 480.f},
+                .scale = glm::vec2{1.f}
+            }
+        );
+        auto boxCollider = reg.emplace<BoxColliderComponent>(
+            entity2,
+            BoxColliderComponent{
+                .width = 480,
+                .height = 1,
+            }
+        );
+        auto& physics2 = reg.emplace<PhysicsComponent>(
+            entity2,
+            PhysicsComponent{
+                pPhysicsWorld,
+                PhysicsAttributes{
+                    .eType = RigidBodyType::STATIC,
+                    .density = 1000.f,
+                    .friction = 0.5f,
+                    .restituton = 0.3f,
+                    .gravityScale = 0.f,
+                    .position = transform2.position,
+                    .scale = transform2.scale,
+                    .boxSize = glm::vec2{boxCollider.width, boxCollider.height},
+                    .bBoxShape = true,
+                    .bFixedRotation = false
+                }
+            }
+        );
+
+        physics2.Init(640, 480);
+
+        /*renderer->DrawLine(ENGINE_RENDERING::Line{
+            .p1 = glm::vec2{50.f}, 
+            .p2 = glm::vec2{200.f}, 
+            .color = ENGINE_RENDERING::Color{255, 0, 0, 255}
+        });
+        renderer->DrawLine(ENGINE_RENDERING::Line{
+            .p1 = glm::vec2{200.f, 50.f}, 
+            .p2 = glm::vec2{50.f, 200.f}, 
+            .color = ENGINE_RENDERING::Color{0, 255, 0, 255}
+        });
+        renderer->DrawRect(ENGINE_RENDERING::Rect{
+            .position = glm::vec2{300, 300},
+            .width = 100,
+            .height = 100,
+            .color = ENGINE_RENDERING::Color{0, 0, 255, 255}
+        });*/
+
         // comment in Renderer: m_Text.clear()
         //auto pFont = assetManager->GetFont("pixel");
-
         /*renderer->DrawText2D(
             ENGINE_RENDERING::Text{
                 .position = glm::vec2{100.f, 50.f},
@@ -402,6 +510,16 @@ namespace ENGINE_EDITOR
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Update();
 
+        auto& physicsWorld = m_pRegistry->GetContext<ENGINE_PHYSICS::PhysicsWorld>();
+        physicsWorld->Step(
+            1.f / 60.f,
+            10, 
+            8
+        );
+
+        auto& physicsSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::PhysicsSystem>>();
+        physicsSystem->Update(m_pRegistry->GetRegistry());
+
         auto& animationSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::AnimationSystem>>();
         animationSystem->Update();
 
@@ -412,33 +530,6 @@ namespace ENGINE_EDITOR
         auto& mouse = inputManager.GetMouse();
         mouse.Update();
 
-        /*auto view = m_pRegistry->GetRegistry().view<ENGINE_CORE::ECS::TransformComponent, ENGINE_CORE::ECS::SpriteComponent>();
-        static float rotation{0.f};
-        static float x_pos{10.f};
-        static bool bMoveRight{true};
-        if(rotation >= 360.f)
-            rotation = 0.f;
-
-        if(bMoveRight && x_pos < 300)
-            x_pos += 3; 
-        else if (bMoveRight && x_pos >= 300.f)
-            bMoveRight = false;
-
-        if(!bMoveRight && x_pos > 10.f)
-            x_pos -= 3;
-        else if (!bMoveRight && x_pos <= 10.f)
-            bMoveRight = true;
-
-        for(const auto& entity : view)
-        {
-            ENGINE_CORE::ECS::Entity ent{*m_pRegistry, entity};
-            auto& transform = ent.GetComponent<ENGINE_CORE::ECS::TransformComponent>();
-
-            transform.rotation = rotation;
-            transform.position.x = x_pos;
-        }
-
-        rotation += bMoveRight ? 9 : -9;*/
     }
 
 

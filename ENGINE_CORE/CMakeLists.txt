@@ -21,6 +21,8 @@ add_library(ENGINE_CORE
     "src/ECS/Components/BoxColliderComponent.cpp"
     "include/Core/ECS/Components/CircleColliderComponent.hpp"
     "src/ECS/Components/CircleColliderComponent.cpp"
+    "include/Core/ECS/Components/PhysicsComponent.hpp"
+    "src/ECS/Components/PhysicsComponent.cpp"
 
     # Resources
     "include/Core/Resources/AssetManager.hpp"
@@ -43,6 +45,8 @@ add_library(ENGINE_CORE
     "src/Systems/RenderSystem.cpp"
     "include/Core/Systems/AnimationSystem.hpp"
     "src/Systems/AnimationSystem.cpp"
+    "include/Core/Systems/PhysicsSystem.hpp"
+    "src/Systems/PhysicsSystem.cpp"
     )
 
 
@@ -55,7 +59,7 @@ target_link_libraries(ENGINE_CORE PUBLIC
     #$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     #$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     ENGINE_LOGGER ENGINE_UTILITIES 
-	ENGINE_RENDERING ENGINE_WINDOW ENGINE_SOUNDS)
+	ENGINE_RENDERING ENGINE_WINDOW ENGINE_SOUNDS ENGINE_PHYSICS)
 
 target_compile_options(
     ENGINE_CORE PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXX_COMPILE_FLAGS}>)

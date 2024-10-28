@@ -57,6 +57,7 @@ add_subdirectory(ENGINE_RENDERING)
 add_subdirectory(ENGINE_WINDOW)
 add_subdirectory(ENGINE_CORE)
 add_subdirectory(ENGINE_SOUNDS)
+add_subdirectory(ENGINE_PHYSICS)
 set_target_properties(
     ENGINE_LOGGER 
     ENGINE_UTILITIES 
@@ -64,6 +65,7 @@ set_target_properties(
     ENGINE_WINDOW 
     ENGINE_CORE
     ENGINE_SOUNDS
+    ENGINE_PHYSICS
     PROPERTIES FOLDER "Engine")
 
 include(cmake/AddResources.cmake)
