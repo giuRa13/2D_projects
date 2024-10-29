@@ -158,7 +158,7 @@ namespace ENGINE_CORE::Systems
     void ScriptingSystem::RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
         ENGINE_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
-        ENGINE_CORE::InputManager::CreateLuaInputBindings(lua);
+        ENGINE_CORE::InputManager::CreateLuaInputBindings(lua, registry);
         ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
         ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
         ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);

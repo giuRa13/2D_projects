@@ -164,7 +164,15 @@ void ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua
 		"scale", 
         [ & ] { return camera->GetScale(); },
 		"set_scale", 
-        [ & ]( float scale ) { camera->SetScale( scale ); }
+        [ & ]( float scale ) { camera->SetScale( scale ); },
+        "get_world_coords",
+        [&] (const glm::vec2& screenCoords){ return camera->ScreenCoordsToWorld(screenCoords); },
+        "get_screen_coords",
+        [&] (const glm::vec2& worldCoords){ return camera->WorldCoordsToScreen(worldCoords); },
+        "width", 
+        [&] { return camera->GetWidth(); },
+        "height", 
+        [&] { return camera->GetHeight(); }
     );
 
 }

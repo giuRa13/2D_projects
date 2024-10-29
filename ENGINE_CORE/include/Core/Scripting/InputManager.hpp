@@ -2,6 +2,7 @@
 
 #include <Windowing/Inputs/Keyboard.hpp>
 #include <Windowing/Inputs/Mouse.hpp>
+#include "Core/ECS/Registry.hpp"
 #include <memory>
 #include <sol/sol.hpp>
 
@@ -29,7 +30,7 @@ namespace ENGINE_CORE
     public:
         static InputManager& GetInstance();
         
-        static void CreateLuaInputBindings(sol::state& lua);
+        static void CreateLuaInputBindings(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
 
         inline Keyboard& GetKeyboard() { return *m_pKeyboard; }
         inline Mouse& GetMouse() { return *m_pMouse; }

@@ -3,13 +3,27 @@
 --run_script("assets/ASTEROIDS/scripts/script_list.lua") 
 --run_script("assets/ASTEROIDS/scripts/main.lua") 
 
+
 --run_script("assets/scripts/TestProject/assetDefs.lua")
 --run_script("assets/scripts/TestProject/testmap1.lua")
 --run_script("assets/scripts/utilities.lua")
+
 --local tilemap = CreateTestMap()
 --assert(tilemap)
 --LoadAssets(AssetDefs)
 --LoadMap(tilemap)
+
+run_script("assets/scripts/follow_cam.lua")
+
+gCam = Camera.get()
+gFollowCam = FollowCam:Create(gCam,
+    {
+        scale = 1,
+        max_x = 20000,
+        max_y = 2000,
+        springback = 0.2
+    }
+)
 
 --Music.play("music1")
 
@@ -21,7 +35,7 @@ local physAttr = PhysicsAttributes()
 physAttr.eType = BodyType.Dynamic
 physAttr.density = 100.0
 physAttr.friction = 0.2
-physAttr.restitution = 0.2
+physAttr.restitution = 0.1
 physAttr.radius = circle.radius * (1.0 / 12.0)
 physAttr.gravityScale = 2.0 
 physAttr.position = transform.position
@@ -33,7 +47,7 @@ local sprite = ball:add_component(Sprite("ball", 42, 42, 0, 0, 0))
 sprite:generate_uvs()
 
 local bottomEnt = Entity("", "")
-local bottomBox = bottomEnt:add_component(BoxCollider(624, 16, vec2(0, 0)))
+local bottomBox = bottomEnt:add_component(BoxCollider(10000, 16, vec2(0, 0)))
 local bottomTrans = bottomEnt:add_component(Transform(vec2(0, 464), vec2(1, 1), 0))
 local bottomPhys = PhysicsAttributes()
 bottomPhys.eType = BodyType.Static
@@ -48,7 +62,7 @@ bottomPhys.bBoxShape = true
 bottomPhys.bFixedRotation = true
 bottomEnt:add_component(PhysicsComp(bottomPhys))
 
-local leftEnt = Entity("", "")
+--[[local leftEnt = Entity("", "")
 local leftBox = leftEnt:add_component(BoxCollider(16, 464, vec2(0, 0)))
 local leftTrans = leftEnt:add_component(Transform(vec2(0, 0), vec2(1, 1), 0))
 local leftPhys = PhysicsAttributes()
@@ -94,7 +108,7 @@ topPhys.scale = topTrans.scale
 topPhys.boxSize = vec2(topBox.width, topBox.height)
 topPhys.bBoxShape = true 
 topPhys.bFixedRotation = true
-topEnt:add_component(PhysicsComp(topPhys))
+topEnt:add_component(PhysicsComp(topPhys))]]--
 ---------------------------------------------------------------------
 
 
@@ -110,11 +124,11 @@ local valText = valEnt:add_component(TextComponent("pixel", " 0", Color(255, 150
 
 function createBall()
     if(Mouse.just_released(LEFT_BTN)) then
-        local pos_x, pos_y = Mouse.screen_position()
+        local pos = Mouse.world_position()
     
         local ball = Entity("", "")
         local circle = ball:add_component(CircleCollider(21.0))
-        local transform = ball:add_component(Transform( vec2(pos_x, pos_y), vec2(1, 1), 0))
+        local transform = ball:add_component(Transform( vec2(pos.x, pos.y), vec2(1, 1), 0))
         local physAttr = PhysicsAttributes()
         physAttr.eType = BodyType.Dynamic
         physAttr.density = 100.0
@@ -151,7 +165,7 @@ function updateEntity(entity)
 	end 
 	if Keyboard.just_pressed(KEY_W) then 
 		physics:set_linear_velocity(vec2(velocity.x, 0))
-		physics:linear_impulse(vec2(0, -300000))
+		physics:linear_impulse(vec2(0, -30000))
 	end
 end
 
@@ -168,6 +182,8 @@ main = {
 
             createBall()
             updateEntity(ball)
+
+            gFollowCam:Update(ball:id())
 
             valText.textStr = tostring(ballCount)
         end

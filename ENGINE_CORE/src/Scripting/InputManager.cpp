@@ -1,4 +1,6 @@
 #include "Core/Scripting/InputManager.hpp"
+#include <Rendering/Core/Camera2D.hpp>
+#include <glm/glm.hpp>
 
 
 namespace ENGINE_CORE
@@ -105,13 +107,14 @@ namespace ENGINE_CORE
     }
 
 
-    void InputManager::CreateLuaInputBindings(sol::state& lua)
+    void InputManager::CreateLuaInputBindings(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
         RegisterLuaKeyNames(lua);
         RegisterLuaMouseBtnames(lua);
         
         auto& inputManager = GetInstance();
         auto& keyboard = inputManager.GetKeyboard();
+        auto& camera = registry.GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
 
         lua.new_usertype<Keyboard>(
             "Keyboard",
@@ -129,7 +132,14 @@ namespace ENGINE_CORE
             "just_pressed", [&](int btn) { return mouse.IsBtnJustPressed(btn); },
             "just_released", [&](int btn) { return mouse.IsBtnJustReleased(btn); },
             "pressed", [&](int btn) { return mouse.IsBtnPressed(btn); },
-            "screen_position", [&]() { return mouse.GetMouseScreeenPosition(); },
+            "screen_position", [&]() { 
+                auto[x, y] = mouse.GetMouseScreeenPosition(); 
+                return glm::vec2{x, y};
+            },
+            "world_position", [&]() { 
+                auto[x, y] = mouse.GetMouseScreeenPosition(); 
+                return camera->ScreenCoordsToWorld(glm::vec2{x, y});
+            },
             "wheel_x", [&]() { return mouse.GetMouseWheelX(); },
             "wheel_y", [&]() { return mouse.GetMouseWheelY(); }
         );
