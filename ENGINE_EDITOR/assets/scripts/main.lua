@@ -4,20 +4,33 @@
 --run_script("assets/ASTEROIDS/scripts/main.lua") 
 
 
---run_script("assets/scripts/TestProject/assetDefs.lua")
---run_script("assets/scripts/TestProject/testmap1.lua")
---run_script("assets/scripts/utilities.lua")
+run_script("assets/scripts/TestProject/assetDefs.lua")
+run_script("assets/scripts/TestProject/testmap1.lua")
+run_script("assets/scripts/utilities.lua")
+run_script("assets/scripts/rain_generator.lua")
 
---local tilemap = CreateTestMap()
---assert(tilemap)
---LoadAssets(AssetDefs)
---LoadMap(tilemap)
-
+local tilemap = CreateTestMap()
+assert(tilemap)
+LoadAssets(AssetDefs)
+LoadMap(tilemap)
 
 --Music.play("music1")
 
+local rainGen = RainGenerator:Create()
+
+Sound.play("rain", -1, 1) -- (-1 ) = loop forever, channel 1
+
+gTimer = Timer()
+gTimer:start()
+local bDegenerate = false
+
+function GetRandomValue(min, max)
+	math.randomseed(get_ticks())
+	return math.random(min, max)
+end
+
 ---------------------------------------------------------------------
-local ball = Entity("", "")
+--[[local ball = Entity("", "")
 local circle = ball:add_component(CircleCollider(21.0))
 local transform = ball:add_component(Transform( vec2(320, 64), vec2(1, 1), 0))
 local physAttr = PhysicsAttributes()
@@ -35,17 +48,15 @@ ball:add_component(PhysicsComp(physAttr))
 local sprite = ball:add_component(Sprite("ball", 42, 42, 0, 0, 0))
 sprite:generate_uvs()
 
-
 gFollowCam = FollowCamera(
     FollowCamParams({
         scale = 1,
         max_x = 20000,
         max_y = 2000,
-        springback = 0.2
+        springback = 1.0
     }),
     ball
 )
-
 
 local bottomEnt = Entity("", "")
 local bottomBox = bottomEnt:add_component(BoxCollider(10000, 16, vec2(0, 0)))
@@ -61,7 +72,7 @@ bottomPhys.scale = bottomTrans.scale
 bottomPhys.boxSize = vec2(bottomBox.width, bottomBox.height)
 bottomPhys.bBoxShape = true 
 bottomPhys.bFixedRotation = true
-bottomEnt:add_component(PhysicsComp(bottomPhys))
+bottomEnt:add_component(PhysicsComp(bottomPhys))]]--
 
 --[[local leftEnt = Entity("", "")
 local leftBox = leftEnt:add_component(BoxCollider(16, 464, vec2(0, 0)))
@@ -113,14 +124,14 @@ topEnt:add_component(PhysicsComp(topPhys))]]--
 ---------------------------------------------------------------------
 
 
-local ballCount = 0
+--[[local ballCount = 0
 local countEnt = Entity("", "")
 countEnt:add_component(Transform(vec2(10,32), vec2(1, 1), 0))
 countEnt:add_component(TextComponent("pixel", "Ball Count: ", Color(255, 150, 0, 255), 4, -1.0))
 
 local valEnt = Entity("", "")
 valEnt:add_component(Transform(vec2(352,32), vec2(1, 1), 0))
-local valText = valEnt:add_component(TextComponent("pixel", " 0", Color(255, 150, 0, 255), 4, -1.0))
+local valText = valEnt:add_component(TextComponent("pixel", " 0", Color(255, 150, 0, 255), 4, -1.0))]]--
 
 
 function createBall()
@@ -182,11 +193,13 @@ main = {
                --Music.stop()
             --end
 
-            createBall()
-            updateEntity(ball)
-            gFollowCam:update()
+            --createBall()
+            --updateEntity(ball)
+            --gFollowCam:update()
 
-            valText.textStr = tostring(ballCount)
+            --valText.textStr = tostring(ballCount)
+
+            rainGen:Update(0.016) -- Add delta-time
         end
     },
     [2] = {

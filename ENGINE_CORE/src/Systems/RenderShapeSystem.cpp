@@ -5,6 +5,7 @@
 #include "Core/Resources/AssetManager.hpp"
 #include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Essentials/Primitives.hpp>
+#include "Core/CoreUtilities/CoreEngineData.hpp"
 
 using namespace ENGINE_CORE::ECS;
 using namespace ENGINE_RENDERING;
@@ -23,6 +24,9 @@ namespace ENGINE_CORE::Systems
 
     void RenderShapeSystem::Update()
     {
+        if (!CoreEngineData::GetInstance().RenderCollidersEnabled())
+			return;
+
         auto& camera = m_Registry.GetContext<std::shared_ptr<Camera2D>>();
         auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
 

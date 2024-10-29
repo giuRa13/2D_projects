@@ -26,6 +26,8 @@ namespace ENGINE_CORE::Systems
 
         static void RegisterLuaFunctions(sol::state& lua);
 
+        static void RegisterLuaFunctions(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
+
     };
 
 }

@@ -25,6 +25,8 @@ add_library(ENGINE_CORE
     "src/ECS/Components/PhysicsComponent.cpp"
     "include/Core/ECS/Components/TextComponent.hpp"
     "src/ECS/Components/TextComponent.cpp"
+    "include/Core/ECS/Components/RigidBodyComponent.hpp"
+    "src/ECS/Components/RigidBodyComponent.cpp"
 
     # Resources
     "include/Core/Resources/AssetManager.hpp"

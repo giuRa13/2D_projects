@@ -295,7 +295,7 @@ namespace ENGINE_EDITOR
         }
 
         ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaBinding(*lua, *m_pRegistry);
-        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua);
+        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua, *m_pRegistry);
 
         if(!scriptSystem->LoadMainScript(*lua))
         {

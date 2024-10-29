@@ -3,6 +3,8 @@ add_library(ENGINE_UTILITIES
 "src/SDL_Wrappers.cpp"
 "include/EngineUtils/Timer.hpp"
 "src/Timer.cpp"
+"include/EngineUtils/RandomGenerator.hpp"
+"src/RandomGenerator.cpp"
 )
 
 target_include_directories(
