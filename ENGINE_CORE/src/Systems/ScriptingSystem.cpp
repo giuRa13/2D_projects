@@ -5,6 +5,7 @@
 #include "Core/ECS/Components/AnimationComponent.hpp"
 #include "Core/ECS/Components/BoxColliderComponent.hpp"
 #include "Core/ECS/Components/CircleColliderComponent.hpp"
+#include "Core/ECS/Components/PhysicsComponent.hpp"
 #include "Core/ECS/Entity.hpp"
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include "Core/Scripting/InputManager.hpp"
@@ -170,18 +171,21 @@ namespace ENGINE_CORE::Systems
         AnimationComponent::CreateAnimationLuaBind(lua);
         BoxColliderComponent::CreateLuaBoxColliderBind(lua);
         CircleColliderComponent::CreateLuaCircleColliderBind(lua);
+        PhysicsComponent::CreatePhysicsLuaBind(lua, registry.GetRegistry());
 
         Entity::RegisterMetaComponent<TransformComponent>();
         Entity::RegisterMetaComponent<SpriteComponent>();
         Entity::RegisterMetaComponent<AnimationComponent>();
         Entity::RegisterMetaComponent<BoxColliderComponent>();
         Entity::RegisterMetaComponent<CircleColliderComponent>();
+        Entity::RegisterMetaComponent<PhysicsComponent>();
 
         Registry::RegistryMetaComponent<TransformComponent>();
         Registry::RegistryMetaComponent<SpriteComponent>();
         Registry::RegistryMetaComponent<AnimationComponent>();
         Registry::RegistryMetaComponent<BoxColliderComponent>();
         Registry::RegistryMetaComponent<CircleColliderComponent>();
+        Registry::RegistryMetaComponent<PhysicsComponent>();
     }
 
 

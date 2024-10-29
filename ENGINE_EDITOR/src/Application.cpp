@@ -26,6 +26,7 @@
 #include <Core/Systems/RenderSystem.hpp>
 #include <Core/Systems/AnimationSystem.hpp>
 #include <Core/Systems/PhysicsSystem.hpp>
+#include <Core/Systems/RenderShapeSystem.hpp>
 
 #include <Core/Scripting/InputManager.hpp>
 #include <Windowing/Inputs/Keyboard.hpp>
@@ -142,6 +143,8 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
         }*/
+
+        assetManager->AddTexture("ball", "assets/textures/ball_13.png");
   
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
@@ -189,6 +192,17 @@ namespace ENGINE_EDITOR
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>(renderSystem))
         {
             ENGINE_ERROR("Failed to add the RenderSystem to Registry Context");
+            return false;
+        }
+        auto renderShapeSystem = std::make_shared<ENGINE_CORE::Systems::RenderShapeSystem>(*m_pRegistry);
+        if(!renderShapeSystem)
+        {
+            ENGINE_ERROR("Failed to create the RenderShape System");
+            return false;   
+        }
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>(renderShapeSystem))
+        {
+            ENGINE_ERROR("Failed to add the RenderShapeSystem to Registry Context");
             return false;
         }
         // Animation System
@@ -285,9 +299,9 @@ namespace ENGINE_EDITOR
             return false;
         }
 
-        assetManager->AddTexture("ball", "assets/textures/ball_13.png");
-        auto pTexture = assetManager->GetTexture("ball");
-
+        
+        
+        /*auto pTexture = assetManager->GetTexture("ball");
         using namespace ENGINE_CORE::ECS;
         auto& reg = m_pRegistry->GetRegistry();
 
@@ -295,7 +309,7 @@ namespace ENGINE_EDITOR
         auto& transform1 = reg.emplace<TransformComponent>(
             entity1,
             TransformComponent{
-                .position = glm::vec2{380.f, 0.f},
+                .position = glm::vec2{420.f, 0.f},
                 .scale = glm::vec2{1.f}
             }
         );
@@ -308,7 +322,6 @@ namespace ENGINE_EDITOR
         auto& physics1 = reg.emplace<PhysicsComponent>(
             entity1,
             PhysicsComponent{
-                pPhysicsWorld,
                 PhysicsAttributes{
                     .eType = RigidBodyType::DYNAMIC,
                     .density = 100.f,
@@ -323,8 +336,8 @@ namespace ENGINE_EDITOR
                 }
             }
         );
-
-        physics1.Init(640, 480);
+        physics1.Init(pPhysicsWorld ,640, 480);
+        
         auto& sprite = reg.emplace<SpriteComponent>(
             entity1,
             SpriteComponent{
@@ -341,26 +354,25 @@ namespace ENGINE_EDITOR
         auto& transform2 = reg.emplace<TransformComponent>(
             entity2,
             TransformComponent{
-                .position = glm::vec2{0.f, 480.f},
+                .position = glm::vec2{0.f, 420.f},
                 .scale = glm::vec2{1.f}
             }
         );
         auto boxCollider = reg.emplace<BoxColliderComponent>(
             entity2,
             BoxColliderComponent{
-                .width = 480,
-                .height = 1,
+                .width = 450,
+                .height = 20,
             }
         );
         auto& physics2 = reg.emplace<PhysicsComponent>(
             entity2,
             PhysicsComponent{
-                pPhysicsWorld,
                 PhysicsAttributes{
-                    .eType = RigidBodyType::STATIC,
+                    .eType = RigidBodyType::DYNAMIC,
                     .density = 1000.f,
                     .friction = 0.5f,
-                    .restituton = 0.3f,
+                    .restituton = 0.0f,
                     .gravityScale = 0.f,
                     .position = transform2.position,
                     .scale = transform2.scale,
@@ -370,8 +382,7 @@ namespace ENGINE_EDITOR
                 }
             }
         );
-
-        physics2.Init(640, 480);
+        physics2.Init(pPhysicsWorld ,640, 480);*/
 
         /*renderer->DrawLine(ENGINE_RENDERING::Line{
             .p1 = glm::vec2{50.f}, 
@@ -536,6 +547,7 @@ namespace ENGINE_EDITOR
     void Application::Render()
 	{
         auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>();
+        auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>();
 
         auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
         auto& renderer = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>();
@@ -552,6 +564,7 @@ namespace ENGINE_EDITOR
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Render();
         renderSystem->Update();
+        renderShapeSystem->Update();
 
         renderer->DrawLines(*shader, *camera);
         renderer->DrawCircles(*circleShader, *camera);

@@ -47,6 +47,8 @@ add_library(ENGINE_CORE
     "src/Systems/AnimationSystem.cpp"
     "include/Core/Systems/PhysicsSystem.hpp"
     "src/Systems/PhysicsSystem.cpp"
+    "include/Core/Systems/RenderShapeSystem.hpp"
+    "src/Systems/RenderShapeSystem.cpp"
     )
 
 

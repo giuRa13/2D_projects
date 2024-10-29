@@ -134,7 +134,7 @@ namespace ENGINE_RENDERING
     {
         auto cam_mat = camera.GetCameraMatrix();
         shader.Enable();
-        shader.SetUniformMat4("projection", cam_mat);
+        shader.SetUniformMat4("uProjection", cam_mat);
 
         m_pLineBatch->Begin();
 

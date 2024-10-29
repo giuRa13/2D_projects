@@ -5,15 +5,18 @@
 namespace ENGINE_CORE::ECS
 {
 
-    PhysicsComponent::PhysicsComponent(ENGINE_PHYSICS::PhysicsWorld pPhysicsWorld, const PhysicsAttributes& physicsAttrib)
-        :m_pPhysicsWorld{pPhysicsWorld}, m_pRigidBody{nullptr}, m_InitialAttribs{physicsAttrib}
-    {
+    PhysicsComponent::PhysicsComponent(const PhysicsAttributes& physicsAttrib)
+        : m_pRigidBody{nullptr}, m_InitialAttribs{physicsAttrib}
+    { }
 
-    }
+    PhysicsComponent::PhysicsComponent()
+        : PhysicsComponent{PhysicsAttributes{}}
+    { }
 
-    void PhysicsComponent::Init(int windowWidth, int windowHeight)
+
+    void PhysicsComponent::Init(ENGINE_PHYSICS::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight)
     {
-        if(!m_pPhysicsWorld)
+        if(!pPhysicsWorld)
         {
             ENGINE_ERROR("Failed to Initialize PhysicsComponent - Physics World idìs nullptr");
             return;
@@ -38,7 +41,7 @@ namespace ENGINE_CORE::ECS
         bodyDef.fixedRotation = m_InitialAttribs.bFixedRotation;
 
         // Create the Rigid Body
-        m_pRigidBody = ENGINE_PHYSICS::MakeSharedBody(m_pPhysicsWorld->CreateBody(&bodyDef));
+        m_pRigidBody = ENGINE_PHYSICS::MakeSharedBody(pPhysicsWorld->CreateBody(&bodyDef));
         if(!m_pRigidBody)
         {
             ENGINE_ERROR("Failed to create the Rigid Body");
@@ -51,7 +54,7 @@ namespace ENGINE_CORE::ECS
 
         if(bCircle)
         {
-            circleShape.m_radius = m_InitialAttribs.radius;
+            circleShape.m_radius = m_InitialAttribs.radius * m_InitialAttribs.scale.x ;
         }
         else if(m_InitialAttribs.bBoxShape)
         {
@@ -89,7 +92,136 @@ namespace ENGINE_CORE::ECS
 
     void PhysicsComponent::CreatePhysicsLuaBind(sol::state& lua, entt::registry& registry)
     {
+        lua.new_enum<RigidBodyType>(
+            "BodyType", {
+                {"Static", RigidBodyType::STATIC},
+                {"Kinematic", RigidBodyType::KINEMATIC},
+                {"Dynamic", RigidBodyType::DYNAMIC},
+            }
+        );
 
+        lua.new_usertype<PhysicsAttributes>(
+            "PhysicsAttributes",
+            sol::call_constructor,
+            sol::factories(
+                []{
+                    return PhysicsAttributes{};
+                }
+                // add more specific
+            ),
+            "eType", &PhysicsAttributes::eType,
+            "density", &PhysicsAttributes::density,
+            "friction", &PhysicsAttributes::friction,
+            "restitution", &PhysicsAttributes::restituton,
+            "restitutionThreshold", &PhysicsAttributes::restitutionThreshold,
+            "radius", &PhysicsAttributes::radius,
+            "gravityScale", &PhysicsAttributes::gravityScale,
+            "position", &PhysicsAttributes::position,
+            "scale", &PhysicsAttributes::scale,
+            "boxSize", &PhysicsAttributes::boxSize,
+            "offset", &PhysicsAttributes::offset,
+            "bCircle", &PhysicsAttributes::bCircle,
+            "bBoxShape", &PhysicsAttributes::bBoxShape,
+            "bFixedRotation", &PhysicsAttributes::bFixedRotation
+            // add filters and more
+        );
+        
+        auto& pPhysicsWorld = registry.ctx().get<ENGINE_PHYSICS::PhysicsWorld>();
+        if(!pPhysicsWorld)
+        {
+            return;
+        }
+
+        lua.new_usertype<PhysicsComponent>(
+            "PhysicsComp",
+            "type_id", &entt::type_hash<PhysicsComponent>::value,
+            sol::call_constructor,
+            sol::factories(
+                [&](const PhysicsAttributes& attr) {
+                    PhysicsComponent pc{attr};
+                    pc.Init(pPhysicsWorld, 640, 480);
+                    return pc;
+                }
+            ),
+            "linear_impulse",
+		    []( PhysicsComponent& pc, const glm::vec2& impulse ) {
+			    auto body = pc.GetBody();
+			    if ( !body )
+			    {
+				    // TODO: Add Error
+				    return;
+			    }
+
+			    body->ApplyLinearImpulse( b2Vec2{ impulse.x, impulse.y }, body->GetPosition(), true );
+		    },
+            "angular_impulse",
+		    []( PhysicsComponent& pc, float impulse ) {
+			    auto body = pc.GetBody();
+			    if ( !body )
+			    {
+				    // TODO: Add Error
+				    return;
+			    }
+
+			    body->ApplyAngularImpulse( impulse, true );
+		    },
+            "set_linear_velocity",
+		    []( PhysicsComponent& pc, const glm::vec2& velocity ) {
+			    auto body = pc.GetBody();
+			    if ( !body )
+			    {
+				    // TODO: Add Error
+				    return;
+			    }
+
+			    body->SetLinearVelocity( b2Vec2{velocity.x, velocity.y} );
+		    },
+            "get_linear_velocity",
+		    []( PhysicsComponent& pc) {
+			    auto body = pc.GetBody();
+			    if ( !body )
+			    {
+				    // TODO: Add Error
+				    return glm::vec2{0.f};
+			    }
+                const auto linearVelocity = body->GetLinearVelocity();
+			    return glm::vec2{linearVelocity.x, linearVelocity.y};
+		    },
+            "set_angular_velocity",
+		    []( PhysicsComponent& pc, float angularVelocity ) {
+			    auto body = pc.GetBody();
+			    if ( !body )
+			    {
+				    // TODO: Add Error
+				    return;
+			    }
+
+			    body->SetAngularVelocity(angularVelocity);
+		    },
+            "get_angular_velocity",
+		    []( PhysicsComponent& pc) {
+			    auto body = pc.GetBody();
+			    if ( !body )
+			    {
+				    // TODO: Add Error
+				    return 0.f;
+			    }
+
+			    return body->GetAngularVelocity();
+		    },
+            "set_gravity_scale", 
+            [](PhysicsComponent& pc, float gravityScale){
+                auto body = pc.GetBody();
+			    if ( !body )
+			    {
+				    // TODO: Add Error
+				    return ;
+			    }
+
+			    body->SetGravityScale(gravityScale);
+            }
+        );
     }
+
 
 }
