@@ -23,6 +23,8 @@ add_library(ENGINE_CORE
     "src/ECS/Components/CircleColliderComponent.cpp"
     "include/Core/ECS/Components/PhysicsComponent.hpp"
     "src/ECS/Components/PhysicsComponent.cpp"
+    "include/Core/ECS/Components/TextComponent.hpp"
+    "src/ECS/Components/TextComponent.cpp"
 
     # Resources
     "include/Core/Resources/AssetManager.hpp"
@@ -49,6 +51,8 @@ add_library(ENGINE_CORE
     "src/Systems/PhysicsSystem.cpp"
     "include/Core/Systems/RenderShapeSystem.hpp"
     "src/Systems/RenderShapeSystem.cpp"
+    "include/Core/Systems/RenderUISystem.hpp"
+    "src/Systems/RenderUISystem.cpp"
     )
 
 

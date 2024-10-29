@@ -27,6 +27,7 @@
 #include <Core/Systems/AnimationSystem.hpp>
 #include <Core/Systems/PhysicsSystem.hpp>
 #include <Core/Systems/RenderShapeSystem.hpp>
+#include <Core/Systems/RenderUISystem.hpp>
 
 #include <Core/Scripting/InputManager.hpp>
 #include <Windowing/Inputs/Keyboard.hpp>
@@ -192,6 +193,17 @@ namespace ENGINE_EDITOR
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>(renderSystem))
         {
             ENGINE_ERROR("Failed to add the RenderSystem to Registry Context");
+            return false;
+        }
+        auto renderUISystem = std::make_shared<ENGINE_CORE::Systems::RenderUISystem>(*m_pRegistry);
+        if(!renderUISystem)
+        {
+            ENGINE_ERROR("Failed to create the RenderUI System");
+            return false;   
+        }
+        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderUISystem>>(renderUISystem))
+        {
+            ENGINE_ERROR("Failed to add the RenderUISystem to Registry Context");
             return false;
         }
         auto renderShapeSystem = std::make_shared<ENGINE_CORE::Systems::RenderShapeSystem>(*m_pRegistry);
@@ -547,6 +559,7 @@ namespace ENGINE_EDITOR
     void Application::Render()
 	{
         auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>();
+        auto& renderUISystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderUISystem>>();
         auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>();
 
         auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
@@ -565,8 +578,10 @@ namespace ENGINE_EDITOR
         scriptSystem->Render();
         renderSystem->Update();
         renderShapeSystem->Update();
+        renderUISystem->Update(m_pRegistry->GetRegistry());
 
         renderer->DrawLines(*shader, *camera);
+        renderer->DrawFilledRects(*shader, *camera);
         renderer->DrawCircles(*circleShader, *camera);
         renderer->DrawAllText(*fontShader, *camera);
 

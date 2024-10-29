@@ -13,6 +13,7 @@
 
 --Music.play("music1")
 
+---------------------------------------------------------------------
 local ball = Entity("", "")
 local circle = ball:add_component(CircleCollider(21.0))
 local transform = ball:add_component(Transform( vec2(320, 64), vec2(1, 1), 0))
@@ -94,6 +95,18 @@ topPhys.boxSize = vec2(topBox.width, topBox.height)
 topPhys.bBoxShape = true 
 topPhys.bFixedRotation = true
 topEnt:add_component(PhysicsComp(topPhys))
+---------------------------------------------------------------------
+
+
+local ballCount = 0
+local countEnt = Entity("", "")
+countEnt:add_component(Transform(vec2(10,32), vec2(1, 1), 0))
+countEnt:add_component(TextComponent("pixel", "Ball Count: ", Color(255, 150, 0, 255), 4, -1.0))
+
+local valEnt = Entity("", "")
+valEnt:add_component(Transform(vec2(352,32), vec2(1, 1), 0))
+local valText = valEnt:add_component(TextComponent("pixel", " 0", Color(255, 150, 0, 255), 4, -1.0))
+
 
 function createBall()
     if(Mouse.just_released(LEFT_BTN)) then
@@ -116,6 +129,8 @@ function createBall()
         ball:add_component(PhysicsComp(physAttr))
         local sprite = ball:add_component(Sprite("ball", 42, 42, 0, 0, 0))
         sprite:generate_uvs()
+
+        ballCount = ballCount + 1
     end
 end
 
@@ -153,6 +168,8 @@ main = {
 
             createBall()
             updateEntity(ball)
+
+            valText.textStr = tostring(ballCount)
         end
     },
     [2] = {
@@ -164,7 +181,7 @@ main = {
             --DrawCircle(vec2(200, 200), 1.0, 100.0, Color(255, 255, 0, 255))
 
             DrawText( Text( 
-                vec2(100.0, 50.0),
+                vec2(100.0, 200.0),
                 "This is some text",
                 "pixel",
                 640.0,
