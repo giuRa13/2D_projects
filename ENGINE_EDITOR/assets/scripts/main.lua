@@ -13,17 +13,6 @@
 --LoadAssets(AssetDefs)
 --LoadMap(tilemap)
 
-run_script("assets/scripts/follow_cam.lua")
-
-gCam = Camera.get()
-gFollowCam = FollowCam:Create(gCam,
-    {
-        scale = 1,
-        max_x = 20000,
-        max_y = 2000,
-        springback = 0.2
-    }
-)
 
 --Music.play("music1")
 
@@ -45,6 +34,18 @@ physAttr.bFixedRotation = false
 ball:add_component(PhysicsComp(physAttr))
 local sprite = ball:add_component(Sprite("ball", 42, 42, 0, 0, 0))
 sprite:generate_uvs()
+
+
+gFollowCam = FollowCamera(
+    FollowCamParams({
+        scale = 1,
+        max_x = 20000,
+        max_y = 2000,
+        springback = 0.2
+    }),
+    ball
+)
+
 
 local bottomEnt = Entity("", "")
 local bottomBox = bottomEnt:add_component(BoxCollider(10000, 16, vec2(0, 0)))
@@ -170,6 +171,7 @@ function updateEntity(entity)
 end
 
 
+
 main = {
     [1] = {
         update = function()
@@ -182,8 +184,7 @@ main = {
 
             createBall()
             updateEntity(ball)
-
-            gFollowCam:Update(ball:id())
+            gFollowCam:update()
 
             valText.textStr = tostring(ballCount)
         end

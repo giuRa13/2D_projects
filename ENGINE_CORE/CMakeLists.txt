@@ -53,6 +53,11 @@ add_library(ENGINE_CORE
     "src/Systems/RenderShapeSystem.cpp"
     "include/Core/Systems/RenderUISystem.hpp"
     "src/Systems/RenderUISystem.cpp"
+
+    "include/Core/CoreUtilities/CoreEngineData.hpp"
+    "src/CoreUtilities/CoreEngineData.cpp"
+    "include/Core/CoreUtilities/FollowCamera.hpp"
+    "src/CoreUtilities/FollowCamera.cpp"
     )
 
 

@@ -3,6 +3,7 @@
 #include "Core/ECS/Components/BoxColliderComponent.hpp"
 #include "Core/ECS/Components/CircleColliderComponent.hpp"
 #include "Core/ECS/Components/TransformComponent.hpp"
+#include "Core/CoreUtilities/CoreEngineData.hpp"
 
 using namespace ENGINE_CORE::ECS;
 
@@ -19,8 +20,10 @@ namespace ENGINE_CORE::Systems
     void PhysicsSystem::Update(entt::registry& registry)
     {
         auto boxView = registry.view<PhysicsComponent, TransformComponent, BoxColliderComponent>();
-        auto scaleWidth = 640.f / METERS_TO_PIXELS;
-        auto scaleHeight = 480.f / METERS_TO_PIXELS;
+        auto& coreEngine = CoreEngineData::GetInstance();
+
+        float hScaledWidth = coreEngine.ScaledWidth() * 0.5f;
+        float hScaledHeight = coreEngine.ScaledHeight() * 0.5f;
 
         for (auto entity : boxView)
         {
@@ -35,10 +38,10 @@ namespace ENGINE_CORE::Systems
 
             const auto& bodyPosition = pRigidBody->GetPosition();
 
-            transform.position.x = ((scaleWidth / 2.f) + bodyPosition.x) * METERS_TO_PIXELS - 
+            transform.position.x = (hScaledWidth + bodyPosition.x) * coreEngine.MetersToPixels() - 
                 (boxCollider.width * transform.scale.x) / 2.f - boxCollider.offset.x;
 
-            transform.position.y = ((scaleHeight / 2.f) + bodyPosition.y) * METERS_TO_PIXELS - 
+            transform.position.y = (hScaledHeight + bodyPosition.y) * coreEngine.MetersToPixels() - 
                 (boxCollider.height * transform.scale.y) / 2.f - boxCollider.offset.y;
 
             if(!pRigidBody->IsFixedRotation())
@@ -60,10 +63,10 @@ namespace ENGINE_CORE::Systems
 
             const auto& bodyPosition = pRigidBody->GetPosition();
 
-            transform.position.x = ((scaleWidth / 2.f) + bodyPosition.x) * METERS_TO_PIXELS - 
+            transform.position.x = (hScaledWidth + bodyPosition.x) * coreEngine.MetersToPixels() - 
                 (circleCollider.radius * transform.scale.x) - circleCollider.offset.x;
 
-            transform.position.y = ((scaleHeight / 2.f) + bodyPosition.y) * METERS_TO_PIXELS - 
+            transform.position.y = (hScaledHeight + bodyPosition.y) * coreEngine.MetersToPixels() - 
                 (circleCollider.radius * transform.scale.y) - circleCollider.offset.y;
 
             if(!pRigidBody->IsFixedRotation())

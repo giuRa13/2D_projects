@@ -1,4 +1,5 @@
 #include "Core/ECS/Components/PhysicsComponent.hpp"
+#include "Core/CoreUtilities/CoreEngineData.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -27,6 +28,7 @@ namespace ENGINE_CORE::ECS
         // create body def
         b2BodyDef bodyDef{};
         bodyDef.type = static_cast<b2BodyType>(m_InitialAttribs.eType);
+        auto PIXELS_TO_METERS = CoreEngineData::GetInstance().PixelsToMeters();
 
         // set initial position of body
         bodyDef.position.Set(

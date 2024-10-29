@@ -14,6 +14,8 @@
 #include "Core/Scripting/RendererBindings.hpp"
 #include "Core/Resources/AssetManager.hpp"
 #include <EngineUtils/Timer.hpp>
+#include "Core/CoreUtilities/CoreEngineData.hpp"
+#include "Core/CoreUtilities/FollowCamera.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -162,6 +164,7 @@ namespace ENGINE_CORE::Systems
         ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
         ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
         ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
+        ENGINE_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
 
         create_timer(lua);
 
