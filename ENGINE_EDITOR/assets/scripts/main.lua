@@ -3,31 +3,34 @@
 --run_script("assets/ASTEROIDS/scripts/script_list.lua") 
 --run_script("assets/ASTEROIDS/scripts/main.lua") 
 
-
 run_script("assets/scripts/TestProject/assetDefs.lua")
-run_script("assets/scripts/TestProject/testmap1.lua")
+--run_script("assets/scripts/TestProject/testmap1.lua")
+run_script("assets/scripts/TestProject/testmap2.lua")
 run_script("assets/scripts/utilities.lua")
 run_script("assets/scripts/rain_generator.lua")
 
-local tilemap = CreateTestMap()
+--local tilemap = CreateTestMap()
+local tilemap = CreateTestPlantformerMap()
 assert(tilemap)
 LoadAssets(AssetDefs)
 LoadMap(tilemap)
 
---Music.play("music1")
+Music.play("music1")
 
-local rainGen = RainGenerator:Create()
+---------------------------------------------------------------------
+local rainGen = RainGenerator:Create({scale = 0.5})
 
 Sound.play("rain", -1, 1) -- (-1 ) = loop forever, channel 1
+Sound.set_volume(1, 30)
 
 gTimer = Timer()
 gTimer:start()
-local bDegenerate = false
 
-function GetRandomValue(min, max)
-	math.randomseed(get_ticks())
-	return math.random(min, max)
-end
+
+--function GetRandomValue(min, max)
+	--math.randomseed(get_ticks())
+	--return math.random(min, max)
+--end
 
 ---------------------------------------------------------------------
 --[[local ball = Entity("", "")
@@ -123,7 +126,6 @@ topPhys.bFixedRotation = true
 topEnt:add_component(PhysicsComp(topPhys))]]--
 ---------------------------------------------------------------------
 
-
 --[[local ballCount = 0
 local countEnt = Entity("", "")
 countEnt:add_component(Transform(vec2(10,32), vec2(1, 1), 0))
@@ -132,7 +134,6 @@ countEnt:add_component(TextComponent("pixel", "Ball Count: ", Color(255, 150, 0,
 local valEnt = Entity("", "")
 valEnt:add_component(Transform(vec2(352,32), vec2(1, 1), 0))
 local valText = valEnt:add_component(TextComponent("pixel", " 0", Color(255, 150, 0, 255), 4, -1.0))]]--
-
 
 function createBall()
     if(Mouse.just_released(LEFT_BTN)) then
@@ -181,7 +182,75 @@ function updateEntity(entity)
 	end
 end
 
+----------------------------------------------------------------------------
 
+gPlayer = Entity("player", "")
+local playerTransform = gPlayer:add_component(Transform(vec2(16, 416), vec2(1, 1), 0)) -- position 16 is 1 400 is 25
+local sprite = gPlayer:add_component(Sprite("player", 32, 32, 0, 0, 2))
+sprite:generate_uvs()
+gPlayer:add_component(Animation(4, 9, 0, false, true))-- frame, framerate, offset, horizontal, loop
+local circleCollider = gPlayer:add_component(CircleCollider(8, vec2(8,12))) -- radius, offset
+local playerPhysAttr = PhysicsAttributes()
+playerPhysAttr.eType = BodyType.Dynamic
+playerPhysAttr.density = 75.0
+playerPhysAttr.friction = 1.0
+playerPhysAttr.restitution = 0.0
+playerPhysAttr.position = playerTransform.position
+playerPhysAttr.radius = circleCollider.radius
+playerPhysAttr.bCircle = true
+playerPhysAttr.bFixedRotation = true
+gPlayer:add_component(PhysicsComp(playerPhysAttr))
+
+bLeft = false
+function UpdatePlayer(player)
+    local physics = player:get_component(PhysicsComp)
+    local velocity = physics:get_linear_velocity()
+    local sprite = player:get_component(Sprite)
+    -- stop if not pressing
+    physics:set_linear_velocity(vec2(0, velocity.y))
+    -- left or right
+    if Keyboard.pressed(KEY_A) then
+        physics:set_linear_velocity(vec2(-10, velocity.y))
+        bLeft = true
+        sprite.start_y = 3
+    elseif Keyboard.pressed(KEY_D) then
+        physics:set_linear_velocity(vec2(10, velocity.y))
+        bLeft = false
+        sprite.start_y = 2
+    end
+    -- jump (velocity negative way up, positive way down)
+    if Keyboard.just_pressed(KEY_W) then
+        physics:set_linear_velocity(vec2(velocity.x, 0))
+        physics:linear_impulse(vec2(velocity.x -1500))
+    end
+    if velocity.y < 0 then
+        physics:set_gravity_scale(2)
+    elseif velocity.y > 0 then
+        physics:set_gravity_scale(2)
+    end
+    -- reset idle animation
+    if velocity.x == 0.0 then
+        if bLeft then
+            sprite.start_y = 1
+        else
+            sprite.start_y = 0
+        end
+    end
+
+    sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height
+end
+
+Camera.get().set_scale(2)
+gFollowCam = FollowCamera(
+    FollowCamParams({
+        min_x = 0,
+        min_y = 0,
+        max_x = 640,
+        max_y = 480,
+        scale = 2,
+    }),
+    gPlayer
+)
 
 main = {
     [1] = {
@@ -196,10 +265,12 @@ main = {
             --createBall()
             --updateEntity(ball)
             --gFollowCam:update()
-
             --valText.textStr = tostring(ballCount)
 
+            Debug()
             rainGen:Update(0.016) -- Add delta-time
+            UpdatePlayer(gPlayer)
+            gFollowCam:update()
         end
     },
     [2] = {
@@ -207,8 +278,8 @@ main = {
 
             --DrawLine(Line( vec2(50),  vec2(200),  Color(255, 0, 0, 255) ))
             --DrawLine(Line( vec2(200, 50),  vec2(50, 200),  Color(0, 255, 0, 255) ))
-            --DrawRect(Rect( vec2(300, 300),  100,  100,  Color(0, 0, 255, 255) ))
-            --DrawCircle(vec2(200, 200), 1.0, 100.0, Color(255, 255, 0, 255))
+            --DrawRect(Rect( vec2(0, 0),  640,  480,  Color(255, 0, 0, 255) ))
+            --DrawCircle(vec2(-100, -150), 1.0, 850.0, Color(0, 0, 0, 100))
 
             DrawText( Text( 
                 vec2(100.0, 200.0),
@@ -225,5 +296,5 @@ main = {
                     Color(255, 100, 0, 255)
             ))]]--
         end
-    },
+    }
 }

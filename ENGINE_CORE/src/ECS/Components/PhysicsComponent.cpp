@@ -15,6 +15,15 @@ namespace ENGINE_CORE::ECS
     { }
 
 
+    const bool PhysicsComponent::IsSensor() const
+    {
+        if(!m_pRigidBody)
+            return false;
+
+        return m_pRigidBody->GetFixtureList()->IsSensor();
+    }
+
+
     void PhysicsComponent::Init(ENGINE_PHYSICS::PhysicsWorld pPhysicsWorld, int windowWidth, int windowHeight)
     {
         if(!pPhysicsWorld)
@@ -56,7 +65,7 @@ namespace ENGINE_CORE::ECS
 
         if(bCircle)
         {
-            circleShape.m_radius = m_InitialAttribs.radius * m_InitialAttribs.scale.x ;
+            circleShape.m_radius = PIXELS_TO_METERS * m_InitialAttribs.radius * m_InitialAttribs.scale.x ;
         }
         else if(m_InitialAttribs.bBoxShape)
         {
@@ -81,6 +90,7 @@ namespace ENGINE_CORE::ECS
         fixtureDef.friction = m_InitialAttribs.friction;
         fixtureDef.restitution = m_InitialAttribs.restituton;
         fixtureDef.restitutionThreshold = m_InitialAttribs.restitutionThreshold;
+        fixtureDef.isSensor = m_InitialAttribs.bIsSensor;
 
         auto p_Fixture = m_pRigidBody->CreateFixture(&fixtureDef);
         if(!p_Fixture)
@@ -124,7 +134,8 @@ namespace ENGINE_CORE::ECS
             "offset", &PhysicsAttributes::offset,
             "bCircle", &PhysicsAttributes::bCircle,
             "bBoxShape", &PhysicsAttributes::bBoxShape,
-            "bFixedRotation", &PhysicsAttributes::bFixedRotation
+            "bFixedRotation", &PhysicsAttributes::bFixedRotation,
+            "bIsSensor", &PhysicsAttributes::bIsSensor
             // add filters and more
         );
         

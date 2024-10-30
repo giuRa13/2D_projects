@@ -8,7 +8,7 @@ namespace ENGINE_RENDERING
 
 	struct Color
 	{
-		GLubyte r, g, b, a; // 8 bit each
+		GLubyte r{255}, g{255}, b{255}, a{255}; // 8 bit each
 	};
 
 

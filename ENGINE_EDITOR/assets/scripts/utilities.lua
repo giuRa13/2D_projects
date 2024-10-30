@@ -174,24 +174,15 @@ function LoadMap(mapDef)
                 assert(tileset, "Tileset does not exists with id: " ..id)
                 local start_x, start_y = tileset:GetTileStartXY(id)
 
-                local scale = 2
+                local scale = 1
                 local position = vec2(((col -1) * tileset.tilewidth * scale), (row * tileset.tileheight * scale))
 
                 local tile = Entity("", "tiles")
-                tile:add_component(Transform(position, vec2(scale, scale), 0))
+                local transform = tile:add_component(Transform(position, vec2(scale, scale), 0))
 
-                local sprite = tile:add_component(
-                    Sprite(
-                        tileset.name,
-                        tileset.tilewidth,
-                        tileset.tileheight,
-                        start_x, start_y,
-                        layer
-                    )
-                )
-                sprite:generate_uvs()
+                local bIsCollider = false
 
-                if tileset.name == "collider" then
+                if tileset.name == "collider"  or tileset.name == "trigger" then
                     local width = tileset.tilewidth / scale
 					local height = tileset.tileheight / scale
                     tile:add_component(
@@ -201,7 +192,36 @@ function LoadMap(mapDef)
                             vec2(0, 0)
                         )
                     )
-                    sprite.bHidden = true
+                    if IsPhysicsEnabled() then
+                        local physicsAttribs = PhysicsAttributes()
+                        physicsAttribs.eType = BodyType.Static
+                        physicsAttribs.density = 1000.0 -- 1000kg/m^2
+                        physicsAttribs.friction = 0.0
+                        physicsAttribs.restitution = 0.0
+                        physicsAttribs.gravityScale = 0.0
+                        physicsAttribs.position = transform.position
+                        physicsAttribs.bFixedRotation = false
+                        physicsAttribs.boxSize = vec2(tileset.tilewidth, tileset.tileheight)
+                        physicsAttribs.bBoxShape = true
+                        if tileset.name == "trigger" then
+                            physicsAttribs.bIsSensor = true
+                        end
+                        tile:add_component(PhysicsComp(physicsAttribs))
+                    end
+                    bIsCollider = true
+                end
+
+                if not bIsCollider then
+                    local sprite = tile:add_component(
+                        Sprite(
+                            tileset.name,
+                            tileset.tilewidth,
+                            tileset.tileheight,
+                            start_x, start_y,
+                            layer
+                        )
+                    )
+                    sprite:generate_uvs()
                 end
                 
                 ::continue::
@@ -236,4 +256,15 @@ function LoadAssets(asset)
             print("Loaded soundFX [" ..v.name .."]")
         end
     end 
+end
+
+
+function Debug()
+    if Keyboard.just_pressed(KEY_B) then
+        if IsRenderCollidersEnabled() then
+            DisableRenderColliders()
+        else
+            EnableRenderColliders()
+        end
+    end
 end

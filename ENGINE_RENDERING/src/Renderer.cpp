@@ -29,8 +29,8 @@ namespace ENGINE_RENDERING
         glClear
         (
             (color ? GL_COLOR_BUFFER_BIT : 0) |
-            (color ? GL_DEPTH_BUFFER_BIT : 0) |
-            (color ? GL_STENCIL_BUFFER_BIT : 0) 
+            (depth ? GL_DEPTH_BUFFER_BIT : 0) |
+            (stencil ? GL_STENCIL_BUFFER_BIT : 0) 
         );
     }
 

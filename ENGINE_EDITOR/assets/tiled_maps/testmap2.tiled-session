@@ -1,0 +1,57 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "testmap2.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "#land_tiles": {
+            "scaleInEditor": 1
+        },
+        "testmap2.tmx": {
+            "scale": 1.6565625,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 319.9396340313149,
+                "y": 239.95472552348616
+            }
+        },
+        "testmap2.tmx#background1": {
+            "scaleInDock": 1
+        },
+        "testmap2.tmx#collider": {
+            "scaleInDock": 1
+        },
+        "testmap2.tmx#land_tiles": {
+            "scaleInDock": 1
+        },
+        "testmap2.tmx#land_tiles1": {
+            "scaleInDock": 1
+        },
+        "testmap2.tmx#trigger": {
+            "scaleInDock": 1
+        }
+    },
+    "last.exportedFilePath": "/home/giuli/testdev/2DProjects/2DEngine/ENGINE_EDITOR/assets/scripts/TestProject",
+    "last.imagePath": "/home/giuli/testdev/2DProjects/2DEngine/ENGINE_EDITOR/assets/textures",
+    "map.height": 30,
+    "map.lastUsedExportFilter": "All Files (*)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 40,
+    "openFiles": [
+        "testmap2.tmx"
+    ],
+    "project": "testmap2.tiled-project",
+    "recentFiles": [
+        "testmap2.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
