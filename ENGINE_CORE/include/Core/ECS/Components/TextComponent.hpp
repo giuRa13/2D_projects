@@ -15,6 +15,8 @@ namespace ENGINE_CORE::ECS
         ENGINE_RENDERING::Color color{255, 255, 255, 255};
         bool bHidden{false};
 
+        [[nodiscard]] std::string to_string();
+
         static void CreateTextLuaBinding(sol::state& lua);
     };
 

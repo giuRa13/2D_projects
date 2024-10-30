@@ -15,6 +15,7 @@ namespace ENGINE_CORE::ECS
 
         bool bColliding{false};
 
+        [[nodiscard]] std::string to_string() const;
 
         static void CreateLuaCircleColliderBind(sol::state& lua);
     };

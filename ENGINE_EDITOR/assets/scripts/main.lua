@@ -199,6 +199,7 @@ playerPhysAttr.position = playerTransform.position
 playerPhysAttr.radius = circleCollider.radius
 playerPhysAttr.bCircle = true
 playerPhysAttr.bFixedRotation = true
+playerPhysAttr.objectData = (ObjectData("player", "", true, false, gPlayer:id()))
 gPlayer:add_component(PhysicsComp(playerPhysAttr))
 
 bLeft = false
@@ -253,14 +254,14 @@ gFollowCam = FollowCamera(
 )
 -----------------------------------------------------------------
 
-local objectData = ObjectData("test_tag", "test_group", true, true, 9919)
+--[[local objectData = ObjectData("test_tag", "test_group", true, true, 9919)
 local userData = UserData.create_user_data(objectData)
 local objData1 = userData:get_user_data()
 print(objData1:to_string() .."\n")
 
 userData:set_user_data(ObjectData("New Tag", "New group", false, true, 12112))
 local objData2 = userData:get_user_data()
-print(objData2:to_string())
+print(objData2:to_string())]]--
 
 
 main = {
@@ -269,19 +270,26 @@ main = {
             --if bAsteroidsLoaded then
                 --RunAsteroids()
             --end
-            --if Keyboard.just_pressed(KEY_M) then
-               --Music.stop()
-            --end
+            if Keyboard.just_pressed(KEY_M) then
+               Music.stop()
+            end
+
+            rainGen:Update(0.016) -- Add delta time
+            UpdatePlayer(gPlayer)
+            gFollowCam:update()
+
+            Debug()
+
+            local uda, udb = ContactListener.get_user_data()
+            if uda and udb then
+                print("USER A: " ..uda:to_string())
+                print("USER B: " ..udb:to_string())
+            end
 
             --createBall()
             --updateEntity(ball)
             --gFollowCam:update()
             --valText.textStr = tostring(ballCount)
-
-            Debug()
-            rainGen:Update(0.016) -- Add delta-time
-            UpdatePlayer(gPlayer)
-            gFollowCam:update()
         end
     },
     [2] = {

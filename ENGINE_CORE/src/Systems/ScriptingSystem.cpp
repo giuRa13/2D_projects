@@ -14,11 +14,13 @@
 #include "Core/Scripting/SoundBindings.hpp"
 #include "Core/Scripting/RendererBindings.hpp"
 #include "Core/Scripting/UserDataBindings.hpp"
+#include "Core/Scripting/ContactListenerBinds.hpp"
 #include "Core/Resources/AssetManager.hpp"
 #include <EngineUtils/Timer.hpp>
 #include <EngineUtils/RandomGenerator.hpp>
 #include "Core/CoreUtilities/CoreEngineData.hpp"
 #include "Core/CoreUtilities/FollowCamera.hpp"
+#include "Core/CoreUtilities/CoreUtilities.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -169,6 +171,7 @@ namespace ENGINE_CORE::Systems
         ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
         ENGINE_CORE::Scripting::UserDataBinder::CreateLuaUserData(lua);
         ENGINE_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
+        ENGINE_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener(lua, registry.GetRegistry());
 
         create_timer(lua);
 
@@ -262,6 +265,12 @@ namespace ENGINE_CORE::Systems
 			sol::constructors<ENGINE_UTIL::RandomGenerator(uint32_t, uint32_t), ENGINE_UTIL::RandomGenerator()>(),
 			"get_float", &ENGINE_UTIL::RandomGenerator::GetFloat,
 			"get_int", &ENGINE_UTIL::RandomGenerator::GetInt
+		);
+
+        lua.set_function("S2D_EntityInView", [&](const TransformComponent& transform, float width, float height) {
+			auto& camera = registry.GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
+			return ENGINE_CORE::EntityInView(transform, width, height, *camera);
+			}
 		);
     }
 }

@@ -2,6 +2,19 @@
 #include <entt/entt.hpp>
 
 
+std::string ENGINE_CORE::ECS::BoxColliderComponent::to_string() const
+{
+	std::stringstream ss;
+	ss <<
+		"==== Box Collider Component ==== \n" << std::boolalpha <<
+		"Width: " << width << "\n" <<
+		"Height: " << height << "\n" <<
+		"Offset: [ x = " << offset.x << ", y = " << offset.y << "]" << "\n";
+        
+	return ss.str();
+}
+
+
 void ENGINE_CORE::ECS::BoxColliderComponent::CreateLuaBoxColliderBind(sol::state& lua)
 {
     lua.new_usertype<BoxColliderComponent>(

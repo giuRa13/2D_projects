@@ -13,6 +13,8 @@ namespace ENGINE_CORE::ECS
         glm::vec2 scale{ glm::vec2{1.f} };
         float rotation{ 0.f };
 
+        [[nodiscard]] std::string to_string();
+
         static void CreateLuaTransformBind(sol::state& lua);
     };
 

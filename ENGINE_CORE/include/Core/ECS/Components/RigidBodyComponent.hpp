@@ -11,6 +11,8 @@ namespace ENGINE_CORE::ECS
 	{
 		glm::vec2 velocity{0.f};
         
+		[[nodiscard]] std::string to_string();
+
 		static void CreateRigidBodyBind(sol::state& lua);
 	};
 

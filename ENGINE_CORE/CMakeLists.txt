@@ -27,6 +27,7 @@ add_library(ENGINE_CORE
     "src/ECS/Components/TextComponent.cpp"
     "include/Core/ECS/Components/RigidBodyComponent.hpp"
     "src/ECS/Components/RigidBodyComponent.cpp"
+    "include/Core/ECS/Components/AllComponents.hpp"
     # Resources
     "include/Core/Resources/AssetManager.hpp"
     "src/Resources/AssetManager.cpp"
@@ -42,6 +43,8 @@ add_library(ENGINE_CORE
     "include/Core/Scripting/UserDataBindings.hpp"
     "include/Core/Scripting/UserDataBindings.inl"
     "src/Scripting/UserDataBindings.cpp"
+    "include/Core/Scripting/ContactListenerBinds.hpp"
+    "src/Scripting/ContactListenerBinds.cpp"
     #Systems
     "include/Core/Systems/ScriptingSystem.hpp"
     "src/Systems/ScriptingSystem.cpp"
@@ -60,6 +63,8 @@ add_library(ENGINE_CORE
     "src/CoreUtilities/CoreEngineData.cpp"
     "include/Core/CoreUtilities/FollowCamera.hpp"
     "src/CoreUtilities/FollowCamera.cpp"
+    "include/Core/CoreUtilities/CoreUtilities.hpp"
+    "src/CoreUtilities/CoreUtilities.cpp"
     )
 
 

@@ -7,6 +7,7 @@
 #include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Essentials/Primitives.hpp>
 #include "Core/CoreUtilities/CoreEngineData.hpp"
+#include "Core/CoreUtilities/CoreUtilities.hpp"
 
 using namespace ENGINE_CORE::ECS;
 using namespace ENGINE_RENDERING;
@@ -45,9 +46,14 @@ namespace ENGINE_CORE::Systems
         {
             const auto& transform = boxView.get<TransformComponent>(entity);
             const auto& boxCollider = boxView.get<BoxColliderComponent>(entity);
-            glm::mat4 model{1.f};
 
-            if  ( transform.rotation > 0.f || transform.rotation < 0.f || 
+            if (!ENGINE_CORE::EntityInView(transform, static_cast<float>(boxCollider.width), static_cast<float>(boxCollider.height), *camera))
+				continue;
+           
+            //glm::mat4 model{1.f};
+            glm::mat4 model = ENGINE_CORE::RSTModel(transform, boxCollider.width, boxCollider.height);
+
+            /*if  ( transform.rotation > 0.f || transform.rotation < 0.f || 
                   transform.scale.x > 1.f || transform.scale.x < 1.f ||
                   transform.scale.y > 1.f || transform.scale.y < 1.f)
             {
@@ -59,7 +65,7 @@ namespace ENGINE_CORE::Systems
                 model = glm::scale(model, glm::vec3{transform.scale, 1.f});
 
                 model = glm::translate(model, glm::vec3{-transform.position, 0.f});
-             } 
+             }*/ 
 
             auto color = Color{255, 0, 0, 135};
             if (m_Registry.GetRegistry().all_of<PhysicsComponent>(entity))

@@ -2,6 +2,18 @@
 #include <entt/entt.hpp>
 
 
+std::string ENGINE_CORE::ECS::CircleColliderComponent::to_string() const
+{
+	std::stringstream ss;
+	ss <<
+		"==== Circle Collider Component ==== \n" << std::boolalpha <<
+		"Radius: " << radius<< "\n" <<
+		"Offset: [ x = " << offset.x << ", y = " << offset.y << "]" << "\n";
+        
+	return ss.str();
+}
+
+
 void ENGINE_CORE::ECS::CircleColliderComponent::CreateLuaCircleColliderBind(sol::state& lua)
 {
     lua.new_usertype<CircleColliderComponent>(

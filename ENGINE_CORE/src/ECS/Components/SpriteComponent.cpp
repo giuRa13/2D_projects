@@ -5,6 +5,42 @@
 using namespace ENGINE_RESOURCES;
 
 
+void ENGINE_CORE::ECS::SpriteComponent::generate_uvs(int textureWidth, int textureHeight)
+{
+	uvs.uv_width = width / textureWidth;
+	uvs.uv_height = height / textureHeight;
+	uvs.u = start_x * uvs.uv_width;
+	uvs.v = start_y * uvs.uv_height;
+}
+
+
+std::string ENGINE_CORE::ECS::SpriteComponent::to_string() const
+{
+	std::stringstream ss;
+	ss <<
+		"==== Sprite Component ==== \n" << std::boolalpha <<
+		"Texture Name: " << texture_name << "\n" <<
+		"Width: " << width << "\n" <<
+		"Height: " << height << "\n" <<
+		"StartX: " << start_x << "\n" <<
+		"StartY: " << start_y << "\n" <<
+		"Layer: " << layer << "\n" <<
+		"UVs: \n\t" <<
+			"U: " << uvs.u << "\n\t" <<
+			"V: " << uvs.v << "\n\t" <<
+			"UvWidth: " << uvs.uv_width << "\n\t" <<
+			"UvHeight: " << uvs.uv_width << "\n" <<
+		"Color: \n\t" <<
+			"Red: " << color.r << "\n\t" <<
+			"Green: " << color.g << "\n\t" <<
+			"Blue: " << color.b << "\n\t" <<
+			"Alpha: " << color.a << "\n" <<
+		"bHidden: " << bHidden << "\n";
+
+	return ss.str();
+}
+
+
 void ENGINE_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
 {
 

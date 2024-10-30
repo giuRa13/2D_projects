@@ -203,8 +203,12 @@ function LoadMap(mapDef)
                         physicsAttribs.bFixedRotation = false
                         physicsAttribs.boxSize = vec2(tileset.tilewidth, tileset.tileheight)
                         physicsAttribs.bBoxShape = true
+
                         if tileset.name == "trigger" then
                             physicsAttribs.bIsSensor = true
+                            physicsAttribs.objectData = ObjectData("", "hole_triggers", false, true, tile:id())
+                        else
+                            physicsAttribs.objectData = ObjectData("", "hole_colliders", true, false, tile:id())
                         end
                         tile:add_component(PhysicsComp(physicsAttribs))
                     end

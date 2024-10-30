@@ -65,6 +65,18 @@ namespace ENGINE_RESOURCES
 		return true;
 	}
 
+	bool AssetManager::AddShaderFromMemory(const std::string& shaderName, const char* vertexShader, const char* fragShader)
+    {
+        if (m_mapShaders.find(shaderName) != m_mapShaders.end())
+        {
+            ENGINE_ERROR("Failed to add shader - [{0}] -- Already exists!", shaderName);
+            return false;
+        }
+        auto shader = std::move(ENGINE_RENDERING::ShaderLoader::CreateFromMemory(vertexShader, fragShader));
+        m_mapShaders.insert(std::make_pair(shaderName, std::move(shader)));
+        return true;
+    }
+
     std::shared_ptr<ENGINE_RENDERING::Shader> AssetManager::GetShader(const std::string& shaderName)
 	{
 		auto shaderItr = m_mapShaders.find(shaderName);

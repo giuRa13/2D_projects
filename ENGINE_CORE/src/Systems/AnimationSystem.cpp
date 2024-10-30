@@ -2,6 +2,7 @@
 #include "Core/ECS/Components/AnimationComponent.hpp"
 #include "Core/ECS/Components/SpriteComponent.hpp"
 #include "Core/ECS/Components/TransformComponent.hpp"
+#include "Core/CoreUtilities/CoreUtilities.hpp"
 #include <SDL2/SDL.h>
 
 using namespace ENGINE_CORE::ECS;
@@ -19,11 +20,19 @@ namespace ENGINE_CORE::Systems
     {
         auto view = m_Registry.GetRegistry().view<AnimationComponent, SpriteComponent, TransformComponent>();
 
+        if (view.size_hint() < 1)
+			return;
+
+		auto& camera = m_Registry.GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
+
         for (auto entity : view)
         {
             const auto& transform = view.get<TransformComponent>(entity);
             auto& sprite = view.get<SpriteComponent>(entity);
             auto& animation = view.get<AnimationComponent>(entity);
+
+            if (!ENGINE_CORE::EntityInView(transform, sprite.width, sprite.height, *camera))
+				continue;
 
             if(animation.numFrames <= 0)
                 continue;

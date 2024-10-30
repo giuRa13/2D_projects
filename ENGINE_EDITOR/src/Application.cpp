@@ -34,6 +34,7 @@
 #include <Windowing/Inputs/Mouse.hpp>
 #include <Sounds/MusicPlayer/MusicPlayer.hpp>
 #include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
+#include <Physics/ContactListener.hpp>
 
 
 
@@ -116,17 +117,21 @@ namespace ENGINE_EDITOR
         SDL_GL_MakeCurrent(m_pWindow->GetWindow().get(), m_pWindow->GetGLContext());
         SDL_GL_SetSwapInterval( 1 );
 
-
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Renderer
         auto renderer = std::make_shared<ENGINE_RENDERING::Renderer>();
 
         // Enable Alpha Blending
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        renderer->SetCapability(ENGINE_RENDERING::Renderer::GLCapability::BLEND, true);
+		renderer->SetBlendCapability(
+			ENGINE_RENDERING::Renderer::BlendingFactors::SRC_ALPHA,
+			ENGINE_RENDERING::Renderer::BlendingFactors::ONE_MINUS_SRC_ALPHA
+		);
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GetOpenGLVersionInfo();
     
-
         auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
         if(!assetManager)
         {
@@ -272,7 +277,6 @@ namespace ENGINE_EDITOR
 
         // Physics /////////////////////
         ENGINE_PHYSICS::PhysicsWorld pPhysicsWorld = std::make_shared<b2World>(b2Vec2{0.f, 9.8f});
-
         if(!m_pRegistry->AddToContext<ENGINE_PHYSICS::PhysicsWorld>(pPhysicsWorld))
         {
             ENGINE_ERROR("Failed to add the Physics World to Registry Context");
@@ -280,13 +284,21 @@ namespace ENGINE_EDITOR
         }
 
         auto pPhysicsSystem = std::make_shared<ENGINE_CORE::Systems::PhysicsSystem>(*m_pRegistry);
-
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::PhysicsSystem>>(pPhysicsSystem))
         {
             ENGINE_ERROR("Failed to add the Physics System to Registry Context");
             return false;
         }
 
+        auto pContactListener = std::make_shared<ENGINE_PHYSICS::ContactListener>();
+		if (!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_PHYSICS::ContactListener>>(pContactListener))
+		{
+			ENGINE_ERROR("Failed to add the contact listener to the registry context!");
+			return false;
+		}
+
+		pPhysicsWorld->SetContactListener(pContactListener.get());
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         if(!LoadShaders())
         {
@@ -311,8 +323,6 @@ namespace ENGINE_EDITOR
             return false;
         }
 
-        
-        
         /*auto pTexture = assetManager->GetTexture("ball");
         using namespace ENGINE_CORE::ECS;
         auto& reg = m_pRegistry->GetRegistry();
@@ -573,6 +583,9 @@ namespace ENGINE_EDITOR
         glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
         glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        //renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
+		//renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
+		//renderer->ClearBuffers(true, false, false);
 
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Render();

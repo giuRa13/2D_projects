@@ -35,12 +35,13 @@ namespace ENGINE_RESOURCES
 		std::shared_ptr<ENGINE_RENDERING::Texture> GetTexture(const std::string& textureName);
 		
         bool AddShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath);
+		bool AddShaderFromMemory(const std::string& shaderName, const char* vertexShader, const char* fragmentShader);
 		std::shared_ptr<ENGINE_RENDERING::Shader> GetShader(const std::string& shaderName);
 
 		bool AddFont(const std::string& fontName, const std::string& fontPath, float fontSize = 32.f);
-		std::shared_ptr<ENGINE_RENDERING::Font> GetFont(const std::string& fontName);
 		bool AddFontFromMemory(const std::string& fontName, unsigned char* fontData, float fontSize = 32.f);
-
+		std::shared_ptr<ENGINE_RENDERING::Font> GetFont(const std::string& fontName);
+		
 		bool AddMusic(const std::string& musicName, const std::string& filepath);
 		std::shared_ptr<ENGINE_SOUNDS::Music> GetMusic(const std::string& musicName);
 

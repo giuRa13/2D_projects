@@ -3,6 +3,8 @@
 #include "Core/ECS/Components/TransformComponent.hpp"
 #include <Rendering/Essentials/Font.hpp>
 #include "Core/Resources/AssetManager.hpp"
+#include "Core/CoreUtilities/CoreEngineData.hpp"
+#include "Core/CoreUtilities/CoreUtilities.hpp"
 #include <Logger/Logger.hpp>
 
 using namespace ENGINE_CORE::ECS;
@@ -18,13 +20,22 @@ namespace ENGINE_CORE::Systems
         , m_pTextRenderer{std::make_unique<ENGINE_RENDERING::TextBatchRenderer>()}
         , m_pCamera2D{ nullptr}
     {
-        m_pCamera2D = std::make_unique<ENGINE_RENDERING::Camera2D>(640, 480);
+        auto& coreEngine = CoreEngineData::GetInstance();
+		m_pCamera2D = std::make_unique<ENGINE_RENDERING::Camera2D>(
+			coreEngine.WindowWidth(), 
+			coreEngine.WindowHeight()
+		);
+
         m_pCamera2D->Update();
     }
 
 
     void RenderUISystem::Update(entt::registry& registry)
     {
+        auto textView = registry.view<TextComponent, TransformComponent>();
+		if (textView.size_hint() < 1)
+			return;
+
         auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
         auto pFontShader = assetManager->GetShader("font");
 
@@ -35,7 +46,6 @@ namespace ENGINE_CORE::Systems
         }
 
         auto cam_mat = m_pCamera2D->GetCameraMatrix();
-        auto textView = registry.view<TextComponent, TransformComponent>();
 
         pFontShader->Enable();
         pFontShader->SetUniformMat4("uProjection", cam_mat);
@@ -58,8 +68,11 @@ namespace ENGINE_CORE::Systems
             }
 
             const auto& transform = textView.get<TransformComponent>(entity);
+            const auto fontSize = pFont->GetFontSize();
 
-            glm::mat4 model{1.f};
+            glm::mat4 model = ENGINE_CORE::RSTModel(transform, fontSize, fontSize);
+
+            /*glm::mat4 model{1.f};
 
             if  ( transform.rotation > 0.f || transform.rotation < 0.f || 
                   transform.scale.x > 1.f || transform.scale.x < 1.f ||
@@ -73,7 +86,7 @@ namespace ENGINE_CORE::Systems
                 model = glm::scale(model, glm::vec3{transform.scale, 1.f});
 
                 model = glm::translate(model, glm::vec3{-transform.position, 0.f});
-            } 
+            } */
 
             m_pTextRenderer->AddText(text.sTextStr, pFont, transform.position, text.padding, text.wrap, text.color, model);
         }

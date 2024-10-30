@@ -13,6 +13,8 @@ namespace ENGINE_CORE::ECS
         int startTime{ static_cast<int>(SDL_GetTicks()) };
         bool bVertical{false}, bLooped{false};
 
+        [[nodiscard]] std::string to_string() const;
+
         static void CreateAnimationLuaBind(sol::state& lua);
     };
 

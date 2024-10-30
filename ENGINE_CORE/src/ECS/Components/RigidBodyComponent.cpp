@@ -2,6 +2,18 @@
 #include <entt/entt.hpp>
 
 
+
+std::string ENGINE_CORE::ECS::RigidBodyComponent::to_string()
+{
+	std::stringstream ss;
+	ss <<
+		"==== RigidBody Component ==== \n" <<
+		"Velocity: [ x = " << velocity.x << ", y = " << velocity.y << "\n";
+		
+	return ss.str();
+}
+
+
 void ENGINE_CORE::ECS::RigidBodyComponent::CreateRigidBodyBind(sol::state& lua)
 {
 	lua.new_usertype<RigidBodyComponent>(
@@ -13,6 +25,7 @@ void ENGINE_CORE::ECS::RigidBodyComponent::CreateRigidBodyBind(sol::state& lua)
 				return RigidBodyComponent{ .velocity = velocity };
 			}
 		),
-		"velocity", &RigidBodyComponent::velocity
+		"velocity", &RigidBodyComponent::velocity,
+		"to_string", &RigidBodyComponent::to_string
 	);
 }
