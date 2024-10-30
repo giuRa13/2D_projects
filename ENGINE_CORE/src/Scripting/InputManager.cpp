@@ -61,6 +61,24 @@ namespace ENGINE_CORE
         lua.set("KEY_RALT", ENGINE_KEY_RALT);
         lua.set("KEY_LSHIFT", ENGINE_KEY_LSHIFT);
         lua.set("KEY_RSHIFT", ENGINE_KEY_RSHIFT);
+        // Punctuation Keys
+        lua.set("KEY_COLON", ENGINE_KEY_COLON);
+        lua.set("KEY_SEMICOLON", ENGINE_KEY_SEMICOLON);
+        lua.set("KEY_QUOTE", ENGINE_KEY_QUOTE);
+        lua.set("KEY_BACKQUOTE", ENGINE_KEY_BACKQUOTE);
+        lua.set("KEY_CARET", ENGINE_KEY_CARET);
+        lua.set("KEY_UNDERSCORE", ENGINE_KEY_UNDERSCORE);
+        lua.set("KEY_RIGHTBRACKET", ENGINE_KEY_RIGHTBRACKET);
+        lua.set("KEY_LEFTBRACKET", ENGINE_KEY_LEFTBRACKET);
+        lua.set("KEY_SLASH", ENGINE_KEY_SLASH);
+        lua.set("KEY_ASTERISK", ENGINE_KEY_ASTERISK);
+        lua.set("KEY_LEFTPAREN", ENGINE_KEY_LEFTPAREN);
+        lua.set("KEY_RIGHTPAREN", ENGINE_KEY_RIGHTPAREN);
+        lua.set("KEY_QUESTION", ENGINE_KEY_QUESTION);
+        lua.set("KEY_AMPERSAND", ENGINE_KEY_AMPERSAND);
+        lua.set("KEY_DOLLAR", ENGINE_KEY_DOLLAR);
+        lua.set("KEY_EXCLAIM", ENGINE_KEY_EXCLAIM);
+        lua.set("KEY_BACKSLASH", ENGINE_KEY_BACKSLASH);
         //  Register Function Keys
         lua.set("KEY_F1", ENGINE_KEY_F1);
         lua.set("KEY_F2", ENGINE_KEY_F2);
@@ -90,7 +108,16 @@ namespace ENGINE_CORE
         lua.set("KP_KEY_7", ENGINE_KEY_KP7);
         lua.set("KP_KEY_8", ENGINE_KEY_KP8);
         lua.set("KP_KEY_9", ENGINE_KEY_KP9);
+
         lua.set("KP_KEY_ENTER", ENGINE_KEY_KP_ENTER);
+        lua.set("KP_KEY_DIVIDE", ENGINE_KEY_KP_DIVIDE);
+        lua.set("KP_KEY_MULTIPLY", ENGINE_KEY_KP_MULTIPLY);
+        lua.set("KP_KEY_MINUS", ENGINE_KEY_KP_MINUS);
+        lua.set("KP_KEY_PLUS", ENGINE_KEY_KP_PLUS);
+        lua.set("KP_KEY_ENTER", ENGINE_KEY_KP_ENTER);
+        lua.set("KP_KEY_PERIOD", ENGINE_KEY_KP_PERIOD);
+        
+        lua.set("KEY_NUM_LOCK", ENGINE_KEY_NUMLOCK);
     }
 
     void InputManager::RegisterLuaMouseBtnames(sol::state& lua)
@@ -121,6 +148,16 @@ namespace ENGINE_CORE
             sol::no_constructor,
             "just_pressed", [&](int key) { return keyboard.IsKeyJustPressed(key); },
             "just_released", [&](int key) { return keyboard.IsKeyJustReleased(key); },
+            "pressed", [&](int key) { return keyboard.IsKeyPressed(key); },
+            "pressed_keys", [&]() {
+                std::vector<int> keys;
+                for (const auto& [key, button] : keyboard.GetButtonMap())
+                {
+                    if (button.bIsPressed)
+                        keys.push_back(key);
+                }
+                return keys;
+            },
             "pressed", [&](int key) { return keyboard.IsKeyPressed(key); }
         );
 

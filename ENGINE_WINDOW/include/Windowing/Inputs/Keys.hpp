@@ -92,7 +92,8 @@ constexpr int ENGINE_KEY_F9 = SDLK_F9;
 constexpr int ENGINE_KEY_F10 = SDLK_F10;
 constexpr int ENGINE_KEY_F11 = SDLK_F11;
 constexpr int ENGINE_KEY_F12 = SDLK_F12;
-constexpr int ENGINE_KEY_SCROLLOCK = SDLK_SCROLLLOCK;
+constexpr int ENGINE_KEY_PRINTSCREEN = SDLK_PRINTSCREEN;
+constexpr int ENGINE_KEY_SCROLLLOK = SDLK_SCROLLLOCK;
 constexpr int ENGINE_KEY_INSERT = SDLK_INSERT;
 constexpr int ENGINE_KEY_HOME = SDLK_HOME;
 constexpr int ENGINE_KEY_PAGEUP = SDLK_PAGEUP;
@@ -126,3 +127,12 @@ constexpr int ENGINE_KEY_LALT = SDLK_LALT;
 constexpr int ENGINE_KEY_RCTRL = SDLK_RCTRL;
 constexpr int ENGINE_KEY_RSHIFT = SDLK_RSHIFT;
 constexpr int ENGINE_KEY_RALT = SDLK_RALT;
+
+ // windows specific keys 
+#ifdef _WIN32
+	constexpr int ENGINE_KEY_LWIN = SDLK_LGUI;
+	constexpr int ENGINE_KEY_RWIN = SDLK_RGUI;
+#else 
+	constexpr int ENGINE_KEY_LGUI = SDLK_LGUI;
+	constexpr int ENGINE_KEY_RGUI = SDLK_RGUI;
+#endif

@@ -13,6 +13,7 @@
 #include "Core/Scripting/InputManager.hpp"
 #include "Core/Scripting/SoundBindings.hpp"
 #include "Core/Scripting/RendererBindings.hpp"
+#include "Core/Scripting/UserDataBindings.hpp"
 #include "Core/Resources/AssetManager.hpp"
 #include <EngineUtils/Timer.hpp>
 #include <EngineUtils/RandomGenerator.hpp>
@@ -166,8 +167,8 @@ namespace ENGINE_CORE::Systems
         ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
         ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
         ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
+        ENGINE_CORE::Scripting::UserDataBinder::CreateLuaUserData(lua);
         ENGINE_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
-        RigidBodyComponent::CreateRigidBodyBind(lua);
 
         create_timer(lua);
 
@@ -180,6 +181,7 @@ namespace ENGINE_CORE::Systems
         CircleColliderComponent::CreateLuaCircleColliderBind(lua);
         PhysicsComponent::CreatePhysicsLuaBind(lua, registry.GetRegistry());
         TextComponent::CreateTextLuaBinding(lua);
+        RigidBodyComponent::CreateRigidBodyBind(lua);
 
         Entity::RegisterMetaComponent<TransformComponent>();
         Entity::RegisterMetaComponent<SpriteComponent>();
@@ -198,6 +200,8 @@ namespace ENGINE_CORE::Systems
         Registry::RegistryMetaComponent<PhysicsComponent>();
         Registry::RegistryMetaComponent<TextComponent>();
         Registry::RegistryMetaComponent<RigidBodyComponent>();
+
+        ENGINE_CORE::Scripting::UserDataBinder::register_meta_user_data<ObjectData>();
     }
 
 

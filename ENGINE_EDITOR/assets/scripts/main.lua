@@ -251,6 +251,17 @@ gFollowCam = FollowCamera(
     }),
     gPlayer
 )
+-----------------------------------------------------------------
+
+local objectData = ObjectData("test_tag", "test_group", true, true, 9919)
+local userData = UserData.create_user_data(objectData)
+local objData1 = userData:get_user_data()
+print(objData1:to_string() .."\n")
+
+userData:set_user_data(ObjectData("New Tag", "New group", false, true, 12112))
+local objData2 = userData:get_user_data()
+print(objData2:to_string())
+
 
 main = {
     [1] = {

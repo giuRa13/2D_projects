@@ -10,13 +10,13 @@ namespace ENGINE_WINDOWING::Inputs
         {ENGINE_KEY_RETURN, Button{}}, {ENGINE_KEY_PAUSE, Button{}}, {ENGINE_KEY_ESCAPE, Button{}}, {ENGINE_KEY_SPACE, Button{}},
         {ENGINE_KEY_EXCLAIM, Button{}}, {ENGINE_KEY_QUOTEDBL, Button{}}, {ENGINE_KEY_HASH, Button{}}, {ENGINE_KEY_DOLLAR, Button{}},
         {ENGINE_KEY_AMPERSAND, Button{}}, {ENGINE_KEY_QUOTE, Button{}}, {ENGINE_KEY_LEFTPAREN, Button{}}, {ENGINE_KEY_RIGHTPAREN, Button{}},
-        {ENGINE_KEY_ASTERISK, Button{}}, {ENGINE_KEY_PLUS, Button{}}, {ENGINE_KEY_COMMA, Button{}}, {ENGINE_KEY_PERIOD, Button{}},
+        {ENGINE_KEY_ASTERISK, Button{}}, {ENGINE_KEY_PLUS, Button{}}, {ENGINE_KEY_COMMA, Button{}}, {ENGINE_KEY_MINUS, Button{}}, {ENGINE_KEY_PERIOD, Button{}},
         {ENGINE_KEY_SLASH, Button{}}, {ENGINE_KEY_0, Button{}},{ENGINE_KEY_1, Button{}}, {ENGINE_KEY_2, Button{}}, {ENGINE_KEY_3, Button{}},
         {ENGINE_KEY_4, Button{}}, {ENGINE_KEY_5, Button{}}, {ENGINE_KEY_6, Button{}}, {ENGINE_KEY_7, Button{}},
         {ENGINE_KEY_8, Button{}}, {ENGINE_KEY_9, Button{}}, {ENGINE_KEY_COLON, Button{}}, {ENGINE_KEY_SEMICOLON, Button{}},
         {ENGINE_KEY_LESS, Button{}}, {ENGINE_KEY_EQUALS, Button{}}, {ENGINE_KEY_GREATER, Button{}}, {ENGINE_KEY_QUESTION, Button{}},
         {ENGINE_KEY_AT, Button{}}, {ENGINE_KEY_LEFTBRACKET, Button{}}, {ENGINE_KEY_BACKSLASH, Button{}}, {ENGINE_KEY_RIGHTBRACKET, Button{}},
-        {ENGINE_KEY_CARET, Button{}}, {ENGINE_KEY_UNDERSCORE, Button{}}, {ENGINE_KEY_A, Button{}}, {ENGINE_KEY_B, Button{}},
+        {ENGINE_KEY_CARET, Button{}}, {ENGINE_KEY_UNDERSCORE, Button{}}, {ENGINE_KEY_BACKQUOTE, Button{}}, {ENGINE_KEY_A, Button{}}, {ENGINE_KEY_B, Button{}},
         {ENGINE_KEY_C, Button{}}, {ENGINE_KEY_D, Button{}}, {ENGINE_KEY_E, Button{}}, {ENGINE_KEY_F, Button{}},
         {ENGINE_KEY_G, Button{}}, {ENGINE_KEY_H, Button{}}, {ENGINE_KEY_I, Button{}}, {ENGINE_KEY_J, Button{}},
         {ENGINE_KEY_K, Button{}}, {ENGINE_KEY_L, Button{}}, {ENGINE_KEY_M, Button{}}, {ENGINE_KEY_N, Button{}},
@@ -26,7 +26,7 @@ namespace ENGINE_WINDOWING::Inputs
         {ENGINE_KEY_DELETE, Button{}}, {ENGINE_KEY_CAPSLOCK, Button{}}, {ENGINE_KEY_F1, Button{}}, {ENGINE_KEY_F2, Button{}},
         {ENGINE_KEY_F3, Button{}}, {ENGINE_KEY_F4, Button{}}, {ENGINE_KEY_F5, Button{}}, {ENGINE_KEY_F6, Button{}},
         {ENGINE_KEY_F7, Button{}}, {ENGINE_KEY_F8, Button{}}, {ENGINE_KEY_F9, Button{}}, {ENGINE_KEY_F10, Button{}},
-        {ENGINE_KEY_F11, Button{}}, {ENGINE_KEY_F12, Button{}}, {ENGINE_KEY_SCROLLOCK, Button{}}, {ENGINE_KEY_INSERT, Button{}},
+        {ENGINE_KEY_F11, Button{}}, {ENGINE_KEY_F12, Button{}}, {ENGINE_KEY_SCROLLLOK, Button{}}, {ENGINE_KEY_PRINTSCREEN, Button{}}, {ENGINE_KEY_INSERT, Button{}},
         {ENGINE_KEY_HOME, Button{}}, {ENGINE_KEY_PAGEUP, Button{}}, {ENGINE_KEY_PAGEDOWN, Button{}}, {ENGINE_KEY_END, Button{}},
         {ENGINE_KEY_RIGHT, Button{}}, {ENGINE_KEY_LEFT, Button{}}, {ENGINE_KEY_DOWN, Button{}}, {ENGINE_KEY_UP, Button{}},
         {ENGINE_KEY_NUMLOCK, Button{}}, {ENGINE_KEY_KP_DIVIDE, Button{}}, {ENGINE_KEY_KP_MULTIPLY, Button{}}, {ENGINE_KEY_KP_MINUS, Button{}},
@@ -37,8 +37,16 @@ namespace ENGINE_WINDOWING::Inputs
         {ENGINE_KEY_LALT, Button{}}, {ENGINE_KEY_RCTRL, Button{}}, {ENGINE_KEY_RSHIFT, Button{}}, {ENGINE_KEY_RALT, Button{}}
         }
     {
-
+        #ifdef _WIN32
+            m_mapButtons.emplace(ENGINE_KEY_LWIN, Button{});
+            m_mapButtons.emplace(ENGINE_KEY_RWIN, Button{});
+        #else
+            m_mapButtons.emplace(ENGINE_KEY_LGUI, Button{});
+            m_mapButtons.emplace(ENGINE_KEY_RGUI, Button{});
+        #endif
     }
+
+
 
 
     void Keyboard::Update() //(Reset)

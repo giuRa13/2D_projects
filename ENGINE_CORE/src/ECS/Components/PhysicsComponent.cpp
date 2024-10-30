@@ -2,12 +2,13 @@
 #include "Core/CoreUtilities/CoreEngineData.hpp"
 #include <Logger/Logger.hpp>
 
+using namespace ENGINE_PHYSICS;
 
 namespace ENGINE_CORE::ECS
 {
 
     PhysicsComponent::PhysicsComponent(const PhysicsAttributes& physicsAttrib)
-        : m_pRigidBody{nullptr}, m_InitialAttribs{physicsAttrib}
+        : m_pRigidBody{nullptr}, m_pUserData{nullptr}, m_InitialAttribs{physicsAttrib}
     { }
 
     PhysicsComponent::PhysicsComponent()
@@ -79,6 +80,11 @@ namespace ENGINE_CORE::ECS
             // create polygon shape
         }
 
+        // Create the UserData
+        m_pUserData = std::make_shared<UserData>();
+        m_pUserData->userData = m_InitialAttribs.objectData;
+        m_pUserData->type_id = entt::type_hash<ObjectData>::value();
+
         // Create the fixture def
         b2FixtureDef fixtureDef{};
         if(bCircle)
@@ -88,9 +94,10 @@ namespace ENGINE_CORE::ECS
 
         fixtureDef.density = m_InitialAttribs.density;
         fixtureDef.friction = m_InitialAttribs.friction;
-        fixtureDef.restitution = m_InitialAttribs.restituton;
+        fixtureDef.restitution = m_InitialAttribs.restitution;
         fixtureDef.restitutionThreshold = m_InitialAttribs.restitutionThreshold;
         fixtureDef.isSensor = m_InitialAttribs.bIsSensor;
+        fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(m_pUserData.get());
 
         auto p_Fixture = m_pRigidBody->CreateFixture(&fixtureDef);
         if(!p_Fixture)
@@ -104,6 +111,35 @@ namespace ENGINE_CORE::ECS
 
     void PhysicsComponent::CreatePhysicsLuaBind(sol::state& lua, entt::registry& registry)
     {
+        lua.new_usertype<ObjectData>(
+            "ObjectData",
+            "type_id", entt::type_hash<ObjectData>::value,
+            sol::call_constructor,
+            sol::factories(
+                [](const std::string& tag, const std::string& group, bool bCollider, bool bTrigger, std::uint32_t entityID)
+                {
+                    return ObjectData{
+                        .tag = tag,
+                        .group = group,
+                        .bCollider = bCollider,
+                        .bTrigger = bTrigger,
+                        .entityID = entityID
+                    };
+                },
+                [](const sol::table& objectData)
+                {
+                    return ObjectData{
+                        .tag = objectData["tag"].get_or(std::string{""}),
+                        .group = objectData["group"].get_or(std::string{""}),
+                        .bCollider = objectData["bCollider"].get_or(false),
+                        .bTrigger = objectData["bTriggere"].get_or(false),
+                        .entityID = objectData["entityID"].get_or((std::uint32_t)0)
+                    };
+                }
+            ),
+            "to_string", &ObjectData::to_string
+        );
+
         lua.new_enum<RigidBodyType>(
             "BodyType", {
                 {"Static", RigidBodyType::STATIC},
@@ -118,13 +154,52 @@ namespace ENGINE_CORE::ECS
             sol::factories(
                 []{
                     return PhysicsAttributes{};
-                }
-                // add more specific
+                },
+                [](const sol::table& physAttr) {
+					return PhysicsAttributes{
+						.eType = physAttr["eType"].get_or(RigidBodyType::STATIC),
+						.density = physAttr["density"].get_or(100.f),
+						.friction = physAttr["friction"].get_or(0.2f),
+						.restitution = physAttr["restitution"].get_or(0.2f),
+						.restitutionThreshold = physAttr["restitutionThreshold"].get_or(0.2f),
+						.radius = physAttr["radius"].get_or(0.f),
+						.gravityScale = physAttr["gravityScale"].get_or(1.f),
+						.position = glm::vec2{
+							physAttr["position"]["x"].get_or(0.f),
+							physAttr["position"]["y"].get_or(0.f)
+						},
+						.scale = glm::vec2{
+							physAttr["scale"]["x"].get_or(0.f),
+							physAttr["scale"]["y"].get_or(0.f)
+						},
+						.boxSize = glm::vec2{
+							physAttr["boxSize"]["x"].get_or(0.f),
+							physAttr["boxSize"]["y"].get_or(0.f)
+						},
+						.offset = glm::vec2{
+							physAttr["offset"]["x"].get_or(0.f),
+							physAttr["offset"]["y"].get_or(0.f)
+						},
+						.bCircle = physAttr["bCircle"].get_or(false),
+						.bBoxShape = physAttr["bBoxShape"].get_or(true),
+						.bFixedRotation = physAttr["bFixedRotation"].get_or(true),
+						.bIsSensor = physAttr["bIsSensor"].get_or(false),
+						.filterCategory = physAttr["filterCategory"].get_or((uint16_t)0),
+						.filterMask = physAttr["filterMask"].get_or((uint16_t)0),
+						.objectData = ObjectData{
+							.tag = physAttr["objectData"]["tag"].get_or(std::string{""}),
+							.group = physAttr["objectData"]["group"].get_or(std::string{""}),
+							.bCollider = physAttr["objectData"]["bCollider"].get_or(false),
+							.bTrigger = physAttr["objectData"]["bTrigger"].get_or(false),
+							.entityID = physAttr["objectData"]["entityID"].get_or((std::uint32_t)0)
+						}
+					};
+				}
             ),
             "eType", &PhysicsAttributes::eType,
             "density", &PhysicsAttributes::density,
             "friction", &PhysicsAttributes::friction,
-            "restitution", &PhysicsAttributes::restituton,
+            "restitution", &PhysicsAttributes::restitution,
             "restitutionThreshold", &PhysicsAttributes::restitutionThreshold,
             "radius", &PhysicsAttributes::radius,
             "gravityScale", &PhysicsAttributes::gravityScale,
@@ -135,7 +210,8 @@ namespace ENGINE_CORE::ECS
             "bCircle", &PhysicsAttributes::bCircle,
             "bBoxShape", &PhysicsAttributes::bBoxShape,
             "bFixedRotation", &PhysicsAttributes::bFixedRotation,
-            "bIsSensor", &PhysicsAttributes::bIsSensor
+            "bIsSensor", &PhysicsAttributes::bIsSensor,
+            "objectData", &PhysicsAttributes::objectData
             // add filters and more
         );
         

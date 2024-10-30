@@ -27,11 +27,9 @@ add_library(ENGINE_CORE
     "src/ECS/Components/TextComponent.cpp"
     "include/Core/ECS/Components/RigidBodyComponent.hpp"
     "src/ECS/Components/RigidBodyComponent.cpp"
-
     # Resources
     "include/Core/Resources/AssetManager.hpp"
     "src/Resources/AssetManager.cpp"
-
     #Scripting
     "include/Core/Scripting/GlmLuaBindings.hpp"
     "src/Scripting/GlmLuaBindings.cpp"
@@ -41,7 +39,9 @@ add_library(ENGINE_CORE
     "src/Scripting/SoundBindings.cpp"
     "include/Core/Scripting/RendererBindings.hpp"
     "src/Scripting/RendererBindings.cpp"
-
+    "include/Core/Scripting/UserDataBindings.hpp"
+    "include/Core/Scripting/UserDataBindings.inl"
+    "src/Scripting/UserDataBindings.cpp"
     #Systems
     "include/Core/Systems/ScriptingSystem.hpp"
     "src/Systems/ScriptingSystem.cpp"
