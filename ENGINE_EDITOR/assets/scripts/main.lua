@@ -2,36 +2,42 @@
 
 --run_script("assets/ASTEROIDS/scripts/script_list.lua") 
 --run_script("assets/ASTEROIDS/scripts/main.lua") 
-
-run_script("assets/scripts/TestProject/assetDefs.lua")
 --run_script("assets/scripts/TestProject/testmap1.lua")
 run_script("assets/scripts/TestProject/testmap2.lua")
+run_script("assets/scripts/TestProject/assetDefs.lua")
 run_script("assets/scripts/utilities.lua")
 run_script("assets/scripts/rain_generator.lua")
+run_script("assets/scripts/events/event_manager.lua")
+run_script("assets/scripts/events/collision_event.lua")
+run_script("assets/scripts/systems/trigger_system.lua")
+--------------------------------------------------------------------
 
 --local tilemap = CreateTestMap()
 local tilemap = CreateTestPlantformerMap()
 assert(tilemap)
 LoadAssets(AssetDefs)
 LoadMap(tilemap)
+--------------------------------------------------------------------
 
 Music.play("music1")
-
----------------------------------------------------------------------
-local rainGen = RainGenerator:Create({scale = 0.5})
-
 Sound.play("rain", -1, 1) -- (-1 ) = loop forever, channel 1
 Sound.set_volume(1, 30)
+---------------------------------------------------------------------
+
+gCollisionEvent = CollisionEvent:Create()
+gTriggerSystem = TriggerSystem:Create()
+gCollisionEvent:SubscribeToEvent(gTriggerSystem)
+---------------------------------------------------------------------
+
+local rainGen = RainGenerator:Create({scale = 0.5})
 
 gTimer = Timer()
 gTimer:start()
-
 
 --function GetRandomValue(min, max)
 	--math.randomseed(get_ticks())
 	--return math.random(min, max)
 --end
-
 ---------------------------------------------------------------------
 --[[local ball = Entity("", "")
 local circle = ball:add_component(CircleCollider(21.0))
@@ -181,7 +187,6 @@ function updateEntity(entity)
 		physics:linear_impulse(vec2(0, -30000))
 	end
 end
-
 ----------------------------------------------------------------------------
 
 gPlayer = Entity("player", "")
@@ -282,8 +287,9 @@ main = {
 
             local uda, udb = ContactListener.get_user_data()
             if uda and udb then
-                print("USER A: " ..uda:to_string())
-                print("USER B: " ..udb:to_string())
+                --print("USER A: " ..uda:to_string())
+                --print("USER B: " ..udb:to_string())
+                gCollisionEvent:EmitEvent(uda, udb)
             end
 
             --createBall()
