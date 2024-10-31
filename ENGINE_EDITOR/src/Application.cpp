@@ -36,6 +36,12 @@
 #include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
 #include <Physics/ContactListener.hpp>
 
+// IMGUI TESTING ======================
+#include <imgui.h>
+#include <imgui_impl_sdl2.h>
+#include <imgui_impl_opengl3.h>
+#include <SDL_opengl.h>
+// ===================================
 
 
 namespace ENGINE_EDITOR
@@ -300,6 +306,12 @@ namespace ENGINE_EDITOR
 		pPhysicsWorld->SetContactListener(pContactListener.get());
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        if(!InitImGui())
+        {
+            ENGINE_ERROR("Failed to initialize ImGui");
+            return false;
+        }
+
         if(!LoadShaders())
         {
             ENGINE_ERROR("Failed to load the Shaders");
@@ -488,6 +500,8 @@ namespace ENGINE_EDITOR
 
         while(SDL_PollEvent(&m_Event))
         {
+            ImGui_ImplSDL2_ProcessEvent(&m_Event);
+            
             switch(m_Event.type)
             {
                 case SDL_QUIT:
@@ -593,6 +607,10 @@ namespace ENGINE_EDITOR
         renderShapeSystem->Update();
         renderUISystem->Update(m_pRegistry->GetRegistry());
 
+        Begin();
+        RenderImGui();
+        End();
+
         renderer->DrawLines(*shader, *camera);
         renderer->DrawFilledRects(*shader, *camera);
         renderer->DrawCircles(*circleShader, *camera);
@@ -625,6 +643,71 @@ namespace ENGINE_EDITOR
         }
 
         CleanUp();
+    }
+
+
+    bool Application::InitImGui()
+    {
+        const char* glslVersion = "#version 460";
+        IMGUI_CHECKVERSION();
+
+        if(!ImGui::CreateContext())
+        {
+            ENGINE_ERROR("Failed to create ImGui Context");
+            return false;
+        }
+
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+        io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+        if(!ImGui_ImplSDL2_InitForOpenGL( m_pWindow->GetWindow().get(), m_pWindow->GetGLContext() ))
+        {
+            ENGINE_ERROR("Failed to initialize ImGui-SDL2-for-OpenGL");
+            return false;
+        }
+
+        if(!ImGui_ImplOpenGL3_Init(glslVersion))
+        {
+            ENGINE_ERROR("Failed to initialize ImGui-OpenGL3");
+            return false;   
+        }
+
+        return true;
+    }
+
+	void Application::Begin()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
+    }
+
+	void Application::End()
+    {
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        ImGuiIO& io = ImGui::GetIO();
+        if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            SDL_GLContext backupContext = SDL_GL_GetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			
+			SDL_GL_MakeCurrent(
+				m_pWindow->GetWindow().get(),
+				backupContext
+			);
+        }
+    }
+
+	void Application::RenderImGui()
+    {
+        ImGui::ShowDemoWindow();
     }
 
 

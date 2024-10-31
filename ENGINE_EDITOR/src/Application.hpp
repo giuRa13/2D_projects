@@ -27,6 +27,12 @@ namespace ENGINE_EDITOR
 		void Render();
 		void CleanUp();
 
+		// IMGUI test
+		bool InitImGui();
+		void Begin();
+		void End();
+		void RenderImGui();
+
 		Application();
 		~Application() = default;
 		Application( const Application& ) = delete;
