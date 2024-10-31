@@ -2,6 +2,7 @@ add_library(ENGINE_PHYSICS
     "include/Physics/Box2DWrappers.hpp"
     "src/Box2DWrappers.cpp"
     "include/Physics/UserData.hpp"
+    "src/UserData.cpp"
     "include/Physics/ContactListener.hpp"
     "src/ContactListener.cpp"
     )

@@ -142,6 +142,7 @@ namespace ENGINE_CORE::ECS
 			"bCollider", &ObjectData::bCollider,
 			"bTrigger", &ObjectData::bTrigger,
 			"entityID", &ObjectData::entityID,
+            "contactEntities", &ObjectData::contactEntities,
             "to_string", &ObjectData::to_string
         );
 
