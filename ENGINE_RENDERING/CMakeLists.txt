@@ -29,6 +29,8 @@ add_library(ENGINE_RENDERING
     "src/Font.cpp"
     "include/Rendering/Essentials/FontLoader.hpp"
     "src/FontLoader.cpp"
+    "include/Rendering/Buffers/FrameBuffer.hpp"
+    "src/FrameBuffer.cpp"
     )
 
 

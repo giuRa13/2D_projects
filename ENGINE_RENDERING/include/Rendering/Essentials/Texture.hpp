@@ -11,7 +11,7 @@ namespace ENGINE_RENDERING
 	{
 
     public:
-		enum class TextureType{PIXEL = 0, BLENDED, NONE};
+		enum class TextureType{PIXEL = 0, BLENDED, FRAMEBUFFER, NONE};
     
     private:
 		GLuint m_TextureID;

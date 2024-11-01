@@ -1,7 +1,10 @@
 add_executable(ENGINE_EDITOR
     "src/main.cpp"
     "src/Application.cpp"
-    "src/Application.hpp")
+    "src/Application.hpp"
+    "src/Editor/displays/SceneDisplay.hpp"
+    "src/Editor/displays/SceneDisplay.cpp"
+    )
 
 target_include_directories(
     ENGINE_EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

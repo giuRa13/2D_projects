@@ -13,6 +13,7 @@
 #include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Core/Renderer.hpp>
 #include <Rendering/Essentials/Vertex.hpp>
+#include <Rendering/Buffers/FrameBuffer.hpp>
 #include <Core/ECS/Entity.hpp>
 #include <Core/ECS/Components/TransformComponent.hpp>
 #include <Core/ECS/Components/SpriteComponent.hpp>
@@ -35,13 +36,14 @@
 #include <Sounds/MusicPlayer/MusicPlayer.hpp>
 #include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
 #include <Physics/ContactListener.hpp>
-
+#include <Core/CoreUtilities/CoreEngineData.hpp>
 // IMGUI TESTING ======================
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
 #include <SDL_opengl.h>
 // ===================================
+#include "Editor/displays/SceneDisplay.hpp"
 
 
 namespace ENGINE_EDITOR
@@ -88,15 +90,15 @@ namespace ENGINE_EDITOR
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); //1=hardware accelleration, 0=software rendering
 
-        //SDL_DisplayMode displayMode;
-	    //SDL_GetCurrentDisplayMode( 0, &displayMode );
+        SDL_DisplayMode displayMode;
+	    SDL_GetCurrentDisplayMode( 0, &displayMode );
 
         m_pWindow = std::make_unique<ENGINE_WINDOWING::Window>(
             "Test window", 
-            640, 480, 
+            displayMode.w, displayMode.h, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             true, 
-            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE //| SDL_WINDOW_MAXIMIZED 
+            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_CAPTURE | SDL_WINDOW_MAXIMIZED 
         );
     
         if ( !m_pWindow->GetWindow() )
@@ -299,7 +301,7 @@ namespace ENGINE_EDITOR
         auto pContactListener = std::make_shared<ENGINE_PHYSICS::ContactListener>();
 		if (!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_PHYSICS::ContactListener>>(pContactListener))
 		{
-			ENGINE_ERROR("Failed to add the contact listener to the registry context!");
+			ENGINE_ERROR("Failed to add the contact listener to the Registry context!");
 			return false;
 		}
 
@@ -334,6 +336,34 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to load Pixel Font");
             return false;
         }
+
+        // FrameBuffer ///////////////////////
+        auto pFramebuffer = std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, true);
+
+        if(!pFramebuffer)
+        {
+            ENGINE_ERROR("Failed to create test FrameBuffer");
+            return false;
+        }
+        if (!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RENDERING::FrameBuffer>>(pFramebuffer))
+		{
+			ENGINE_ERROR("Failed to add the FrameBuffer to the Registry context!");
+            return false;
+        }	
+        // Scene /////////////////////////////
+        auto pSceneDisplay = std::make_shared<SceneDisplay>(*m_pRegistry);
+
+        if(!pSceneDisplay)
+        {
+            ENGINE_ERROR("Failed to create test SceneDisplay");
+            return false;
+        }
+        if (!m_pRegistry->AddToContext<std::shared_ptr<SceneDisplay>>(pSceneDisplay))
+		{
+			ENGINE_ERROR("Failed to add the SceneDisplay to the Registry context!");
+            return false;
+        }	
+
 
         /*auto pTexture = assetManager->GetTexture("ball");
         using namespace ENGINE_CORE::ECS;
@@ -501,7 +531,7 @@ namespace ENGINE_EDITOR
         while(SDL_PollEvent(&m_Event))
         {
             ImGui_ImplSDL2_ProcessEvent(&m_Event);
-            
+
             switch(m_Event.type)
             {
                 case SDL_QUIT:
@@ -531,8 +561,7 @@ namespace ENGINE_EDITOR
                     switch (m_Event.window.event)
                     {
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
-                        m_pWindow->SetWidth(m_Event.window.data1);
-                        m_pWindow->SetHeight(m_Event.window.data2);
+                        m_pWindow->SetSize(m_Event.window.data1, m_Event.window.data2);
                         break;
                     default:
                         break;
@@ -545,6 +574,10 @@ namespace ENGINE_EDITOR
 
     void Application::Update()
     {
+
+        auto& engineData = ENGINE_CORE::CoreEngineData::GetInstance();
+        engineData.UpdateDeltaTime();
+        
         auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
         
         if (!camera)
@@ -594,18 +627,24 @@ namespace ENGINE_EDITOR
         auto circleShader = assetManager->GetShader("circle");
         auto fontShader = assetManager->GetShader("font");
 
-        glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
-        glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        //renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
-		//renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
-		//renderer->ClearBuffers(true, false, false);
-
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
+        
+        const auto& fb = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::FrameBuffer>>();
+        fb->Bind();
+
+        //glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
+        //glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        renderer->SetViewport(0, 0, fb->Width(), fb->Height());
+        //renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
+		renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
+		renderer->ClearBuffers(true, true, false);
+
         scriptSystem->Render();
         renderSystem->Update();
         renderShapeSystem->Update();
         renderUISystem->Update(m_pRegistry->GetRegistry());
+        fb->Unbind();
 
         Begin();
         RenderImGui();
@@ -615,6 +654,8 @@ namespace ENGINE_EDITOR
         renderer->DrawFilledRects(*shader, *camera);
         renderer->DrawCircles(*circleShader, *camera);
         renderer->DrawAllText(*fontShader, *camera);
+
+        fb->CheckResize();
 
         SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
 
@@ -707,6 +748,11 @@ namespace ENGINE_EDITOR
 
 	void Application::RenderImGui()
     {
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+
+        auto& pSceneDisplay = m_pRegistry->GetContext<std::shared_ptr<SceneDisplay>>();
+        pSceneDisplay->Draw();
+
         ImGui::ShowDemoWindow();
     }
 

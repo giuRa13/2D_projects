@@ -41,8 +41,7 @@ namespace ENGINE_WINDOWING
         //inline const int SetYPos(int y_pos) { m_YPos = y_pos; }
 
         void SetPosition(int x, int y);
-        inline void SetWidth(int width) { m_Width = width; }
-        inline void SetHeight(int height) { m_Height = height; }
+        void SetSize(int width, int height);
 
         inline const int GetWidth() const { return m_Width; }
         inline const int GetHeight() const { return m_Height; }
