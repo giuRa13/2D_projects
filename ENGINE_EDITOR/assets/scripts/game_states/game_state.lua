@@ -35,7 +35,10 @@ function GameState:Initialize()
 
 	-- Create the player
 	if not gPlayer then 
-		gPlayer = Entity("player", "")
+		local character = Character:Create({name = "robot"})
+		gPlayer = Entity(character.m_EntityID)
+		AddActiveCharacter(gPlayer:id(), character)
+		--[[gPlayer = Entity("player", "")
 		local playerTransform = gPlayer:add_component(Transform(vec2(16, 368), vec2(1, 1), 0))
 		local sprite = gPlayer:add_component(Sprite("player", 32, 32, 0, 0, 2))
 		sprite:generate_uvs()
@@ -52,7 +55,7 @@ function GameState:Initialize()
 		playerPhysAttr.bFixedRotation = true 
 		playerPhysAttr.objectData = (ObjectData("player", "", true, false, gPlayer:id()))
 		-- Add Physics component to the player 
-		gPlayer:add_component(PhysicsComp(playerPhysAttr))
+		gPlayer:add_component(PhysicsComp(playerPhysAttr))]]--
 	end
 	if not gFollowCam then 
 		gFollowCam = FollowCamera(
@@ -83,8 +86,8 @@ function GameState:OnExit()
 end
 
 function GameState:OnUpdate(dt)
-	self:UpdatePlayer(gPlayer)
 	self:UpdateContacts()
+	UpdateActiveCharacters(dt)
 	gFollowCam:update()
 	--self.m_SceneRain:UpdateRainGen(dt)
 end
@@ -98,45 +101,6 @@ function GameState:HandleInputs()
 		return 
 	end
 end
-
-
-function GameState:UpdatePlayer(player)
-	local physics = player:get_component(PhysicsComp)
-	local velocity = physics:get_linear_velocity()
-	local sprite = player:get_component(Sprite)
-	-- Stop the player if we aare not pressing the button 
-	physics:set_linear_velocity(vec2(0, velocity.y))
-	-- Move player left or right
-	if Keyboard.pressed(KEY_A) then 
-		physics:set_linear_velocity(vec2(-10, velocity.y))
-		bLeft = true 
-		sprite.start_y = 3
-	elseif Keyboard.pressed(KEY_D) then 
-		physics:set_linear_velocity(vec2(10, velocity.y))
-		bLeft = false 
-		sprite.start_y = 2
-	end
-	-- Make the player Jump
-	if Keyboard.just_pressed(KEY_W) then
-		physics:set_linear_velocity(vec2(velocity.x, 0))
-		physics:linear_impulse(vec2(velocity.x, -1250))
-	end
-	if velocity.y < 0 then 
-		physics:set_gravity_scale(2)
-	elseif velocity.y > 0 then 
-		physics:set_gravity_scale(5)
-	end
-	-- Reset back to idle Animation
-	if velocity.x == 0.0 then 
-		if bLeft then 
-			sprite.start_y = 1 
-		else 
-			sprite.start_y = 0 
-		end
-	end
-	sprite:inspect_y()	
-end
-
 
 function GameState:UpdateContacts()
 	local uda, udb = ContactListener.get_user_data()

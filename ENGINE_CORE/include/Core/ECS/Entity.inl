@@ -53,7 +53,7 @@ namespace ENGINE_CORE::ECS
 	{
 		// Get component back from Entity
 		auto& component = entity.AddComponent<TComponent>(
-			comp.valid() ? comp.as<TComponent>() : TComponent{}
+			comp.valid() ? std::move(comp.as<TComponent&&>()) : TComponent{}
 		);
 
 		return sol::make_reference(s, std::ref(component));

@@ -3,11 +3,23 @@
 #include <Rendering/Essentials/ShaderLoader.hpp>
 #include <Rendering/Essentials/FontLoader.hpp>
 #include <Logger/Logger.hpp>
+#include "Core/Resources/default_fonts.hpp"
 
 
 
 namespace ENGINE_RESOURCES
 {
+	bool AssetManager::CreateDefaultFonts()
+	{
+		if(!AddFontFromMemory("pixel", pixel_font))
+		{
+			ENGINE_ERROR("Failed to creeate pixel font");
+			return false;
+		}
+		return true;
+	}
+
+
 	// Texture //////////////////////////
     bool AssetManager::AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt)
 	{

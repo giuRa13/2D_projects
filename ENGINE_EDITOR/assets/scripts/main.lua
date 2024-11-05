@@ -1,20 +1,8 @@
 -- Main Lua Script
 
---run_script("assets/ASTEROIDS/scripts/script_list.lua") 
---run_script("assets/ASTEROIDS/scripts/main.lua") 
-run_script("assets/scripts/TestProject/testmap1.lua")
-run_script("assets/scripts/TestProject/testmap2.lua")
-run_script("assets/scripts/TestProject/assetDefs.lua")
-run_script("assets/scripts/utilities.lua")
---run_script("assets/scripts/rain_generator.lua")
---run_script("assets/scripts/scene_rain.lua")
---run_script("assets/scripts/follow_cam.lua")
-run_script("assets/scripts/events/event_manager.lua")
-run_script("assets/scripts/events/collision_event.lua")
-run_script("assets/scripts/systems/trigger_system.lua")
-
-run_script("assets/scripts/game_states/game_state.lua")
-run_script("assets/scripts/game_states/title_state.lua")
+ENGINE_run_script("assets/scripts/script_list.lua")
+ENGINE_load_script_table(ScriptList)
+LoadAssets(AssetDefs)
 --------------------------------------------------------------------
 --local tilemap = CreateTestMap()
 --[[local tilemap = CreateTestPlatformerMap()
@@ -30,8 +18,6 @@ gCollisionEvent = CollisionEvent:Create()
 gTriggerSystem = TriggerSystem:Create()
 gCollisionEvent:SubscribeToEvent(gTriggerSystem)]]--
 ---------------------------------------------------------------------
-
-LoadAssets(AssetDefs)
 
 gFollowCam = nil 
 gCollisionEvent = nil 
@@ -71,13 +57,13 @@ main = {
             --DrawRect(Rect( vec2(0, 0),  640,  480,  Color(255, 0, 0, 255) ))
             --DrawCircle(vec2(-100, -150), 1.0, 850.0, Color(0, 0, 0, 100))
 
-            DrawText( Text( 
+            --[[DrawText( Text( 
                 vec2(100.0, 200.0),
                 "This is some text",
                 "pixel",
                 640.0,
                 Color(255, 150, 0, 255)
-            ))
+            ))]]--
         end
     }
 }

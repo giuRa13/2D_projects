@@ -23,6 +23,7 @@
 #include "Core/CoreUtilities/CoreUtilities.hpp"
 #include "Core/States/State.hpp"
 #include "Core/States/StateStack.hpp"
+#include "Core/States/StateMachine.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -179,6 +180,7 @@ namespace ENGINE_CORE::Systems
 
         ENGINE_CORE::State::CreateLuaStateBind(lua);
         ENGINE_CORE::StateStack::CreateLuaStateStackBinds(lua);
+        ENGINE_CORE::StateMachine::CreateLuaStateMachine(lua);
 
         Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);
@@ -216,7 +218,7 @@ namespace ENGINE_CORE::Systems
     void ScriptingSystem::RegisterLuaFunctions(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
         lua.set_function(
-            "run_script", [&](const std::string& path)
+            "ENGINE_run_script", [&](const std::string& path)
             {
                 try
                 {
@@ -232,11 +234,36 @@ namespace ENGINE_CORE::Systems
             }
         );
 
-        lua.set_function("get_ticks", [] { return SDL_GetTicks(); });
+        lua.set_function("ENGINE_load_script_table", [&](const sol::table& scriptList){
+            if(!scriptList.valid() )
+            { 
+                ENGINE_ERROR("Failed to load script list: Table is invalid"); 
+                return;
+            }
+            for(const auto& [index, script] : scriptList)
+            {
+                try
+                {
+                    auto result = lua.safe_script_file(script.as<std::string>());
+                    if(!result.valid())
+                    {
+                        sol::error error = result;
+                        throw error;
+                    }
+                }
+                catch(const sol::error& error)
+                {
+                   	ENGINE_ERROR( "Error loading the main lua script: {0}", error.what() );
+		            return;
+                }
+            }
+        });
+
+        lua.set_function("ENGINE_get_ticks", [] { return SDL_GetTicks(); });
 
 		auto& assetManager = registry.GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
 
-		lua.set_function("measure_text", [&](const std::string& text, const std::string& fontName) {
+		lua.set_function("ENGINE_measure_text", [&](const std::string& text, const std::string& fontName) {
 			const auto& pFont = assetManager->GetFont(fontName);
 			if (!pFont)
 			{
@@ -272,7 +299,7 @@ namespace ENGINE_CORE::Systems
 			"get_int", &ENGINE_UTIL::RandomGenerator::GetInt
 		);
 
-        lua.set_function("S2D_EntityInView", [&](const TransformComponent& transform, float width, float height) {
+        lua.set_function("ENGINE_EntityInView", [&](const TransformComponent& transform, float width, float height) {
 			auto& camera = registry.GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
 			return ENGINE_CORE::EntityInView(transform, width, height, *camera);
 			}

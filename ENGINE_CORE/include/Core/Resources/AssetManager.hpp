@@ -31,6 +31,8 @@ namespace ENGINE_RESOURCES
 		AssetManager() = default;
 		~AssetManager() = default;
 
+		bool CreateDefaultFonts();
+
 		bool AddTexture(const std::string& textureName, const std::string& TexturePath, bool pixelArt = true);
 		std::shared_ptr<ENGINE_RENDERING::Texture> GetTexture(const std::string& textureName);
 		

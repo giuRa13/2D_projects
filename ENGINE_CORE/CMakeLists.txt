@@ -31,6 +31,7 @@ add_library(ENGINE_CORE
     # Resources
     "include/Core/Resources/AssetManager.hpp"
     "src/Resources/AssetManager.cpp"
+    "include/Core/Resources/default_fonts.hpp"
     #Scripting
     "include/Core/Scripting/GlmLuaBindings.hpp"
     "src/Scripting/GlmLuaBindings.cpp"
@@ -63,6 +64,8 @@ add_library(ENGINE_CORE
     "src/States/State.cpp"
     "include/Core/States/StateStack.hpp"
     "src/States/StateStack.cpp"
+    "include/Core/States/StateMachine.hpp"
+    "src/States/StateMachine.cpp"
 
     "include/Core/CoreUtilities/CoreEngineData.hpp"
     "src/CoreUtilities/CoreEngineData.cpp"

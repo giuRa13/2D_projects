@@ -38,7 +38,8 @@
 #include <Physics/ContactListener.hpp>
 #include <Core/CoreUtilities/CoreEngineData.hpp>
 // IMGUI TESTING ======================
-#include <imgui.h>
+//#include <imgui.h>
+#include <imgui_internal.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
 #include <SDL_opengl.h>
@@ -331,9 +332,14 @@ namespace ENGINE_EDITOR
 
         renderer->SetLineWidth(4.f);
 
-        if(!assetManager->AddFont("pixel", "./assets/fonts/retro_pixel.TTF"))
+        /*if(!assetManager->AddFont("pixel", "./assets/fonts/retro_pixel.TTF"))
         {
             ENGINE_ERROR("Failed to load Pixel Font");
+            return false;
+        }*/
+        if(!assetManager->CreateDefaultFonts())
+        {
+            ENGINE_ERROR("Failed to create Default Font");
             return false;
         }
 
@@ -749,6 +755,18 @@ namespace ENGINE_EDITOR
 	void Application::RenderImGui()
     {
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+        /*const auto dockSpaceId = ImGui::DockSpaceOverViewport( ImGui::GetMainViewport());
+        if (static auto firstTime = true; firstTime) [[unlikely]]
+        {
+            firstTime = false;
+            ImGui::DockBuilderRemoveNode(dockSpaceId);
+            ImGui::DockBuilderAddNode(dockSpaceId);
+            auto centerNodeId = dockSpaceId;
+            const auto leftNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId);
+            ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
+            ImGui::DockBuilderDockWindow("Scene", centerNodeId);
+            ImGui::DockBuilderFinish(dockSpaceId);
+        }*/
 
         auto& pSceneDisplay = m_pRegistry->GetContext<std::shared_ptr<SceneDisplay>>();
         pSceneDisplay->Draw();

@@ -1,3 +1,26 @@
+ActiveCharacters = {}
+function AddActiveCharacter(entity_id, character)
+	ActiveCharacters[entity_id] = character
+end
+
+function GetActiveCharacter(entity_id)
+	assert(ActiveCharacters[entity_id], string.format("Character with ID [%d] does not exist.", entity_id))
+	return ActiveCharacters[entity_id]
+end
+
+-- TODO: fix this to actually destroy the underlying entity
+function ClearCharacters()
+	for k, v in pairs(ActiveCharacters) do 
+		ActiveCharacters[k] = nil 
+	end 
+end
+
+function UpdateActiveCharacters(dt)
+	for _, v in pairs(ActiveCharacters) do 
+		v.m_Controller:update(dt)
+	end 
+end 
+
 
 function LoadEntity(def)
     assert(def, "Def does not exist")
@@ -17,23 +40,16 @@ function LoadEntity(def)
     if def.components.transform then
         newEntity:add_component(
             Transform(
-                vec2(
-                    def.components.transform.position.x,
-                    def.components.transform.position.y
-                ),
-                vec2(
-                    def.components.transform.scale.x,
-                    def.components.transform.scale.y
-                ),
+                def.components.transform.position,
+                def.components.transform.scale,
                 def.components.transform.rotation
             )
         )
     end
-
     if def.components.sprite then
         local sprite = newEntity:add_component(
             Sprite(
-                def.components.sprite.asset_name,
+                def.components.sprite.texture,
                 def.components.sprite.width,
                 def.components.sprite.height,
                 def.components.sprite.start_x,
@@ -44,15 +60,14 @@ function LoadEntity(def)
         sprite:generate_uvs()
         sprite.bHidden = def.components.sprite.bHidden or false
     end
-
     if def.components.circle_collider then
         newEntity:add_component(
             CircleCollider(
-                def.components.circle_collider.radius
+                def.components.circle_collider.radius,
+                def.components.circle_collider.offset
             )
         )
     end
-
     if def.components.animation then
         newEntity:add_component(
             Animation(
@@ -64,6 +79,28 @@ function LoadEntity(def)
             )
         )
     end
+    if def.components.physics_attributes then 
+		local physAttr = def.components.physics_attributes 
+		local newPhysicsAttr = PhysicsAttributes()
+		newPhysicsAttr.eType = physAttr.type 
+		newPhysicsAttr.density = physAttr.density
+		newPhysicsAttr.friction = physAttr.friction
+		newPhysicsAttr.restitution = physAttr.restitution
+		newPhysicsAttr.position = physAttr.position
+		newPhysicsAttr.radius = physAttr.radius
+		newPhysicsAttr.bCircle = physAttr.bCircle or false
+		newPhysicsAttr.bFixedRotation = physAttr.bFixedRotation or false
+		newPhysicsAttr.bIsSensor = physAttr.bIsSensor or false
+		newPhysicsAttr.objectData = ObjectData(
+			physAttr.object_data.tag,
+			physAttr.object_data.group,
+			physAttr.object_data.bCollider,
+			physAttr.object_data.bTrigger,
+			newEntity:id()
+		)
+		
+		newEntity:add_component(PhysicsComp(newPhysicsAttr))
+	end
 
     return newEntity:id()
 end
