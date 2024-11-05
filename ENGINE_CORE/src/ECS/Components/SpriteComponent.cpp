@@ -108,6 +108,16 @@ void ENGINE_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua, ENG
             }
 
             sprite.generate_uvs(pTexture->GetWidth(), pTexture->GetHeight());
-        }
+        },
+		"inspect_uvs", [](SpriteComponent& sprite) {
+			sprite.uvs.u = sprite.start_x * sprite.uvs.uv_width;
+			sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height;
+		},
+		"inspect_x", [](SpriteComponent& sprite) {
+			sprite.uvs.u = sprite.start_x * sprite.uvs.uv_width;
+		},
+		"inspect_y", [](SpriteComponent& sprite) {
+			sprite.uvs.v = sprite.start_y * sprite.uvs.uv_height;
+		}
     );
 }

@@ -54,7 +54,7 @@ namespace ENGINE_WINDOWING
 
     void Window::SetSize(int width, int height)
 	{
-		SDL_SetWindowSize(m_pWindow.get(), width, height);
+		//SDL_SetWindowSize(m_pWindow.get(), width, height);
 		m_Width = width;
 		m_Height = height;
 	}

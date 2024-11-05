@@ -21,6 +21,8 @@
 #include "Core/CoreUtilities/CoreEngineData.hpp"
 #include "Core/CoreUtilities/FollowCamera.hpp"
 #include "Core/CoreUtilities/CoreUtilities.hpp"
+#include "Core/States/State.hpp"
+#include "Core/States/StateStack.hpp"
 #include <Logger/Logger.hpp>
 
 
@@ -170,10 +172,13 @@ namespace ENGINE_CORE::Systems
         ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
         ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
         ENGINE_CORE::Scripting::UserDataBinder::CreateLuaUserData(lua);
-        ENGINE_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
         ENGINE_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener(lua, registry.GetRegistry());
-
+    
+        ENGINE_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
         create_timer(lua);
+
+        ENGINE_CORE::State::CreateLuaStateBind(lua);
+        ENGINE_CORE::StateStack::CreateLuaStateStackBinds(lua);
 
         Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);

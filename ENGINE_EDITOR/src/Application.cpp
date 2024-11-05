@@ -338,7 +338,7 @@ namespace ENGINE_EDITOR
         }
 
         // FrameBuffer ///////////////////////
-        auto pFramebuffer = std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, true);
+        auto pFramebuffer = std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, false);
 
         if(!pFramebuffer)
         {

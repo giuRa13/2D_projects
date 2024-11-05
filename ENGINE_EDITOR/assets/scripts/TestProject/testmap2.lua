@@ -1,4 +1,4 @@
-function CreateTestPlantformerMap()
+function CreateTestPlatformerMap()
 
 return {
   version = "1.10",

@@ -36,7 +36,14 @@ void ENGINE_CORE::ECS::TextComponent::CreateTextLuaBinding(sol::state& lua)
                     .wrap = wrap,
                     .color = color
                 };
-            }
+            },
+            [](const std::string& sFontName, const std::string& sTextStr)
+			{
+				return TextComponent{
+					.sFontName = sFontName,
+					.sTextStr = sTextStr
+				};
+			}
         ),
         "textStr", &TextComponent::sTextStr,
         "fontName", &TextComponent::sFontName,
