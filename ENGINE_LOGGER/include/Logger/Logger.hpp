@@ -60,6 +60,9 @@ namespace ENGINE_LOGGER
 		template <typename... Args>
 		void Error(std::source_location location, const std::string_view message, Args&&... args);
     
+		void LuaLog( const std::string_view message );
+		void LuaWarn( const std::string_view message );
+		void LuaError( const std::string_view message );
     };
 
 }

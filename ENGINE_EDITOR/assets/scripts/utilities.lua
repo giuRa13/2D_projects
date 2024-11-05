@@ -276,25 +276,31 @@ end
 function LoadAssets(asset)
     for k, v in pairs(asset.textures) do
         if not AssetManager.add_texture(v.name, v.path, v.pixel_art) then
-            print("Failed to load texture [ " ..v.name .. " ] at path [ " ..v.path .." ]" )
+            ENGINE_error("Failed to load texture [%s] at path [%s]",v.name, v.path)
+            --print("Failed to load texture [ " ..v.name .. " ] at path [ " ..v.path .." ]" )
         else
-            print("Loaded texture [ " ..v.name .." ]")
+            ENGINE_log("Loaded Texture [%s]", v.name)
+            --print("Loaded texture [ " ..v.name .." ]")
         end
     end
 
     for k, v in pairs(asset.music) do
         if not AssetManager.add_music(v.name, v.path) then
-            print("Failed to load Music [" ..v.name .."] at path [" ..v.path .."]")
+            ENGINE_error("Failed to load music [%s] at path [%s]",v.name, v.path)
+            --print("Failed to load Music [" ..v.name .."] at path [" ..v.path .."]")
         else
-            print("Loaded Music [" ..v.name .."]")
+            ENGINE_log("Loaded Music [%s]", v.name)
+            --print("Loaded Music [" ..v.name .."]")
         end
     end
 
     for k, v in pairs(asset.sound_fx) do
         if not AssetManager.add_soundfx(v.name, v.path) then
-            print("Failed to load soundFX [" ..v.name .."] at path [" ..v.path .."]")
+            ENGINE_error("Failed to load soundfx [%s] at path [%s]",v.name, v.path)
+            --print("Failed to load soundFX [" ..v.name .."] at path [" ..v.path .."]")
         else
-            print("Loaded soundFX [" ..v.name .."]")
+            ENGINE_log("Loaded soundfx [%s]", v.name)
+            --print("Loaded soundFX [" ..v.name .."]")
         end
     end 
 end

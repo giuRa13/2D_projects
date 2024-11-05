@@ -164,6 +164,115 @@ namespace ENGINE_CORE::Systems
         );
     };
 
+    // LUA LOG //////////////////////////////////
+    auto create_lua_logger = []( sol::state& lua ) {
+
+        auto& logger = ENGINE_LOGGER::Logger::GetInstance();
+        lua.new_usertype<ENGINE_LOGGER::Logger>(
+            "Logger",
+            sol::no_constructor,
+            "log",
+            [ & ]( const std::string_view message ) { logger.LuaLog( message ); },
+            "warn",
+            [ & ]( const std::string_view message ) { logger.LuaWarn( message ); },
+            "error",
+            [ & ]( const std::string_view message ) { logger.LuaError( message ); } );
+        
+        auto logResult = lua.safe_script( R"(
+                    function ZZZ_Log(message, ...)
+                        Logger.log(string.format(message, ...))
+                    end
+                )" );
+        if ( !logResult.valid() )
+        {
+            ENGINE_ERROR( "Failed to initialize lua logs" );
+        }
+
+        auto warnResult = lua.safe_script( R"(
+                    function ZZZ_Warn(message, ...)
+                        Logger.warn(string.format(message, ...))
+                    end
+                )" );
+        if ( !warnResult.valid() )
+        {
+            ENGINE_ERROR( "Failed to initialize lua warnings" );
+        }
+
+        auto errorResult = lua.safe_script( R"(
+                    function ZZZ_Error(message, ...)
+                        Logger.error(string.format(message, ...))
+                    end
+                )" );
+        if ( !errorResult.valid() )
+        {
+            ENGINE_ERROR( "Failed to initialize lua errors" );
+        }
+
+        lua.set_function( "ENGINE_log", []( const std::string& message, const sol::variadic_args& args, sol::this_state s ) {
+            try
+            {
+                sol::state_view L = s;
+                sol::protected_function log = L[ "ZZZ_Log" ];
+                auto result = log( message, args );
+                if ( !result.valid() )
+                {
+                    sol::error error = result;
+                    throw error;
+                }
+            }
+            catch ( const sol::error& error )
+            {
+                ENGINE_ERROR( "Failed to get lua log: {}", error.what() );
+            }
+        } );
+
+        lua.set_function( "ENGINE_warn", []( const std::string& message, const sol::variadic_args& args, sol::this_state s ) {
+            try
+            {
+                sol::state_view L = s;
+                sol::protected_function warn = L[ "ZZZ_Warn" ];
+                auto result = warn( message, args );
+                if ( !result.valid() )
+                {
+                    sol::error error = result;
+                    throw error;
+                }
+            }
+            catch ( const sol::error& error )
+            {
+                ENGINE_ERROR( "Failed to get lua warning: {}", error.what() );
+            }
+        } );
+
+        lua.set_function( "ENGINE_error", []( const std::string& message, const sol::variadic_args& args, sol::this_state s ) {
+            try
+            {
+                sol::state_view L = s;
+                sol::protected_function err = L[ "ZZZ_Error" ];
+                auto result = err( message, args );
+                if ( !result.valid() )
+                {
+                    sol::error error = result;
+                    throw error;
+                }
+            }
+            catch ( const sol::error& error )
+            {
+                ENGINE_ERROR( "Failed to get lua errors: {}", error.what() );
+            }
+        } );
+
+	auto assertResult = lua.safe_script( R"(
+				ENGINE_assert = assert
+				assert = function(arg1, message, ...)
+					if not arg1 then 
+						Logger.error(string.format(message, ...))
+					end 
+					ENGINE_assert(arg1)
+				end
+			)" );
+    };
+
 
     void ScriptingSystem::RegisterLuaBinding(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
@@ -177,6 +286,7 @@ namespace ENGINE_CORE::Systems
     
         ENGINE_CORE::FollowCamera::CreateLuaFollowCamera(lua, registry);
         create_timer(lua);
+        create_lua_logger( lua );
 
         ENGINE_CORE::State::CreateLuaStateBind(lua);
         ENGINE_CORE::StateStack::CreateLuaStateStackBinds(lua);
@@ -304,5 +414,7 @@ namespace ENGINE_CORE::Systems
 			return ENGINE_CORE::EntityInView(transform, width, height, *camera);
 			}
 		);
+
+
     }
 }

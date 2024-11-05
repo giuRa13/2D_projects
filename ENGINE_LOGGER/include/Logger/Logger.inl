@@ -47,7 +47,7 @@ namespace ENGINE_LOGGER
             std::cout << ss.str() << "\n";
             SetConsoleTextAttribute( hConsole, WHITE );
     #else
-            std::cout << GREEN << ss.str() << RESET << "\n";
+            std::cout << GREEN << ss.str() << RESET <<"\n" ;
     #endif
         }
 
