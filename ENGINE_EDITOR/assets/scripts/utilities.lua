@@ -91,11 +91,13 @@ function LoadEntity(def)
 		newPhysicsAttr.bCircle = physAttr.bCircle or false
 		newPhysicsAttr.bFixedRotation = physAttr.bFixedRotation or false
 		newPhysicsAttr.bIsSensor = physAttr.bIsSensor or false
+
 		newPhysicsAttr.objectData = ObjectData(
 			physAttr.object_data.tag,
 			physAttr.object_data.group,
-			physAttr.object_data.bCollider,
-			physAttr.object_data.bTrigger,
+			physAttr.object_data.bCollider or false,
+			physAttr.object_data.bTrigger or false,
+            physAttr.object_data.bIsFriendly or false,
 			newEntity:id()
 		)
 		
@@ -219,7 +221,7 @@ function LoadMap(mapDef)
 
                 local bIsCollider = false
 
-                if tileset.name == "collider"  or tileset.name == "trigger" then
+                if tileset.name == "collider"  or tileset.name == "trigger" or tileset.name == "ground" then
                     local width = tileset.tilewidth / scale
 					local height = tileset.tileheight / scale
                     tile:add_component(
@@ -243,9 +245,10 @@ function LoadMap(mapDef)
 
                         if tileset.name == "trigger" then
                             physicsAttribs.bIsSensor = true
-                            physicsAttribs.objectData = ObjectData("", "hole_triggers", false, true, tile:id())
-                        else
-                            physicsAttribs.objectData = ObjectData("", "hole_colliders", true, false, tile:id())
+                            physicsAttribs.objectData = ObjectData("", "hole_triggers", false, true, false, tile:id())
+                        elseif tileset.name == "ground" then
+                            physicsAttribs.bIsSensor = true
+                            physicsAttribs.objectData = ObjectData("", "ground", true, true, true, tile:id())
                         end
                         tile:add_component(PhysicsComp(physicsAttribs))
                     end

@@ -9,6 +9,7 @@ AssetDefs =
         --{ name = "jungle_ruins", path = "assets/textures/jungle_ruins.png", pixel_art = true},
         { name = "rain", path = "assets/textures/rain.png", pixel_art = true},
         { name = "trigger", path = "assets/textures/trigger.png", pixel_art = true},
+        { name = "ground", path = "assets/textures/ground.png", pixel_art = true},
         { name = "land_tiles1", path = "assets/textures/land_tiles1.png", pixel_art = true},
         { name = "background1", path = "assets/textures/background1.png", pixel_art = true},
         --{ name = "white_box", path = "assets/textures/white.png", pixel_art = true}

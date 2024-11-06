@@ -1,4 +1,5 @@
 #include "Physics/ContactListener.hpp"
+#include <entt/entt.hpp>
 #include <Logger/Logger.hpp>
 
 
@@ -14,11 +15,26 @@ namespace ENGINE_PHYSICS
 
     void ContactListener::BeginContact(b2Contact* contact)
     {
+
+    	if ( !contact->GetFixtureA()->GetUserData().pointer || !contact->GetFixtureB()->GetUserData().pointer )
+        {
+            SetUserContacts( nullptr, nullptr );
+            return;
+        }
+
         UserData* a_data = reinterpret_cast<UserData*>(contact->GetFixtureA()->GetUserData().pointer);
         UserData* b_data = reinterpret_cast<UserData*>(contact->GetFixtureB()->GetUserData().pointer);
 
         try
         {
+            if ( !a_data || !b_data || 
+            a_data->type_id != entt::type_hash<ObjectData>::value() ||
+			b_data->type_id != entt::type_hash<ObjectData>::value() )
+            {
+                SetUserContacts( nullptr, nullptr );
+                return;
+            }
+
             auto a_any = std::any_cast<ObjectData>(a_data->userData);
             auto b_any = std::any_cast<ObjectData>(b_data->userData);
 
@@ -43,26 +59,45 @@ namespace ENGINE_PHYSICS
 
     void ContactListener::EndContact(b2Contact* contact)
     {
+        if ( !contact->GetFixtureA()->GetUserData().pointer || !contact->GetFixtureB()->GetUserData().pointer )
+        {
+            SetUserContacts( nullptr, nullptr );
+            return;
+        }
+
         UserData* a_data = reinterpret_cast<UserData*>(contact->GetFixtureA()->GetUserData().pointer);
         UserData* b_data = reinterpret_cast<UserData*>(contact->GetFixtureB()->GetUserData().pointer);
 
         try
         {
+        	if ( !a_data || !b_data || 
+            a_data->type_id != entt::type_hash<ObjectData>::value() ||
+			b_data->type_id != entt::type_hash<ObjectData>::value() )
+            {
+                SetUserContacts( nullptr, nullptr );
+                return;
+            }
             auto a_any = std::any_cast<ObjectData>(a_data->userData);
             auto b_any = std::any_cast<ObjectData>(b_data->userData);
 
-            a_any.RemoveContact(b_any);
-            b_any.RemoveContact(a_any);
-
-            a_data->userData.reset();
-            a_data->userData = a_any;
-            b_data->userData.reset();
-            b_data->userData = b_any;
+            if(a_any.RemoveContact(b_any))
+            {
+                a_data->userData.reset();
+                a_data->userData = a_any;
+            }
+            if(b_any.RemoveContact(a_any))
+            {
+                b_data->userData.reset();
+                b_data->userData = b_any;
+            }
         }
         catch(const std::bad_any_cast& ex)
         {
-            ENGINE_ERROR("Failed to cast user contacts: {}", ex.what());
+            //ENGINE_ERROR("Failed to cast user contacts: {}", ex.what());
+            // Eat this exception for now
         }
+
+        SetUserContacts( nullptr, nullptr );
     }
 
 

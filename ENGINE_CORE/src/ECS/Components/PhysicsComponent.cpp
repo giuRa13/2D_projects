@@ -116,13 +116,14 @@ namespace ENGINE_CORE::ECS
             "type_id", entt::type_hash<ObjectData>::value,
             sol::call_constructor,
             sol::factories(
-                [](const std::string& tag, const std::string& group, bool bCollider, bool bTrigger, std::uint32_t entityID)
+                [](const std::string& tag, const std::string& group, bool bCollider, bool bTrigger, bool bIsFriendly, std::uint32_t entityID)
                 {
                     return ObjectData{
                         .tag = tag,
                         .group = group,
                         .bCollider = bCollider,
                         .bTrigger = bTrigger,
+                        .bIsFriendly = bIsFriendly,
                         .entityID = entityID
                     };
                 },
@@ -133,6 +134,7 @@ namespace ENGINE_CORE::ECS
                         .group = objectData["group"].get_or(std::string{""}),
                         .bCollider = objectData["bCollider"].get_or(false),
                         .bTrigger = objectData["bTriggere"].get_or(false),
+                        .bIsFriendly = objectData["bIsFriendly"].get_or(false),
                         .entityID = objectData["entityID"].get_or((std::uint32_t)0)
                     };
                 }
@@ -141,6 +143,7 @@ namespace ENGINE_CORE::ECS
 			"group", &ObjectData::group,
 			"bCollider", &ObjectData::bCollider,
 			"bTrigger", &ObjectData::bTrigger,
+            "bIsFriendly", &ObjectData::bIsFriendly,
 			"entityID", &ObjectData::entityID,
             "contactEntities", &ObjectData::contactEntities,
             "to_string", &ObjectData::to_string

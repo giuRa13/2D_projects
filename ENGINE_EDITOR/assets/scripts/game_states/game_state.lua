@@ -89,6 +89,7 @@ function GameState:OnUpdate(dt)
 	self:UpdateContacts()
 	UpdateActiveCharacters(dt)
 	gFollowCam:update()
+	gTriggerSystem:Update()
 	--self.m_SceneRain:UpdateRainGen(dt)
 end
 
