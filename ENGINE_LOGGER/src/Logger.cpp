@@ -69,7 +69,39 @@ namespace ENGINE_LOGGER
 		}
 
 		if ( m_bRetainLogs )
+		{
 			m_LogEntries.emplace_back( LogEntry::LogType::INFO, ss.str() );
+			m_bLogAdded = true;
+		}
+	}
+
+	void Logger::LuaMessage( const std::string_view message )
+	{
+		assert( m_bInitialized && "The logger must be initialized before it is used!" );
+		if ( !m_bInitialized )
+		{
+			std::cout << "The logger must be initialized before it is used!" << std::endl;
+			return;
+		}
+		std::stringstream ss;
+		ss << "LUA [MESSAGE]: " << CurrentDateTime() << " - " << message << "\n";
+		if ( m_bConsoleLog )
+		{
+#ifdef _WIN32
+			HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );
+			SetConsoleTextAttribute( hConsole, BLUE );
+			std::cout << ss.str();
+			SetConsoleTextAttribute( hConsole, WHITE );
+#else
+			std::cout << BLUE << ss.str() << RESET ;/*"\n"*/
+#endif
+		}
+
+		if ( m_bRetainLogs )
+		{
+			m_LogEntries.emplace_back( LogEntry::LogType::MESSAGE, ss.str() );
+			m_bLogAdded = true;
+		}
 	}
 
 
@@ -96,7 +128,10 @@ namespace ENGINE_LOGGER
 		}
 
 		if ( m_bRetainLogs )
+		{
 			m_LogEntries.emplace_back( LogEntry::LogType::WARN, ss.str() );
+			m_bLogAdded = true;
+		}
 	}
 
 
@@ -123,7 +158,10 @@ namespace ENGINE_LOGGER
 		}
 
 		if ( m_bRetainLogs )
+		{
 			m_LogEntries.emplace_back( LogEntry::LogType::ERR, ss.str() );
+			m_bLogAdded = true;
+		}
 	}
 
 }

@@ -174,6 +174,8 @@ namespace ENGINE_CORE::Systems
             sol::no_constructor,
             "log",
             [ & ]( const std::string_view message ) { logger.LuaLog( message ); },
+            "mex",
+            [ & ]( const std::string_view message ) { logger.LuaMessage( message ); },
             "warn",
             [ & ]( const std::string_view message ) { logger.LuaWarn( message ); },
             "error",
@@ -187,6 +189,16 @@ namespace ENGINE_CORE::Systems
         if ( !logResult.valid() )
         {
             ENGINE_ERROR( "Failed to initialize lua logs" );
+        }
+
+        auto messageResult = lua.safe_script( R"(
+                    function ZZZ_Mex(message, ...)
+                        Logger.mex(string.format(message, ...))
+                    end
+                )" );
+        if ( !messageResult.valid() )
+        {
+            ENGINE_ERROR( "Failed to initialize lua messages" );
         }
 
         auto warnResult = lua.safe_script( R"(
@@ -224,6 +236,23 @@ namespace ENGINE_CORE::Systems
             catch ( const sol::error& error )
             {
                 ENGINE_ERROR( "Failed to get lua log: {}", error.what() );
+            }
+        } );
+        lua.set_function( "ENGINE_mex", []( const std::string& message, const sol::variadic_args& args, sol::this_state s ) {
+            try
+            {
+                sol::state_view L = s;
+                sol::protected_function mex = L[ "ZZZ_Mex" ];
+                auto result = mex( message, args );
+                if ( !result.valid() )
+                {
+                    sol::error error = result;
+                    throw error;
+                }
+            }
+            catch ( const sol::error& error )
+            {
+                ENGINE_ERROR( "Failed to get lua message: {}", error.what() );
             }
         } );
 

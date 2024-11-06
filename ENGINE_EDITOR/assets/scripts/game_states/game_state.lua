@@ -74,6 +74,7 @@ end
 
 
 function GameState:OnEnter()
+	ENGINE_mex("Enter Game_State")
 	LoadMap(CreateTestPlatformerMap())
 	Sound.play("rain", -1, 1)
 	Sound.set_volume(1, 20)

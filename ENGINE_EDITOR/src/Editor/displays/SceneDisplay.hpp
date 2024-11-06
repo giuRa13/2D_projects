@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../displays/IDisplay.hpp"
 #include <Core/ECS/Registry.hpp>
 
 
@@ -7,7 +8,7 @@
 namespace ENGINE_EDITOR
 {
 
-    class SceneDisplay
+    class SceneDisplay : public IDisplay
     {
 
     private:
@@ -18,7 +19,7 @@ namespace ENGINE_EDITOR
         SceneDisplay(ENGINE_CORE::ECS::Registry& registry);
         ~SceneDisplay() = default;
 
-        void Draw();
+        virtual void Draw() override;
 
     };
 

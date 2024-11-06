@@ -46,6 +46,7 @@
 #include <SDL_opengl.h>
 // ===================================
 #include "Editor/displays/SceneDisplay.hpp"
+#include "Editor/displays/LogDisplay.hpp"
 
 
 namespace ENGINE_EDITOR
@@ -271,15 +272,14 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to add the SoundFX Player to Registry Context");
             return false;
         }*/
-
-        // Camera //////////////////////
-        auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
-
         /*if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>(assetManager))
         {
             ENGINE_ERROR("Failed to add the Asset Manager to Registry Context");
             return false;
         }*/
+
+        // Camera //////////////////////
+        auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
 
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>(camera))
         {
@@ -333,6 +333,12 @@ namespace ENGINE_EDITOR
             return false; 
         }
 
+        if(!CreateDisplays())
+        {
+            ENGINE_ERROR("Failed to create Displays");
+            return false;
+        }
+
         renderer->SetLineWidth(4.f);
 
         /*if(!assetManager->AddFont("pixel", "./assets/fonts/retro_pixel.TTF"))
@@ -359,21 +365,6 @@ namespace ENGINE_EDITOR
 			ENGINE_ERROR("Failed to add the FrameBuffer to the Registry context!");
             return false;
         }	
-        // Scene /////////////////////////////
-        auto pSceneDisplay = std::make_shared<SceneDisplay>(*m_pRegistry);
-
-        if(!pSceneDisplay)
-        {
-            ENGINE_ERROR("Failed to create test SceneDisplay");
-            return false;
-        }
-        if (!m_pRegistry->AddToContext<std::shared_ptr<SceneDisplay>>(pSceneDisplay))
-		{
-			ENGINE_ERROR("Failed to add the SceneDisplay to the Registry context!");
-            return false;
-        }	
-
-
         /*auto pTexture = assetManager->GetTexture("ball");
         using namespace ENGINE_CORE::ECS;
         auto& reg = m_pRegistry->GetRegistry();
@@ -491,7 +482,6 @@ namespace ENGINE_EDITOR
                 .pFont = pFont
             }
         );*/
-
         return true;
     }
 
@@ -698,6 +688,35 @@ namespace ENGINE_EDITOR
     }
 
 
+    bool Application::CreateDisplays()
+    {
+        auto& mainRegistry = MAIN_REGISTRY();
+
+        auto pDisplayHolder = std::make_shared<DisplayHolder>();
+       	if ( !mainRegistry.AddToContext<std::shared_ptr<DisplayHolder>>( pDisplayHolder ) )
+        {
+            ENGINE_ERROR( "Failed to add the display holder to the main registry." );
+            return false;
+        }
+
+        auto pSceneDisplay = std::make_unique<SceneDisplay>(*m_pRegistry);
+        if(!pSceneDisplay)
+        {
+            ENGINE_ERROR("Failed to create test SceneDisplay");
+            return false;
+        }
+        auto pLogDisplay = std::make_unique<LogDisplay>();
+        if(!pLogDisplay)
+        {
+            ENGINE_ERROR("Failed to create test LogDisplay");
+            return false;
+        }
+
+        pDisplayHolder->displays.push_back(std::move(pSceneDisplay));
+        pDisplayHolder->displays.push_back(std::move(pLogDisplay));
+        return true;
+    }    
+
     bool Application::InitImGui()
     {
         const char* glslVersion = "#version 460";
@@ -766,15 +785,25 @@ namespace ENGINE_EDITOR
             firstTime = false;
             ImGui::DockBuilderRemoveNode(dockSpaceId);
             ImGui::DockBuilderAddNode(dockSpaceId);
+
             auto centerNodeId = dockSpaceId;
             const auto leftNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId);
+
+            const auto LogNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId);
+
             ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
             ImGui::DockBuilderDockWindow("Scene", centerNodeId);
+            ImGui::DockBuilderDockWindow("Logs", LogNodeId);
+
             ImGui::DockBuilderFinish(dockSpaceId);
         }
 
-        auto& pSceneDisplay = m_pRegistry->GetContext<std::shared_ptr<SceneDisplay>>();
-        pSceneDisplay->Draw();
+        auto& mainRegistry = MAIN_REGISTRY();
+        auto& pDisplayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
+        for (const auto& pDisplay : pDisplayHolder->displays)
+        {
+            pDisplay->Draw();
+        }
 
         ImGui::ShowDemoWindow();
     }

@@ -19,6 +19,7 @@ static const char* GREEN = "\033[0;32m";
 static const char* YELLOW = "\033[0;33m";
 static const char* RED = "\033[0;31m";
 static const char* WHITE = "\033[0;30m";
+static const char* BLUE = "\033[0;34m"; 
 //static const char* CLOSE = "\022[0m";
 static const char* RESET = "\033[0m";
 #endif
@@ -54,6 +55,39 @@ namespace ENGINE_LOGGER
         if ( m_bRetainLogs )
         {
             m_LogEntries.emplace_back( LogEntry::LogType::INFO, ss.str() );
+            m_bLogAdded = true;
+        }
+    }
+
+    template <typename... Args>
+    void Logger::Message( const std::string_view message, Args&&... args )
+    {
+        assert( m_bInitialized && "The logger must be initialized before it is used!" );
+
+        if ( !m_bInitialized )
+        {
+            std::cout << "The logger must be initialized before it is used!" << std::endl;
+            return;
+        }
+
+        std::stringstream ss;
+        ss << "ENGINE [MESSAGE]: " << CurrentDateTime() << " - " << fmt::vformat( message, fmt::make_format_args( args... ) );
+
+        if ( m_bConsoleLog )
+        {
+    #ifdef _WIN32
+            HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );
+            SetConsoleTextAttribute( hConsole, BLUE );
+            std::cout << ss.str() << "\n";
+            SetConsoleTextAttribute( hConsole, WHITE );
+    #else
+            std::cout << BLUE << ss.str() << RESET <<"\n" ;
+    #endif
+        }
+
+        if ( m_bRetainLogs )
+        {
+            m_LogEntries.emplace_back( LogEntry::LogType::MESSAGE, ss.str() );
             m_bLogAdded = true;
         }
     }

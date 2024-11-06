@@ -47,7 +47,8 @@ end
 
 
 function TriggerSystem:OnPlayerTriggered(trigger, player)
-	print(trigger.group .." has been activated by " ..player.tag)
+	--print(trigger.group .." has been activated by " ..player.tag)
+	ENGINE_mex("%s has been activated by %s", trigger.group, player.tag)
 	g_DebounceTimer:start()
     local playerEntity = Entity(player.entityID)
     local physics = playerEntity:get_component(PhysicsComp)

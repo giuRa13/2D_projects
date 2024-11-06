@@ -2,8 +2,11 @@ add_executable(ENGINE_EDITOR
     "src/main.cpp"
     "src/Application.cpp"
     "src/Application.hpp"
+    "src/Editor/displays/IDisplay.hpp"
     "src/Editor/displays/SceneDisplay.hpp"
     "src/Editor/displays/SceneDisplay.cpp"
+    "src/Editor/displays/LogDisplay.hpp"
+    "src/Editor/displays/LogDisplay.cpp"
     )
 
 target_include_directories(

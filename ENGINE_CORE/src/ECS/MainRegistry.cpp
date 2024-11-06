@@ -1,5 +1,4 @@
 #include "Core/ECS/MainRegistry.hpp"
-#include "Core/ECS/Registry.hpp"
 #include "Core/Resources/AssetManager.hpp"
 #include <Logger/Logger.hpp>
 #include <Sounds/MusicPlayer/MusicPlayer.hpp>
