@@ -5,6 +5,7 @@
 #include "Core/Resources/AssetManager.hpp"
 #include "Core/CoreUtilities/CoreEngineData.hpp"
 #include "Core/CoreUtilities/CoreUtilities.hpp"
+#include "Core/ECS/MainRegistry.hpp"
 #include <Logger/Logger.hpp>
 
 using namespace ENGINE_CORE::ECS;
@@ -21,6 +22,7 @@ namespace ENGINE_CORE::Systems
         , m_pCamera2D{ nullptr}
     {
         auto& coreEngine = CoreEngineData::GetInstance();
+
 		m_pCamera2D = std::make_unique<ENGINE_RENDERING::Camera2D>(
 			coreEngine.WindowWidth(), 
 			coreEngine.WindowHeight()
@@ -36,8 +38,10 @@ namespace ENGINE_CORE::Systems
 		if (textView.size_hint() < 1)
 			return;
 
-        auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
-        auto pFontShader = assetManager->GetShader("font");
+        //auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
+        auto& mainRegistry = MAIN_REGISTRY();
+        auto& assetManager = mainRegistry.GetAssetManager();
+        auto pFontShader = assetManager.GetShader("font");
 
         if(!pFontShader)
         {
@@ -59,7 +63,7 @@ namespace ENGINE_CORE::Systems
             if(text.sFontName.empty() || text.bHidden)
                 continue;
 
-            const auto& pFont = assetManager->GetFont(text.sFontName);
+            const auto& pFont = assetManager.GetFont(text.sFontName);
             
             if(!pFont)
             {

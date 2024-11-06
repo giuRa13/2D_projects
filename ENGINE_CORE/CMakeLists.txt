@@ -7,6 +7,8 @@ add_library(ENGINE_CORE
     "src/ECS/Registry.cpp"
     "include/Core/ECS/MetaUtilities.hpp"
     "src/ECS/MetaUtilities.cpp"
+    "include/Core/ECS/MainRegistry.hpp"
+    "src/ECS/MainRegistry.cpp"
     
     # Components
     "include/Core/ECS/Components/Identification.hpp"

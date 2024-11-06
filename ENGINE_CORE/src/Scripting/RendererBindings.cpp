@@ -4,6 +4,7 @@
 #include <Rendering/Core/Renderer.hpp>
 #include "Core/Resources/AssetManager.hpp"
 #include "Core/ECS/Registry.hpp"
+#include "Core/ECS/MainRegistry.hpp"
 #include <Logger/Logger.hpp>
 
 using namespace ENGINE_RENDERING;
@@ -12,7 +13,9 @@ using namespace ENGINE_RESOURCES;
 
 void ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
 {
-    auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
+    //auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
+    auto& mainRegistry = MAIN_REGISTRY();
+	auto& assetManager = mainRegistry.GetAssetManager();
 
     lua.new_usertype<Line>( 
         "Line",
@@ -63,7 +66,7 @@ void ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(sol::state& lua
         sol::factories(
             [&]( const glm::vec2& position, const std::string& textStr, const std::string& fontName, float wrap, const Color& color )
             {
-                auto pFont = assetManager->GetFont(fontName);
+                auto pFont = assetManager.GetFont(fontName);
                 if(!pFont)
                 {
                     ENGINE_ERROR("Failed to get Font [{}] -- does not exsists in Asset Manager", fontName);

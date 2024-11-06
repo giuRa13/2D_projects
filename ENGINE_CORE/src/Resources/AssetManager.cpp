@@ -3,6 +3,7 @@
 #include <Rendering/Essentials/ShaderLoader.hpp>
 #include <Rendering/Essentials/FontLoader.hpp>
 #include <Logger/Logger.hpp>
+#include "Core/ECS/MainRegistry.hpp"
 #include "Core/Resources/default_fonts.hpp"
 
 
@@ -255,14 +256,16 @@ namespace ENGINE_RESOURCES
 
 
 	// Lua /////////////////
-	void AssetManager::CreateLuaAssetManager(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
+	void AssetManager::CreateLuaAssetManager(sol::state& lua)
 	{
-		auto& asset_manager = registry.GetContext<std::shared_ptr<AssetManager>>();
-		if(!asset_manager)
+		auto& mainRegistry = MAIN_REGISTRY();
+		auto& asset_manager = mainRegistry.GetAssetManager();
+		//auto& asset_manager = registry.GetContext<std::shared_ptr<AssetManager>>();
+		/*if(!asset_manager)
 		{
 			ENGINE_ERROR("Failed tp bind the asset manager to Lua - Does not exists in the registry");
 			return;
-		}
+		}*/
 
 		lua.new_usertype<AssetManager>(
 			"AssetManager",
@@ -270,22 +273,21 @@ namespace ENGINE_RESOURCES
 			"add_texture", 
 			[&](const std::string& assetName, const std::string& filepath, bool pixel_art)
 			{
-				return asset_manager->AddTexture(assetName, filepath, pixel_art);
+				return asset_manager.AddTexture(assetName, filepath, pixel_art);
 			},
 			"add_music", 
-			[&](const std::string& musicName, const std::string& filepath)
-			{
-				return asset_manager->AddMusic(musicName, filepath);
+			[&](const std::string& musicName,const std::string& filepath){
+				return asset_manager.AddMusic( musicName, filepath );
 			},
 			"add_soundfx",
 			[&](const std::string& soundFxName, const std::string& filepath)
 			{
-				return asset_manager->AddSoundFx(soundFxName, filepath);
+				return asset_manager.AddSoundFx(soundFxName, filepath);
 			},
 			"add_font",
 			[&] (const std::string& fontName, const std::string& fontPath, float fontSize)
 			{
-				return asset_manager->AddFont(fontName, fontPath, fontSize);
+				return asset_manager.AddFont(fontName, fontPath, fontSize);
 			}
 		);
 	}

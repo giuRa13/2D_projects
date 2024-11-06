@@ -22,6 +22,7 @@
 #include <Core/ECS/Components/CircleColliderComponent.hpp>
 #include <Core/ECS/Components/Identification.hpp>
 #include <Core/Resources/AssetManager.hpp>
+#include <Core/ECS/MainRegistry.hpp>
 
 #include <Core/Systems/ScriptingSystem.hpp>
 #include <Core/Systems/RenderSystem.hpp>
@@ -95,7 +96,7 @@ namespace ENGINE_EDITOR
 	    SDL_GetCurrentDisplayMode( 0, &displayMode );
 
         m_pWindow = std::make_unique<ENGINE_WINDOWING::Window>(
-            "Test window", 
+            "Engine Test", 
             displayMode.w, displayMode.h, 
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
             true, 
@@ -110,12 +111,6 @@ namespace ENGINE_EDITOR
 
         m_pWindow->SetGLContext(SDL_GL_CreateContext(m_pWindow->GetWindow().get()));
         
-        if ( gladLoadGLLoader( SDL_GL_GetProcAddress ) == 0 )
-        {
-            ENGINE_ERROR("Failed to Initialize Glad");
-            return false;
-        }
-        
         if (!m_pWindow->GetGLContext())
         {
             std::string error = SDL_GetError();
@@ -125,6 +120,13 @@ namespace ENGINE_EDITOR
 
         SDL_GL_MakeCurrent(m_pWindow->GetWindow().get(), m_pWindow->GetGLContext());
         SDL_GL_SetSwapInterval( 1 );
+
+        if ( gladLoadGLLoader( SDL_GL_GetProcAddress ) == 0 )
+        {
+            ENGINE_ERROR("Failed to Initialize Glad");
+            return false;
+        }
+        
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -140,13 +142,16 @@ namespace ENGINE_EDITOR
         //glEnable(GL_BLEND);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GetOpenGLVersionInfo();
-    
-        auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
-        if(!assetManager)
+
+        auto& mainRegistry = MAIN_REGISTRY();
+	    mainRegistry.Initialize();
+        //auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
+        /*if(!assetManager)
         {
             ENGINE_ERROR("Failed to create the Asset manager");
             return false;
-        }
+        }*/
+
         // Texture //////////////////////
         /*if(!assetManager->AddTexture("16map", "./assets/textures/16map.png", true))
         {
@@ -158,8 +163,6 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
         }*/
-
-        assetManager->AddTexture("ball", "assets/textures/ball_13.png");
   
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
@@ -176,10 +179,10 @@ namespace ENGINE_EDITOR
         {
             ENGINE_ERROR("Failed to create the Lua State");
             return false;
-        }
-        lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string);
+        }        
+        lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string, sol::lib::package);
 
-        m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua);
+        //m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua);
         if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
         {
             ENGINE_ERROR("Failed to add the sol::state to Registry Context");
@@ -245,7 +248,7 @@ namespace ENGINE_EDITOR
         }
 
         // Sound ///////////////////////
-        auto musicPlayer = std::make_shared<ENGINE_SOUNDS::MusicPlayer>();
+        /*auto musicPlayer = std::make_shared<ENGINE_SOUNDS::MusicPlayer>();
         if(!musicPlayer)
         {
             ENGINE_ERROR("Failed to create the Music Player");
@@ -267,16 +270,16 @@ namespace ENGINE_EDITOR
         {
             ENGINE_ERROR("Failed to add the SoundFX Player to Registry Context");
             return false;
-        }
+        }*/
 
         // Camera //////////////////////
         auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
 
-        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>(assetManager))
+        /*if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>(assetManager))
         {
             ENGINE_ERROR("Failed to add the Asset Manager to Registry Context");
             return false;
-        }
+        }*/
 
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>(camera))
         {
@@ -337,7 +340,7 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to load Pixel Font");
             return false;
         }*/
-        if(!assetManager->CreateDefaultFonts())
+        if(!mainRegistry.GetAssetManager().CreateDefaultFonts())
         {
             ENGINE_ERROR("Failed to create Default Font");
             return false;
@@ -495,30 +498,31 @@ namespace ENGINE_EDITOR
 
     bool Application::LoadShaders()
 	{
-        auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
-        
-        if (!assetManager)
+        auto& mainRegistry = MAIN_REGISTRY();
+	    auto& assetManager = mainRegistry.GetAssetManager();
+        //auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
+        /*if (!assetManager)
         {
             ENGINE_ERROR("Failed to get Asset Manager from the Registry Context");
             return false;
-        }
+        }*/
 
-        if (!assetManager->AddShader("basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag"))
+        if (!assetManager.AddShader("basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag"))
         {
             ENGINE_ERROR("Failed to add Basic-Shaders to Asset Manager");
             return false;
         }
-        if (!assetManager->AddShader("color", "assets/shaders/colorShader.vert", "assets/shaders/colorShader.frag"))
+        if (!assetManager.AddShader("color", "assets/shaders/colorShader.vert", "assets/shaders/colorShader.frag"))
         {
             ENGINE_ERROR("Failed to add Color-Shaders to Asset Manager");
             return false;
         }
-        if (!assetManager->AddShader("circle", "assets/shaders/circleShader.vert", "assets/shaders/circleShader.frag"))
+        if (!assetManager.AddShader("circle", "assets/shaders/circleShader.vert", "assets/shaders/circleShader.frag"))
 		{
 			ENGINE_ERROR("Failed to add the Circle-Shaders to the asset manager");
 			return false;
 		}
-        if (!assetManager->AddShader("font", "assets/shaders/fontShader.vert", "assets/shaders/fontShader.frag"))
+        if (!assetManager.AddShader("font", "assets/shaders/fontShader.vert", "assets/shaders/fontShader.frag"))
 		{
 			ENGINE_ERROR("Failed to add the Font-Shaders to the asset manager");
 			return false;
@@ -563,6 +567,7 @@ namespace ENGINE_EDITOR
                     break;
                 case SDL_MOUSEMOTION:
                     mouse.SetMouseMoving(true);
+                    break;
                 case SDL_WINDOWEVENT:
                     switch (m_Event.window.event)
                     {
@@ -580,7 +585,6 @@ namespace ENGINE_EDITOR
 
     void Application::Update()
     {
-
         auto& engineData = ENGINE_CORE::CoreEngineData::GetInstance();
         engineData.UpdateDeltaTime();
         
@@ -627,22 +631,20 @@ namespace ENGINE_EDITOR
 
         auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
         auto& renderer = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>();
-        auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
         
-        auto shader = assetManager->GetShader("color");
-        auto circleShader = assetManager->GetShader("circle");
-        auto fontShader = assetManager->GetShader("font");
+        //auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
+        //auto shader = assetManager->GetShader("color");
+        //auto circleShader = assetManager->GetShader("circle");
+        //auto fontShader = assetManager->GetShader("font");
 
         auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
-        
         const auto& fb = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::FrameBuffer>>();
         fb->Bind();
-
         //glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
         //glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
         //glClear(GL_COLOR_BUFFER_BIT);
-        renderer->SetViewport(0, 0, fb->Width(), fb->Height());
-        //renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
+        //renderer->SetViewport(0, 0, fb->Width(), fb->Height());
+        renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
 		renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
 		renderer->ClearBuffers(true, true, false);
 
@@ -652,20 +654,23 @@ namespace ENGINE_EDITOR
         renderUISystem->Update(m_pRegistry->GetRegistry());
         fb->Unbind();
 
+        renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
+	    renderer->ClearBuffers( true, true, false );
+
         Begin();
         RenderImGui();
         End();
 
-        renderer->DrawLines(*shader, *camera);
-        renderer->DrawFilledRects(*shader, *camera);
-        renderer->DrawCircles(*circleShader, *camera);
-        renderer->DrawAllText(*fontShader, *camera);
+        //renderer->DrawLines(*shader, *camera);
+        //renderer->DrawFilledRects(*shader, *camera);
+        //renderer->DrawCircles(*circleShader, *camera);
+        //renderer->DrawAllText(*fontShader, *camera);
 
         fb->CheckResize();
 
         SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
 
-        renderer->ClearPrimitives();
+        //renderer->ClearPrimitives();
 	}
 
 
@@ -754,8 +759,8 @@ namespace ENGINE_EDITOR
 
 	void Application::RenderImGui()
     {
-        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
-        /*const auto dockSpaceId = ImGui::DockSpaceOverViewport( ImGui::GetMainViewport());
+        //ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+        const auto dockSpaceId = ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
         if (static auto firstTime = true; firstTime) [[unlikely]]
         {
             firstTime = false;
@@ -766,7 +771,7 @@ namespace ENGINE_EDITOR
             ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
             ImGui::DockBuilderDockWindow("Scene", centerNodeId);
             ImGui::DockBuilderFinish(dockSpaceId);
-        }*/
+        }
 
         auto& pSceneDisplay = m_pRegistry->GetContext<std::shared_ptr<SceneDisplay>>();
         pSceneDisplay->Draw();

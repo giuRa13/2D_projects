@@ -29,7 +29,7 @@ namespace ENGINE_CORE::ECS
        
 		[[nodiscard]] std::string to_string() const;
 
-        static void CreateSpriteLuaBind(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
+        static void CreateSpriteLuaBind(sol::state& lua);
         
     };
 

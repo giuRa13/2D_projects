@@ -9,6 +9,7 @@
 #include "Core/ECS/Components/TextComponent.hpp"
 #include "Core/ECS/Components/RigidBodyComponent.hpp"
 #include "Core/ECS/Entity.hpp"
+#include "Core/ECS/MainRegistry.hpp"
 #include "Core/Scripting/GlmLuaBindings.hpp"
 #include "Core/Scripting/InputManager.hpp"
 #include "Core/Scripting/SoundBindings.hpp"
@@ -278,8 +279,8 @@ namespace ENGINE_CORE::Systems
     {
         ENGINE_CORE::Scripting::GLMBindings::CreateGLMBindings(lua);
         ENGINE_CORE::InputManager::CreateLuaInputBindings(lua, registry);
-        ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua, registry);
-        ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(lua, registry);
+        ENGINE_RESOURCES::AssetManager::CreateLuaAssetManager(lua);
+        ENGINE_CORE::Scripting::SoundBinder::CreateSoundBind(lua);
         ENGINE_CORE::Scripting::RendererBinder::CreateRenderingBind(lua, registry);
         ENGINE_CORE::Scripting::UserDataBinder::CreateLuaUserData(lua);
         ENGINE_CORE::Scripting::ContactListenerBinder::CreateLuaContactListener(lua, registry.GetRegistry());
@@ -295,7 +296,7 @@ namespace ENGINE_CORE::Systems
         Registry::CreateLuaRegistryBind(lua, registry);
         Entity::CreateLuaEntityBinding(lua, registry);
         TransformComponent::CreateLuaTransformBind(lua);
-        SpriteComponent::CreateSpriteLuaBind(lua, registry);
+        SpriteComponent::CreateSpriteLuaBind(lua);
         AnimationComponent::CreateAnimationLuaBind(lua);
         BoxColliderComponent::CreateLuaBoxColliderBind(lua);
         CircleColliderComponent::CreateLuaCircleColliderBind(lua);
@@ -327,6 +328,8 @@ namespace ENGINE_CORE::Systems
 
     void ScriptingSystem::RegisterLuaFunctions(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
     {
+        auto& mainRegistry = MAIN_REGISTRY();
+
         lua.set_function(
             "ENGINE_run_script", [&](const std::string& path)
             {
@@ -371,10 +374,11 @@ namespace ENGINE_CORE::Systems
 
         lua.set_function("ENGINE_get_ticks", [] { return SDL_GetTicks(); });
 
-		auto& assetManager = registry.GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
+		//auto& assetManager = registry.GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
+        auto& assetManager = mainRegistry.GetAssetManager();
 
 		lua.set_function("ENGINE_measure_text", [&](const std::string& text, const std::string& fontName) {
-			const auto& pFont = assetManager->GetFont(fontName);
+			const auto& pFont = assetManager.GetFont(fontName);
 			if (!pFont)
 			{
 				ENGINE_ERROR("Failed to get font [{}] - Does not exist in asset manager!", fontName);

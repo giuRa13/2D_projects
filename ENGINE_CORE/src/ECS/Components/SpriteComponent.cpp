@@ -1,5 +1,6 @@
 #include "Core/ECS/Components/SpriteComponent.hpp"
 #include "Core/Resources/AssetManager.hpp"
+#include "Core/ECS/MainRegistry.hpp"
 #include <Logger/Logger.hpp>
 
 using namespace ENGINE_RESOURCES;
@@ -41,8 +42,10 @@ std::string ENGINE_CORE::ECS::SpriteComponent::to_string() const
 }
 
 
-void ENGINE_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua, ENGINE_CORE::ECS::Registry& registry)
+void ENGINE_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua)
 {
+    auto& mainRegistry = MAIN_REGISTRY();
+	auto& assetManager = mainRegistry.GetAssetManager();
 
     lua.new_usertype<ENGINE_RENDERING::Color>(
         "Color",
@@ -98,8 +101,8 @@ void ENGINE_CORE::ECS::SpriteComponent::CreateSpriteLuaBind(sol::state& lua, ENG
         "uvs", &SpriteComponent::uvs,
         "color", &SpriteComponent::color,
         "generate_uvs", [&](SpriteComponent& sprite) {
-            auto& assetManager = registry.GetContext<std::shared_ptr<AssetManager>>();
-            auto pTexture = assetManager->GetTexture(sprite.texture_name);
+
+            auto pTexture = assetManager.GetTexture(sprite.texture_name);
 
             if(!pTexture)
             {

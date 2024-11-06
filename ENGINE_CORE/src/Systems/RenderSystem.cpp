@@ -5,6 +5,7 @@
 #include "Core/CoreUtilities/CoreUtilities.hpp"
 #include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Essentials/Shader.hpp>
+#include "Core/ECS/MainRegistry.hpp"
 #include <Logger/Logger.hpp>
 
 using namespace ENGINE_CORE::ECS;
@@ -27,10 +28,13 @@ namespace ENGINE_CORE::Systems
 		    if (view.size_hint() < 1)
 			    return;
 
+            auto& mainRegistry = MAIN_REGISTRY();
+	        auto& assetManager = mainRegistry.GetAssetManager();
+            //auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
             auto& camera = m_Registry.GetContext<std::shared_ptr<Camera2D>>();
-            auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
+            
 
-            const auto& spriteShader = assetManager->GetShader("basic");
+            const auto& spriteShader = assetManager.GetShader("basic");
             auto cam_mat = camera->GetCameraMatrix();
 
             if(spriteShader->ShaderProgramID() == 0)
@@ -55,8 +59,8 @@ namespace ENGINE_CORE::Systems
                 if(sprite.texture_name.empty() || sprite.bHidden)
                     continue;
 
-                const auto& texture = assetManager->GetTexture(sprite.texture_name);
-                if(!texture)
+                const auto& pTexture = assetManager.GetTexture(sprite.texture_name);
+                if(!pTexture)
                 {
                     ENGINE_ERROR("Texture [{0}] was not created correctly", sprite.texture_name);
                     return;
@@ -82,7 +86,7 @@ namespace ENGINE_CORE::Systems
                     model = glm::translate(model, glm::vec3{-transform.position, 0.f});
                 } */
 
-                m_pBatchRenderer->AddSprite(spriteRect, uvRect, texture->GetID(), sprite.layer, model, sprite.color);
+                m_pBatchRenderer->AddSprite(spriteRect, uvRect, pTexture->GetID(), sprite.layer, model, sprite.color);
             }
 
             m_pBatchRenderer->End();

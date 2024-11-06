@@ -50,7 +50,7 @@ namespace ENGINE_RESOURCES
 		bool AddSoundFx(const std::string& soundFxName, const std::string& filepath);
 		std::shared_ptr<ENGINE_SOUNDS::SoundFX> GetSoundFx(const std::string& soundFxName);
 
-		static void CreateLuaAssetManager(sol::state& lua, ENGINE_CORE::ECS::Registry& registry);
+		static void CreateLuaAssetManager(sol::state& lua);
 	};
 
 }
