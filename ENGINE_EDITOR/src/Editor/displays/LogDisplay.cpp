@@ -76,7 +76,8 @@ namespace ENGINE_EDITOR
                 std::string text{line_start, line_end};
                 ImVec4 color{1.f, 1.f, 1.f, 1.f};
                 if(text.find("INFO") != std::string::npos)
-                    color = ImVec4{0.f, 1.f, 0.2f, 1.f};
+                    //color = ImVec4{0.f, 1.f, 0.2f, 1.f};
+                    color = ImVec4{0.f, 1.f, 0.f, 1.f};
                 else if(text.find("ERROR") != std::string::npos)
                     color = ImVec4{1.f, 0.3f, 0.3f, 1.f};
                 else if(text.find("WARN") != std::string::npos)

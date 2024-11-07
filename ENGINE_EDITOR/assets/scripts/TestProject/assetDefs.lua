@@ -13,14 +13,16 @@ AssetDefs =
         { name = "land_tiles1", path = "assets/textures/land_tiles1.png", pixel_art = true},
         { name = "background1", path = "assets/textures/background1.png", pixel_art = true},
         --{ name = "white_box", path = "assets/textures/white.png", pixel_art = true}
-        { name = "player", path = "assets/textures/robotSprite.png", pixel_art = true}
+        { name = "player", path = "assets/textures/robotSprite.png", pixel_art = true},
+        { name = "shot_atlas", path = "assets/textures/shot_atlas.png", pixel_art = true}
     },
     music = 
     {
-        {name = "music1", path = "assets/ASTEROIDS/sounds/music/rhythm_factory.wav"}
+        { name = "music1", path = "assets/ASTEROIDS/sounds/music/rhythm_factory.wav"}
     },
     sound_fx =
     {
-        { name = "rain", path = "assets/sound_fx/rain_loop.wav"}
+        { name = "rain", path = "assets/sound_fx/rain_loop.wav"},
+        { name = "laser", path = "assets/ASTEROIDS/sounds/sound/laser1.wav"}
     }
 }

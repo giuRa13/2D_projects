@@ -640,7 +640,7 @@ namespace ENGINE_EDITOR
         //glClear(GL_COLOR_BUFFER_BIT);
         //renderer->SetViewport(0, 0, fb->Width(), fb->Height());
         renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
-		renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
+		//renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
 		renderer->ClearBuffers(true, true, false);
 
         //scriptSystem->Render();
@@ -649,7 +649,7 @@ namespace ENGINE_EDITOR
         renderUISystem->Update(m_pRegistry->GetRegistry());
         fb->Unbind();
 
-        renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
+        //renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
 	    renderer->ClearBuffers( true, true, false );
 
         Begin();

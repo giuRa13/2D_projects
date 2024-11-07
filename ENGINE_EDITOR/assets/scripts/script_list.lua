@@ -13,6 +13,8 @@ ScriptList =
     "assets/scripts/events/collision_event.lua",
     "assets/scripts/systems/trigger_system.lua",
 
+    "assets/scripts/TestProject/projectileDefs.lua",
+    "assets/scripts/TestProject/projectiles.lua",
     "assets/scripts/character/move_state.lua",
     "assets/scripts/TestProject/playerDefs.lua",
     "assets/scripts/character/character.lua",

@@ -5,10 +5,25 @@
 
 #include "Application.hpp"
 
-
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 int main(int argc, char* argv[])
 {
+#ifndef NDEBUG
+#ifdef _WIN32
+	ShowWindow( GetConsoleWindow(), SW_SHOW );
+//#else
+	// ADD Linux stuff
+#endif
+#else
+#ifdef _WIN32
+	ShowWindow( GetConsoleWindow(), SW_HIDE );
+//#else
+	// ADD Linux stuff
+#endif
+#endif
 
     auto& app = ENGINE_EDITOR::Application::GetInstance();
     app.Run();

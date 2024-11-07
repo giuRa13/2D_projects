@@ -20,6 +20,30 @@ function UpdateActiveCharacters(dt)
 		v.m_Controller:update(dt)
 	end 
 end 
+---------------------------------------------------------------
+Projectiles = {}
+function AddProjectile(projectile)
+	Projectiles[projectile.m_EntityID] = projectile
+end
+
+function UpdateProjectiles(dt)
+	for k, v in pairs(Projectiles) do 
+		if v:TimesUp() then 
+			v:Destroy()
+			Projectiles[k] = nil
+		else 
+			v:Update(dt)
+		end
+	end
+end
+
+function ResetProjectiles()
+	for k, v in pairs(Projectiles) do 
+		v:Destroy()
+		Projectiles[k] = nil
+	end
+end
+---------------------------------------------------------------
 
 
 function LoadEntity(def)
