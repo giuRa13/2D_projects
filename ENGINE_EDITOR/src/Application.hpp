@@ -21,6 +21,7 @@ namespace ENGINE_EDITOR
     private:
 		bool Initialize();
 		bool LoadShaders();
+		bool LoadEditorTextures();
 		void ProcessEvents();
 
 		void Update();

@@ -50,7 +50,7 @@ main = {
     [2] = {
         render = function()
 
-            gStateStack:render()
+            --gStateStack:render()
 
             --DrawLine(Line( vec2(50),  vec2(200),  Color(255, 0, 0, 255) ))
             --DrawLine(Line( vec2(200, 50),  vec2(50, 200),  Color(0, 255, 0, 255) ))

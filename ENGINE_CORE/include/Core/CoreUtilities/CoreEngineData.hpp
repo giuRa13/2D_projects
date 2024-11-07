@@ -2,6 +2,8 @@
 
 #include <chrono>
 
+#define CORE_GLOBALS() ENGINE_CORE::CoreEngineData::GetInstance()
+
 
 namespace ENGINE_CORE 
 {

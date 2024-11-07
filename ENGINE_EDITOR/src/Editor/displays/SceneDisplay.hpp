@@ -13,6 +13,10 @@ namespace ENGINE_EDITOR
 
     private:
         ENGINE_CORE::ECS::Registry& m_Registry;
+        bool m_bPlayScene, m_bSceneLoaded;
+
+        void LoadScene();
+        void UnloadScene();
 
 
     public:
@@ -20,6 +24,7 @@ namespace ENGINE_EDITOR
         ~SceneDisplay() = default;
 
         virtual void Draw() override;
+        virtual void Update() override;
 
     };
 

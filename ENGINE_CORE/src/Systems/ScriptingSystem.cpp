@@ -109,7 +109,8 @@ namespace ENGINE_CORE::Systems
         }
 
         auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
-		lua->collect_garbage();
+		if(lua)
+            lua->collect_garbage();
     }
 
 
@@ -139,7 +140,8 @@ namespace ENGINE_CORE::Systems
         }
 
         auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
-		lua->collect_garbage();
+        if(lua)
+		    lua->collect_garbage();
     }
 
 

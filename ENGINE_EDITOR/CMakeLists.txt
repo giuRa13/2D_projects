@@ -7,6 +7,7 @@ add_executable(ENGINE_EDITOR
     "src/Editor/displays/SceneDisplay.cpp"
     "src/Editor/displays/LogDisplay.hpp"
     "src/Editor/displays/LogDisplay.cpp"
+    "src/Editor/utilities/editor_textures.hpp"
     )
 
 target_include_directories(

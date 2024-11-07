@@ -34,6 +34,8 @@ namespace ENGINE_RESOURCES
 		bool CreateDefaultFonts();
 
 		bool AddTexture(const std::string& textureName, const std::string& TexturePath, bool pixelArt = true);
+		bool AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
+							   bool pixelArt = true, bool bTileset = false );
 		std::shared_ptr<ENGINE_RENDERING::Texture> GetTexture(const std::string& textureName);
 		
         bool AddShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath);

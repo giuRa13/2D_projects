@@ -47,6 +47,7 @@
 // ===================================
 #include "Editor/displays/SceneDisplay.hpp"
 #include "Editor/displays/LogDisplay.hpp"
+#include "Editor/utilities/editor_textures.hpp"
 
 
 namespace ENGINE_EDITOR
@@ -175,13 +176,11 @@ namespace ENGINE_EDITOR
 
         // Lua state //////////////////////
         auto lua = std::make_shared<sol::state>();
-
         if(!lua)
         {
             ENGINE_ERROR("Failed to create the Lua State");
             return false;
         }        
-        lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::table, sol::lib::io, sol::lib::string, sol::lib::package);
 
         //m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua);
         if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
@@ -324,13 +323,10 @@ namespace ENGINE_EDITOR
             return false;
         }
 
-        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaBinding(*lua, *m_pRegistry);
-        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua, *m_pRegistry);
-
-        if(!scriptSystem->LoadMainScript(*lua))
+        if(!LoadEditorTextures())
         {
-            ENGINE_ERROR("Failed to load the Main Lua Script");
-            return false; 
+            ENGINE_ERROR("Failed to load Editor Textures from memory");
+            return false;
         }
 
         if(!CreateDisplays())
@@ -521,6 +517,36 @@ namespace ENGINE_EDITOR
         return true;
     }
 
+    bool Application::LoadEditorTextures()
+	{
+        auto& mainRegistry = MAIN_REGISTRY();
+	    auto& assetManager = mainRegistry.GetAssetManager();
+
+        if(!assetManager.AddTexture("play_button", "./assets/textures/play_button.png", true))
+        {
+            ENGINE_ERROR("Failed to Create and Add Texture");
+            return false;
+        }
+        if(!assetManager.AddTexture("stop_button", "./assets/textures/stop_button.png", true))
+        {
+            ENGINE_ERROR("Failed to Create and Add Texture");
+            return false;
+        }
+
+        /*if(!assetManager.AddTextureFromMemory("play_button", play_button, sizeof(play_button) / sizeof(play_button[0])))
+        {
+            ENGINE_ERROR("Failed to load texture [play_button] from memory");
+            return false;
+        }
+        if(!assetManager.AddTextureFromMemory("stop_button", stop_button, sizeof(stop_button) / sizeof(stop_button[0])))
+        {
+            ENGINE_ERROR("Failed to load texture [stop_button] from memory");
+            return false;
+        }*/
+
+        return true;
+    }
+
 
     void Application::ProcessEvents()
     {
@@ -577,31 +603,11 @@ namespace ENGINE_EDITOR
     {
         auto& engineData = ENGINE_CORE::CoreEngineData::GetInstance();
         engineData.UpdateDeltaTime();
-        
-        auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
-        
-        if (!camera)
-        {
-            ENGINE_ERROR("Failed to get Camera from the Registry Context");
-            return;
-        }
-        
-        camera->Update();
-        auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
-        scriptSystem->Update();
 
-        auto& physicsWorld = m_pRegistry->GetContext<ENGINE_PHYSICS::PhysicsWorld>();
-        physicsWorld->Step(
-            1.f / 60.f,
-            10, 
-            8
-        );
-
-        auto& physicsSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::PhysicsSystem>>();
-        physicsSystem->Update(m_pRegistry->GetRegistry());
-
-        auto& animationSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::AnimationSystem>>();
-        animationSystem->Update();
+        auto& mainRegistry = MAIN_REGISTRY();
+        auto& displayHolder = mainRegistry.GetContext<std::shared_ptr<DisplayHolder>>();
+        for(const auto& pDisplay : displayHolder->displays)
+            pDisplay->Update();
 
         // Update inputs
         auto& inputManager = ENGINE_CORE::InputManager::GetInstance();
@@ -609,7 +615,6 @@ namespace ENGINE_EDITOR
         keyboard.Update();
         auto& mouse = inputManager.GetMouse();
         mouse.Update();
-
     }
 
 
@@ -627,7 +632,7 @@ namespace ENGINE_EDITOR
         //auto circleShader = assetManager->GetShader("circle");
         //auto fontShader = assetManager->GetShader("font");
 
-        auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
+        //auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         const auto& fb = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::FrameBuffer>>();
         fb->Bind();
         //glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
@@ -638,7 +643,7 @@ namespace ENGINE_EDITOR
 		renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
 		renderer->ClearBuffers(true, true, false);
 
-        scriptSystem->Render();
+        //scriptSystem->Render();
         renderSystem->Update();
         renderShapeSystem->Update();
         renderUISystem->Update(m_pRegistry->GetRegistry());
@@ -788,8 +793,7 @@ namespace ENGINE_EDITOR
 
             auto centerNodeId = dockSpaceId;
             const auto leftNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId);
-
-            const auto LogNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Down, 0.25f, nullptr, &centerNodeId);
+            const auto LogNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Down, 0.28f, nullptr, &centerNodeId);
 
             ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
             ImGui::DockBuilderDockWindow("Scene", centerNodeId);

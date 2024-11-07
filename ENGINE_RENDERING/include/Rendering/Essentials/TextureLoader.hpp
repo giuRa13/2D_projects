@@ -13,8 +13,10 @@ namespace ENGINE_RENDERING
 		static bool LoadTexture(const std::string& filepath, GLuint& id, int& width, int& height, bool blended = false);
 		static bool LoadFBTexture( GLuint& id, int& width, int& height );
 		static bool LoadTextureFromMemory( const unsigned char* imageData, size_t length, GLuint& id, int& width,
-		int& height, bool blended = false );
+			int& height, bool blended = false );
 	
+		bool LoadTextureFromMemory(const void* data, size_t data_size, GLuint* out_texture, int* out_width, int* out_height);
+		bool LoadTextureFromFile(const char* file_name, GLuint* out_texture, int* out_width, int* out_height);
     
     public:
 		TextureLoader() = delete;
