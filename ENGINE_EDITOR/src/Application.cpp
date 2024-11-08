@@ -45,10 +45,14 @@
 #include <imgui_impl_opengl3.h>
 #include <SDL_opengl.h>
 // ===================================
+#include "Editor/utilities/editor_textures.hpp"
+#include "Editor/utilities/EditorFramebuffer.hpp"
+#include "Editor/systems/GridSystem.hpp"
 #include "Editor/displays/SceneDisplay.hpp"
 #include "Editor/displays/LogDisplay.hpp"
-#include "Editor/utilities/editor_textures.hpp"
 #include "Editor/displays/TilesetDisplay.hpp"
+#include "Editor/displays/TilemapDisplay.hpp"
+
 
 
 namespace ENGINE_EDITOR
@@ -148,6 +152,12 @@ namespace ENGINE_EDITOR
 
         auto& mainRegistry = MAIN_REGISTRY();
 	    mainRegistry.Initialize();
+
+        if(!mainRegistry.AddToContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>(renderer));
+        {
+            ENGINE_ERROR("Failed to add the Renderer to Main Registry Context");
+            //return false;
+        }
         //auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
         /*if(!assetManager)
         {
@@ -168,12 +178,6 @@ namespace ENGINE_EDITOR
         }*/
   
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
-
-        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>(renderer));
-        {
-            ENGINE_ERROR("Failed to add the Renderer to Registry Context");
-            //return false;
-        }
 
         // Lua state //////////////////////
         auto lua = std::make_shared<sol::state>();
@@ -208,9 +212,9 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to create the Render System");
             return false;   
         }
-        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>(renderSystem))
+        if(!mainRegistry.AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>(renderSystem))
         {
-            ENGINE_ERROR("Failed to add the RenderSystem to Registry Context");
+            ENGINE_ERROR("Failed to add the RenderSystem to Main Registry Context");
             return false;
         }
         auto renderUISystem = std::make_shared<ENGINE_CORE::Systems::RenderUISystem>(*m_pRegistry);
@@ -219,9 +223,9 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to create the RenderUI System");
             return false;   
         }
-        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderUISystem>>(renderUISystem))
+        if(!mainRegistry.AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderUISystem>>(renderUISystem))
         {
-            ENGINE_ERROR("Failed to add the RenderUISystem to Registry Context");
+            ENGINE_ERROR("Failed to add the RenderUISystem to Main Registry Context");
             return false;
         }
         auto renderShapeSystem = std::make_shared<ENGINE_CORE::Systems::RenderShapeSystem>(*m_pRegistry);
@@ -230,9 +234,9 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to create the RenderShape System");
             return false;   
         }
-        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>(renderShapeSystem))
+        if(!mainRegistry.AddToContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>(renderShapeSystem))
         {
-            ENGINE_ERROR("Failed to add the RenderShapeSystem to Registry Context");
+            ENGINE_ERROR("Failed to add the RenderShapeSystem to Main Registry Context");
             return false;
         }
         // Animation System
@@ -350,18 +354,29 @@ namespace ENGINE_EDITOR
         }
 
         // FrameBuffer ///////////////////////
-        auto pFramebuffer = std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, false);
-
-        if(!pFramebuffer)
+        //auto pFramebuffer = std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, false);
+        auto pEditorFramebuffers = std::make_shared<EditorFramebuffers>();
+        if(!pEditorFramebuffers)
         {
-            ENGINE_ERROR("Failed to create test FrameBuffer");
+            ENGINE_ERROR("Failed to create Editor FrameBuffer");
             return false;
         }
-        if (!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RENDERING::FrameBuffer>>(pFramebuffer))
+        if (!mainRegistry.AddToContext<std::shared_ptr<ENGINE_EDITOR::EditorFramebuffers>>(pEditorFramebuffers))
 		{
-			ENGINE_ERROR("Failed to add the FrameBuffer to the Registry context!");
+			ENGINE_ERROR("Failed to add the Editor FrameBuffer to the Main Registry context!");
             return false;
         }	
+        pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::SCENE, 
+            std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, false));
+        pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::TILEMAP, 
+            std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, false));
+
+        if (!mainRegistry.AddToContext<std::shared_ptr<GridSystem>>(std::make_shared<GridSystem>()))
+		{
+			ENGINE_ERROR("Failed to add the GrydSystem to the Main Registry context!");
+            return false;
+        }	
+
         /*auto pTexture = assetManager->GetTexture("ball");
         using namespace ENGINE_CORE::ECS;
         auto& reg = m_pRegistry->GetRegistry();
@@ -621,37 +636,23 @@ namespace ENGINE_EDITOR
 
     void Application::Render()
 	{
-        auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>();
-        auto& renderUISystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderUISystem>>();
-        auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>();
+        //auto& renderSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderSystem>>();
+        //auto& renderUISystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderUISystem>>();
+        //auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>();
+        //auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
 
-        auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
-        auto& renderer = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>();
-        
         //auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
         //auto shader = assetManager->GetShader("color");
         //auto circleShader = assetManager->GetShader("circle");
         //auto fontShader = assetManager->GetShader("font");
 
-        //auto& scriptSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
-        const auto& fb = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::FrameBuffer>>();
-        fb->Bind();
         //glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
         //glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
         //glClear(GL_COLOR_BUFFER_BIT);
-        //renderer->SetViewport(0, 0, fb->Width(), fb->Height());
-        renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
-		//renderer->SetClearColor(0.15f, 0.45f, 0.75f, 1.f);
-		renderer->ClearBuffers(true, true, false);
 
-        //scriptSystem->Render();
-        renderSystem->Update();
-        renderShapeSystem->Update();
-        renderUISystem->Update(m_pRegistry->GetRegistry());
-        fb->Unbind();
-
-        //renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );
-	    renderer->ClearBuffers( true, true, false );
+        //renderSystem->Update();
+        //renderShapeSystem->Update();
+        //renderUISystem->Update(m_pRegistry->GetRegistry());
 
         Begin();
         RenderImGui();
@@ -662,7 +663,6 @@ namespace ENGINE_EDITOR
         //renderer->DrawCircles(*circleShader, *camera);
         //renderer->DrawAllText(*fontShader, *camera);
 
-        fb->CheckResize();
 
         SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
 
@@ -708,25 +708,32 @@ namespace ENGINE_EDITOR
         auto pSceneDisplay = std::make_unique<SceneDisplay>(*m_pRegistry);
         if(!pSceneDisplay)
         {
-            ENGINE_ERROR("Failed to create SceneDisplay");
+            ENGINE_ERROR("Failed to create Scene Display");
             return false;
         }
         auto pLogDisplay = std::make_unique<LogDisplay>();
         if(!pLogDisplay)
         {
-            ENGINE_ERROR("Failed to create LogDisplay");
+            ENGINE_ERROR("Failed to create LogD isplay");
             return false;
         }
         auto pTilesetDisplay = std::make_unique<TilesetDisplay>();
         if(!pTilesetDisplay)
         {
-            ENGINE_ERROR("Failed to create TilesetDisplay");
+            ENGINE_ERROR("Failed to create Tilese tDisplay");
+            return false;
+        }
+        auto pTilemapDisplay = std::make_unique<TilemapDisplay>();
+        if(!pTilemapDisplay)
+        {
+            ENGINE_ERROR("Failed to create Tilemap Display");
             return false;
         }
 
         pDisplayHolder->displays.push_back(std::move(pSceneDisplay));
         pDisplayHolder->displays.push_back(std::move(pLogDisplay));
         pDisplayHolder->displays.push_back(std::move(pTilesetDisplay));
+        pDisplayHolder->displays.push_back(std::move(pTilemapDisplay));
         return true;
     }    
 
@@ -805,7 +812,9 @@ namespace ENGINE_EDITOR
 
             ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
             ImGui::DockBuilderDockWindow("Scene", centerNodeId);
+            ImGui::DockBuilderDockWindow("Tilemap Editor", centerNodeId);
             ImGui::DockBuilderDockWindow("Logs", LogNodeId);
+            ImGui::DockBuilderDockWindow("Tileset", LogNodeId);
 
             ImGui::DockBuilderFinish(dockSpaceId);
         }

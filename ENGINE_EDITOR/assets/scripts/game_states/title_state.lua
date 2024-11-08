@@ -9,9 +9,9 @@ function TitleState:Create(stack)
 		m_PressEnter = Entity("press_enter", "")
 	}
 	
-	this.m_Title:add_component(Transform(vec2(100, 200), vec2(1, 1), 0))
+	this.m_Title:add_component(Transform(vec2(200, 100), vec2(1, 1), 0))
 	this.m_Title:add_component(TextComponent("pixel", "Title State"))
-	this.m_PressEnter:add_component(Transform(vec2(100, 300), vec2(1, 1), 0))
+	this.m_PressEnter:add_component(Transform(vec2(200, 200), vec2(1, 1), 0))
 	this.m_PressEnter:add_component(TextComponent("pixel", "PRESS ENTER!"))
 	local state = State("title state")
 	state:set_variable_table(this)

@@ -8,8 +8,13 @@ add_executable(ENGINE_EDITOR
     "src/Editor/displays/LogDisplay.hpp"
     "src/Editor/displays/LogDisplay.cpp"
     "src/Editor/utilities/editor_textures.hpp"
+    "src/Editor/utilities/EditorFramebuffer.hpp"
     "src/Editor/displays/TilesetDisplay.hpp"
     "src/Editor/displays/TilesetDisplay.cpp"
+    "src/Editor/systems/GridSystem.hpp"
+    "src/Editor/systems/GridSystem.cpp"
+    "src/Editor/displays/TilemapDisplay.hpp"
+    "src/Editor/displays/TilemapDisplay.cpp"
     )
 
 target_include_directories(

@@ -17,7 +17,7 @@ namespace ENGINE_EDITOR
 
         void LoadScene();
         void UnloadScene();
-
+        void RenderScene();
 
     public:
         SceneDisplay(ENGINE_CORE::ECS::Registry& registry);

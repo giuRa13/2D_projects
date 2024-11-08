@@ -2,16 +2,21 @@
 #include <imgui.h>
 #include <Rendering/Buffers/FrameBuffer.hpp>
 #include <Rendering/Core/Camera2D.hpp>
+#include <Rendering/Core/Renderer.hpp>
 #include <Core/ECS/MainRegistry.hpp>
 #include <Core/Systems/AnimationSystem.hpp>
 #include <Core/Systems/PhysicsSystem.hpp>
 #include <Core/Systems/ScriptingSystem.hpp>
 #include <Core/CoreUtilities/CoreEngineData.hpp>
 #include <Logger/Logger.hpp>
+#include <Core/Systems/RenderSystem.hpp>
+#include <Core/Systems/RenderUISystem.hpp>
+#include <Core/Systems/RenderShapeSystem.hpp>
 #include <Sounds/MusicPlayer/MusicPlayer.hpp>
 #include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
 #include <Physics/Box2DWrappers.hpp>
 #include <Core/Resources/AssetManager.hpp>
+#include "Editor/utilities/EditorFramebuffer.hpp"
 
 using namespace ENGINE_CORE::Systems;
 
@@ -62,6 +67,37 @@ namespace ENGINE_EDITOR
         mainRegistry.GetMusicPlayer().Stop();
         mainRegistry.GetSoundPlayer().Stop(-1);
     }
+
+
+    void SceneDisplay::RenderScene()
+    {
+        auto& mainRegistry = MAIN_REGISTRY();
+        auto& editorFrameBuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
+        auto& renderer = mainRegistry.GetContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>();
+
+        auto& renderSystem = mainRegistry.GetContext<std::shared_ptr<RenderSystem>>();
+        auto& renderUISystem = mainRegistry.GetContext<std::shared_ptr<RenderUISystem>>();
+        auto& renderShapeSystem = mainRegistry.GetContext<std::shared_ptr<RenderShapeSystem>>();
+
+        const auto& fb = editorFrameBuffers->mapFramebuffers[FramebufferType::SCENE];
+        
+        fb->Bind();
+        //glViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
+        //glClearColor(0.15f, 0.45f, 0.75f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        //renderer->SetViewport(0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight());
+        renderer->SetViewport(0, 0, fb->Width(), fb->Height());
+        renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );//(0.15f, 0.45f, 0.75f, 1.f)
+		renderer->ClearBuffers(true, true, false);
+
+        renderSystem->Update();
+        renderShapeSystem->Update();
+        renderUISystem->Update(m_Registry.GetRegistry());
+        
+        fb->Unbind();
+        fb->CheckResize();
+    }
+
 
     void SceneDisplay::Update()
     {
@@ -141,6 +177,8 @@ namespace ENGINE_EDITOR
             ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
         }*/
 
+       RenderScene();
+
         if(ImGui::ImageButton((ImTextureID)pStopTexture->GetID(),
             ImVec2{
                 (float)pStopTexture->GetWidth(),
@@ -159,7 +197,8 @@ namespace ENGINE_EDITOR
         /////////////
         if (ImGui::BeginChild("##SceneChild", ImVec2{0.f, 0.f}, NULL, ImGuiWindowFlags_NoScrollWithMouse))
         {
-            const auto& fb = m_Registry.GetContext<std::shared_ptr<ENGINE_RENDERING::FrameBuffer>>();
+            auto& editorFrameBuffers = mainRegistry.GetContext<std::shared_ptr<EditorFramebuffers>>();
+            const auto& fb = editorFrameBuffers->mapFramebuffers[FramebufferType::SCENE];
 
             ImGui::SetCursorPos(ImVec2{0.f, 0.f});
 
