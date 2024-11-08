@@ -180,5 +180,5 @@ function MoveState:ShootProjectile()
 		}
 	))
 	Sound.play("laser", 0, -1) 
-	Sound.set_volume(1, 20)
+	Sound.set_volume(-1, 25)
 end

@@ -45,7 +45,6 @@ function ResetProjectiles()
 end
 ---------------------------------------------------------------
 
-
 function LoadEntity(def)
     assert(def, "Def does not exist")
 
@@ -146,7 +145,6 @@ function GetRandomPosition()
     )
 end
 
-
 -- get Value at that Digit
 function GetDigit(num, digit)
     local n = 10 ^ digit
@@ -154,7 +152,7 @@ function GetDigit(num, digit)
 	return math.floor((num % n) / n1)
 end
 
-
+-------------------------------------------------------------------------------------------------------------
 Tileset = {}
 Tileset.__index = Tileset
 function Tileset:Create(params)
@@ -302,7 +300,12 @@ end
 
 function LoadAssets(asset)
     for k, v in pairs(asset.textures) do
-        if not AssetManager.add_texture(v.name, v.path, v.pixel_art) then
+        local bTileset = false
+        if v.bTileset then
+            bTileset = v.bTileset
+        end
+
+        if not AssetManager.add_texture(v.name, v.path, v.pixel_art, bTileset) then
             ENGINE_error("Failed to load texture [%s] at path [%s]",v.name, v.path)
             --print("Failed to load texture [ " ..v.name .. " ] at path [ " ..v.path .." ]" )
         else

@@ -112,11 +112,11 @@ namespace ENGINE_EDITOR
         auto pStopTexture = assetManager.GetTexture("stop_button"); 
         constexpr static auto green = ImVec4(0.0f, 9.0f, 0.0f, 0.3f);
 
-        /*if(m_bPlayScene)
+        /*if ( m_bPlayScene )
         {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.f, 0.9, 0.f, 0.3});
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.f, 0.9, 0.f, 0.3});
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.f, 0.9, 0.f, 0.3});
+            ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+            ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+            ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
         }*/
         if(ImGui::ImageButton((ImTextureID)pPlayTexture->GetID(),
             ImVec2{
@@ -129,17 +129,16 @@ namespace ENGINE_EDITOR
         }
         /*if(ImGui::GetColorStackSize() > 0)
             ImGui::PopStyleColor(ImGui::GetColorStackSize());
-
         if( ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
             ImGui::SetTooltip("Play Scene");*/
 
         ImGui::SameLine();
 
-        /*if(!m_bPlayScene)
+        /*if ( m_bPlayScene )
         {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.f, 0.9, 0.f, 0.3});
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.f, 0.9, 0.f, 0.3});
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.f, 0.9, 0.f, 0.3});
+            ImGui::PushStyleColor( ImGuiCol_Button, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+            ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
+            ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
         }*/
 
         if(ImGui::ImageButton((ImTextureID)pStopTexture->GetID(),
@@ -151,10 +150,9 @@ namespace ENGINE_EDITOR
         {
             UnloadScene();
         }
-
+        	//ImGui::PopStyleColor( 2 ); // ImGui::PushStyleColor called three times only. (m_bPlayScene) != (!m_bPlayScene)
         /*if(ImGui::GetColorStackSize() > 0)
             ImGui::PopStyleColor(ImGui::GetColorStackSize());
-
         if( ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
             ImGui::SetTooltip("Stop Scene");*/
         

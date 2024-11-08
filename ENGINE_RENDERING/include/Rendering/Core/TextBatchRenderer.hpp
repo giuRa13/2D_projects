@@ -18,7 +18,7 @@ namespace ENGINE_RENDERING
 
     public:
         TextBatchRenderer();
-        ~TextBatchRenderer() = default;
+        virtual ~TextBatchRenderer() = default;
 
         virtual void End() override;
         virtual void Render() override;

@@ -17,7 +17,7 @@ namespace ENGINE_RENDERING
     
     public:
         SpriteBatchRenderer();
-        ~SpriteBatchRenderer() = default;
+        virtual ~SpriteBatchRenderer() = default;
 
         virtual void End() override;
         virtual void Render() override;

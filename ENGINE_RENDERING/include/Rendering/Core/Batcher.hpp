@@ -48,7 +48,7 @@ namespace  ENGINE_RENDERING
     public:
         Batcher();
         Batcher(bool bUseIBO);
-        ~Batcher();
+        virtual ~Batcher();
 
         void Begin();
         virtual void End() = 0;

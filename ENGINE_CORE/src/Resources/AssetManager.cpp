@@ -4,6 +4,7 @@
 #include <Rendering/Essentials/FontLoader.hpp>
 #include <Logger/Logger.hpp>
 #include "Core/ECS/MainRegistry.hpp"
+#include <EngineUtils/EngineUtilities.hpp>
 #include "Core/Resources/default_fonts.hpp"
 
 
@@ -12,9 +13,10 @@ namespace ENGINE_RESOURCES
 {
 	bool AssetManager::CreateDefaultFonts()
 	{
-		if(!AddFontFromMemory("pixel", pixel_font))
+		//if(!AddFontFromMemory("pixel", pixel_font))
+		if(!AddFontFromMemory("pixel", matrixtype))
 		{
-			ENGINE_ERROR("Failed to creeate pixel font");
+			ENGINE_ERROR("Failed to create pixel font");
 			return false;
 		}
 		return true;
@@ -22,9 +24,9 @@ namespace ENGINE_RESOURCES
 
 
 	// Texture //////////////////////////
-    bool AssetManager::AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt)
+    bool AssetManager::AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt, bool bTileset)
 	{
-		if (m_mapTextures.find(textureName) != m_mapTextures.end()) //check if already exists
+		if (m_mapTextures.find(textureName) != m_mapTextures.end()) 
 		{
 			ENGINE_ERROR("Failed to add Texture [{0}] -- Already exists", textureName);
 			return false;
@@ -32,8 +34,7 @@ namespace ENGINE_RESOURCES
 
 		auto texture = ENGINE_RENDERING::TextureLoader::Create(
 			pixelArt ? ENGINE_RENDERING::Texture::TextureType::PIXEL : ENGINE_RENDERING::Texture::TextureType::BLENDED,
-			texturePath
-		);
+			texturePath, bTileset);
 
 		if (!texture)
 		{
@@ -56,6 +57,37 @@ namespace ENGINE_RESOURCES
 		}
 
 		return texItr->second;//Dereferece Itr and get the second that is the Shared_Pointer
+	}
+
+	bool AssetManager::AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
+											bool pixelArt, bool bTileset )
+	{
+		// Check to see if the Texture already exist
+		if ( m_mapTextures.contains( textureName ) )
+		{
+			ENGINE_ERROR( "AssetManager: Texture [{}] -- Already exists!", textureName );
+			return false;
+		}
+
+		auto texture =
+			std::move( ENGINE_RENDERING::TextureLoader::CreateFromMemory( imageData, length, pixelArt, bTileset ) );
+
+		// Load the texture
+		if ( !texture )
+		{
+			ENGINE_ERROR( "Unable to load texture [{}] from memory!", textureName );
+			return false;
+		}
+
+		// Insert the texture into the map
+		auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
+
+		return bSuccess;
+	}
+
+	std::vector<std::string> AssetManager::GetTilesetNames() const
+	{
+		return ENGINE_UTIL::GetKeys( m_mapTextures, []( const auto& pair ) { return pair.second->IsTileset(); } );
 	}
 
 	// Shaders //////////////////////////
@@ -271,10 +303,19 @@ namespace ENGINE_RESOURCES
 			"AssetManager",
 			sol::no_constructor,
 			"add_texture", 
+			sol::overload(
 			[&](const std::string& assetName, const std::string& filepath, bool pixel_art)
 			{
-				return asset_manager.AddTexture(assetName, filepath, pixel_art);
+				return asset_manager.AddTexture(assetName, filepath, pixel_art, false);
 			},
+			[&](const std::string& assetName, const std::string& filepath, bool pixel_art, bool bTileset)
+			{
+				return asset_manager.AddTexture(assetName, filepath, pixel_art, bTileset);
+			}),
+			/*[&](const std::string& assetName, const std::string& filepath, bool pixel_art)
+			{
+				return asset_manager.AddTexture(assetName, filepath, pixel_art);
+			},*/
 			"add_music", 
 			[&](const std::string& musicName,const std::string& filepath){
 				return asset_manager.AddMusic( musicName, filepath );

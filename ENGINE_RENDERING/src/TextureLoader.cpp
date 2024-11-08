@@ -121,7 +121,7 @@ namespace ENGINE_RENDERING
     }
 
 
-    std::shared_ptr<Texture> TextureLoader::Create(Texture::TextureType type, const std::string& texturePath)
+    std::shared_ptr<Texture> TextureLoader::Create(Texture::TextureType type, const std::string& texturePath, bool bTileset)
 	{
         GLuint id;
         int width, height;
@@ -141,11 +141,11 @@ namespace ENGINE_RENDERING
             return nullptr;
         }
 
-        return std::make_shared<Texture>(id, width, height, type, texturePath);
+        return std::make_shared<Texture>(id, width, height, type, texturePath, bTileset);
 	}
 
 
-    std::shared_ptr<Texture> TextureLoader::Create(Texture::TextureType type, int width, int height)
+    std::shared_ptr<Texture> TextureLoader::Create(Texture::TextureType type, int width, int height, bool bTileset)
     {
         ENGINE_ASSERT(type == Texture::TextureType::FRAMEBUFFER && "Must be FrameBuffer type");
         if(type != Texture::TextureType::FRAMEBUFFER)
@@ -158,11 +158,11 @@ namespace ENGINE_RENDERING
         glGenTextures(1, &id);
         LoadFBTexture(id, width, height);
 
-        return std::make_shared<Texture>(id, width, height, type);
+        return std::make_shared<Texture>(id, width, height, type, "", bTileset);
     }
 
 
-    std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* imageData, size_t length, bool blended)
+    std::shared_ptr<Texture> TextureLoader::CreateFromMemory( const unsigned char* imageData, size_t length, bool blended, bool bTileset)
     {
         GLuint id;
         int width, height;
@@ -170,7 +170,7 @@ namespace ENGINE_RENDERING
         LoadTextureFromMemory( imageData, length, id, width, height, blended );
 
         return std::make_shared<Texture>( id, width, height, blended ? 
-            Texture::TextureType::BLENDED : Texture::TextureType::PIXEL, "" );
+            Texture::TextureType::BLENDED : Texture::TextureType::PIXEL, "" , bTileset);
     }
 
 

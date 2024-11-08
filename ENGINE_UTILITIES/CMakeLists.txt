@@ -5,6 +5,7 @@ add_library(ENGINE_UTILITIES
 "src/Timer.cpp"
 "include/EngineUtils/RandomGenerator.hpp"
 "src/RandomGenerator.cpp"
+"include/EngineUtils/EngineUtilities.hpp"
 )
 
 target_include_directories(

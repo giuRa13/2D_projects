@@ -8,6 +8,8 @@ add_executable(ENGINE_EDITOR
     "src/Editor/displays/LogDisplay.hpp"
     "src/Editor/displays/LogDisplay.cpp"
     "src/Editor/utilities/editor_textures.hpp"
+    "src/Editor/displays/TilesetDisplay.hpp"
+    "src/Editor/displays/TilesetDisplay.cpp"
     )
 
 target_include_directories(

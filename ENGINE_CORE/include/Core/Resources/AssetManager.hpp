@@ -33,7 +33,7 @@ namespace ENGINE_RESOURCES
 
 		bool CreateDefaultFonts();
 
-		bool AddTexture(const std::string& textureName, const std::string& TexturePath, bool pixelArt = true);
+		bool AddTexture(const std::string& textureName, const std::string& TexturePath, bool pixelArt = true, bool bTileset = false);
 		bool AddTextureFromMemory( const std::string& textureName, const unsigned char* imageData, size_t length,
 							   bool pixelArt = true, bool bTileset = false );
 		std::shared_ptr<ENGINE_RENDERING::Texture> GetTexture(const std::string& textureName);
@@ -51,6 +51,10 @@ namespace ENGINE_RESOURCES
 
 		bool AddSoundFx(const std::string& soundFxName, const std::string& filepath);
 		std::shared_ptr<ENGINE_SOUNDS::SoundFX> GetSoundFx(const std::string& soundFxName);
+
+		std::vector<std::string> GetTilesetNames() const;
+		
+		inline const std::map<std::string, std::shared_ptr<ENGINE_RENDERING::Texture>>& GetAllTextures() const { return m_mapTextures; };
 
 		static void CreateLuaAssetManager(sol::state& lua);
 	};

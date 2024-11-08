@@ -38,7 +38,7 @@
 #include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
 #include <Physics/ContactListener.hpp>
 #include <Core/CoreUtilities/CoreEngineData.hpp>
-// IMGUI TESTING ======================
+// IMGUI  ============================
 //#include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_impl_sdl2.h>
@@ -48,6 +48,7 @@
 #include "Editor/displays/SceneDisplay.hpp"
 #include "Editor/displays/LogDisplay.hpp"
 #include "Editor/utilities/editor_textures.hpp"
+#include "Editor/displays/TilesetDisplay.hpp"
 
 
 namespace ENGINE_EDITOR
@@ -707,18 +708,25 @@ namespace ENGINE_EDITOR
         auto pSceneDisplay = std::make_unique<SceneDisplay>(*m_pRegistry);
         if(!pSceneDisplay)
         {
-            ENGINE_ERROR("Failed to create test SceneDisplay");
+            ENGINE_ERROR("Failed to create SceneDisplay");
             return false;
         }
         auto pLogDisplay = std::make_unique<LogDisplay>();
         if(!pLogDisplay)
         {
-            ENGINE_ERROR("Failed to create test LogDisplay");
+            ENGINE_ERROR("Failed to create LogDisplay");
+            return false;
+        }
+        auto pTilesetDisplay = std::make_unique<TilesetDisplay>();
+        if(!pTilesetDisplay)
+        {
+            ENGINE_ERROR("Failed to create TilesetDisplay");
             return false;
         }
 
         pDisplayHolder->displays.push_back(std::move(pSceneDisplay));
         pDisplayHolder->displays.push_back(std::move(pLogDisplay));
+        pDisplayHolder->displays.push_back(std::move(pTilesetDisplay));
         return true;
     }    
 

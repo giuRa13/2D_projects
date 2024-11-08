@@ -10,11 +10,13 @@ AssetDefs =
         { name = "rain", path = "assets/textures/rain.png", pixel_art = true},
         { name = "trigger", path = "assets/textures/trigger.png", pixel_art = true},
         { name = "ground", path = "assets/textures/ground.png", pixel_art = true},
-        { name = "land_tiles1", path = "assets/textures/land_tiles1.png", pixel_art = true},
-        { name = "background1", path = "assets/textures/background1.png", pixel_art = true},
-        --{ name = "white_box", path = "assets/textures/white.png", pixel_art = true}
+        { name = "land_tiles1", path = "assets/textures/land_tiles1.png", pixel_art = true, bTileset = true},
+        { name = "background1", path = "assets/textures/background1.png", pixel_art = true, bTileset = true},
         { name = "player", path = "assets/textures/robotSprite.png", pixel_art = true},
-        { name = "shot_atlas", path = "assets/textures/shot_atlas.png", pixel_art = true}
+        { name = "shot_atlas", path = "assets/textures/shot_atlas.png", pixel_art = true},
+        { name = "16map", path = "assets/textures/16map.png", pixel_art = true, bTileset = true},
+        { name = "land_tiles2", path = "assets/textures/land_tiles2.png", pixel_art = true, bTileset = true},
+        { name = "hill_tiles", path = "assets/textures/hill_tiles.png", pixel_art = true, bTileset = true}
     },
     music = 
     {
