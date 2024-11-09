@@ -15,6 +15,9 @@ add_executable(ENGINE_EDITOR
     "src/Editor/systems/GridSystem.cpp"
     "src/Editor/displays/TilemapDisplay.hpp"
     "src/Editor/displays/TilemapDisplay.cpp"
+    "src/Editor/displays/AssetDisplay.hpp"
+    "src/Editor/displays/AssetDisplay.cpp"
+    "src/Editor/utilities/EditorUtilities.hpp"
     )
 
 target_include_directories(

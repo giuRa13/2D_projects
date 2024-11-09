@@ -13,8 +13,7 @@ namespace ENGINE_RESOURCES
 {
 	bool AssetManager::CreateDefaultFonts()
 	{
-		//if(!AddFontFromMemory("pixel", pixel_font))
-		if(!AddFontFromMemory("pixel", matrixtype))
+		if(!AddFontFromMemory("pixel", matrixtype)) //pixel_font
 		{
 			ENGINE_ERROR("Failed to create pixel font");
 			return false;
@@ -22,6 +21,65 @@ namespace ENGINE_RESOURCES
 		return true;
 	}
 
+	std::vector<std::string> AssetManager::GetAssetKeyNames(ENGINE_UTIL::AssetType eAssetType) const
+	{
+		switch(eAssetType)
+		{
+		case ENGINE_UTIL::AssetType::TEXTURE: 
+			return ENGINE_UTIL::GetKeys(m_mapTextures, 
+				[](const auto& pair) { return !pair.second->IsEditorTexture(); });
+		case ENGINE_UTIL::AssetType::FONT:
+			return ENGINE_UTIL::GetKeys(m_mapFonts);
+		case ENGINE_UTIL::AssetType::SOUNDFX:
+			return ENGINE_UTIL::GetKeys(m_mapSoundFX);
+		case ENGINE_UTIL::AssetType::MUSIC:
+			return ENGINE_UTIL::GetKeys(m_mapMusic);
+		default: ENGINE_ASSERT(false && "Cannot get this asset type");
+		}
+
+		return {};
+	}
+
+	std::vector<std::string> AssetManager::GetTilesetNames() const
+	{
+		return ENGINE_UTIL::GetKeys( m_mapTextures, []( const auto& pair ) { return pair.second->IsTileset(); } );
+	}
+
+	bool AssetManager::ChangeAssetName(const std::string& sOldName, const std::string& sNewName, ENGINE_UTIL::AssetType eAssetType)
+	{
+		switch(eAssetType)
+		{
+		case ENGINE_UTIL::AssetType::TEXTURE: 
+			return ENGINE_UTIL::KeyChange(m_mapTextures, sOldName, sNewName);
+		case ENGINE_UTIL::AssetType::FONT:
+			return ENGINE_UTIL::KeyChange(m_mapFonts, sOldName, sNewName);
+		case ENGINE_UTIL::AssetType::SOUNDFX:
+			return ENGINE_UTIL::KeyChange(m_mapSoundFX, sOldName, sNewName);
+		case ENGINE_UTIL::AssetType::MUSIC:
+			return ENGINE_UTIL::KeyChange(m_mapMusic, sOldName, sNewName);
+		default: ENGINE_ASSERT(false && "Cannot get this asset type");
+		}
+
+		return false;
+	}
+
+	bool AssetManager::CheckHasAsset(const std::string& sCheckName, ENGINE_UTIL::AssetType eAssetType)
+	{
+		switch(eAssetType)
+		{
+		case ENGINE_UTIL::AssetType::TEXTURE: 
+			return m_mapTextures.contains(sCheckName);
+		case ENGINE_UTIL::AssetType::FONT:
+			return m_mapFonts.contains(sCheckName);
+		case ENGINE_UTIL::AssetType::SOUNDFX:
+			return m_mapSoundFX.contains(sCheckName);
+		case ENGINE_UTIL::AssetType::MUSIC:
+			return m_mapMusic.contains(sCheckName);
+		default: ENGINE_ASSERT(false && "Cannot get this asset type");
+		}
+
+		return false;
+	}
 
 	// Texture //////////////////////////
     bool AssetManager::AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt, bool bTileset)
@@ -83,11 +141,6 @@ namespace ENGINE_RESOURCES
 		auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
 
 		return bSuccess;
-	}
-
-	std::vector<std::string> AssetManager::GetTilesetNames() const
-	{
-		return ENGINE_UTIL::GetKeys( m_mapTextures, []( const auto& pair ) { return pair.second->IsTileset(); } );
 	}
 
 	// Shaders //////////////////////////

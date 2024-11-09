@@ -13,8 +13,8 @@ namespace ENGINE_RENDERING
 		m_Height{height}, 
 		m_eType{type}, 
 		m_sPath{texturePath}, 
-		m_bTileset{bIsTileset}
-		//m_bEditorTexture{ false}
+		m_bTileset{bIsTileset},
+		m_bEditorTexture{ false}
 	{ }
 	
     

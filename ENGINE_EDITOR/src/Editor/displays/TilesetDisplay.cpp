@@ -70,7 +70,7 @@ namespace ENGINE_EDITOR
                     ImGui::TableSetColumnIndex(j);
 
                     if(m_Selected == id)
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4{1.f, 0.3f, 0.3f, 0.3f}));
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4{0.9f, 0.5f, 0.8f, 0.3f}));
 
                     // create unique ID for buttons
                     ImGui::PushID(k++);

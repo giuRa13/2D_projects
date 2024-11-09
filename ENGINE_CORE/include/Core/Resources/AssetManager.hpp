@@ -11,6 +11,11 @@
 #include <Sounds/Essentials/SoundFX.hpp>
 #include <sol/sol.hpp>
 
+namespace ENGINE_UTIL
+{
+	enum class AssetType;
+}
+
 
 namespace ENGINE_RESOURCES
 {
@@ -52,9 +57,16 @@ namespace ENGINE_RESOURCES
 		bool AddSoundFx(const std::string& soundFxName, const std::string& filepath);
 		std::shared_ptr<ENGINE_SOUNDS::SoundFX> GetSoundFx(const std::string& soundFxName);
 
+		/////////////////////////////////////////////////////////////////////////////////////////
+
 		std::vector<std::string> GetTilesetNames() const;
 		
 		inline const std::map<std::string, std::shared_ptr<ENGINE_RENDERING::Texture>>& GetAllTextures() const { return m_mapTextures; };
+
+		std::vector<std::string> GetAssetKeyNames(ENGINE_UTIL::AssetType eAssetType) const;
+
+		bool ChangeAssetName(const std::string& sOldName, const std::string& sNewName, ENGINE_UTIL::AssetType eAssetType);
+		bool CheckHasAsset(const std::string& sCheckName, ENGINE_UTIL::AssetType eAssetType);
 
 		static void CreateLuaAssetManager(sol::state& lua);
 	};

@@ -19,7 +19,7 @@ namespace ENGINE_RENDERING
 		std::string m_sPath;
 		TextureType m_eType;
 		bool m_bTileset;
-		//bool m_bEditorTexture;
+		bool m_bEditorTexture;
 	
     
     public:
@@ -35,8 +35,8 @@ namespace ENGINE_RENDERING
 		inline const bool IsTileset() const { return m_bTileset; }
 		inline void SetIsTileset(bool bIsTileset) { m_bTileset = bIsTileset; }
 
-		//inline const bool IsEditorTexture() const { return m_bEditorTexture; }
-		//inline void SetIsEditorTexture(bool bIsEditorTexture) { m_bEditorTexture = bIsEditorTexture; }
+		inline const bool IsEditorTexture() const { return m_bEditorTexture; }
+		inline void SetIsEditorTexture(bool bIsEditorTexture) { m_bEditorTexture = bIsEditorTexture; }
 		
         void Bind();
 		void Unbind();

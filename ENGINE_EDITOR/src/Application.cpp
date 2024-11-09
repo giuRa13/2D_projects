@@ -52,6 +52,7 @@
 #include "Editor/displays/LogDisplay.hpp"
 #include "Editor/displays/TilesetDisplay.hpp"
 #include "Editor/displays/TilemapDisplay.hpp"
+#include "Editor/displays/AssetDisplay.hpp"
 
 
 
@@ -141,13 +142,14 @@ namespace ENGINE_EDITOR
         auto renderer = std::make_shared<ENGINE_RENDERING::Renderer>();
 
         // Enable Alpha Blending
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         renderer->SetCapability(ENGINE_RENDERING::Renderer::GLCapability::BLEND, true);
 		renderer->SetBlendCapability(
 			ENGINE_RENDERING::Renderer::BlendingFactors::SRC_ALPHA,
 			ENGINE_RENDERING::Renderer::BlendingFactors::ONE_MINUS_SRC_ALPHA
 		);
-        //glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         GetOpenGLVersionInfo();
 
         auto& mainRegistry = MAIN_REGISTRY();
@@ -159,23 +161,6 @@ namespace ENGINE_EDITOR
             //return false;
         }
         //auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
-        /*if(!assetManager)
-        {
-            ENGINE_ERROR("Failed to create the Asset manager");
-            return false;
-        }*/
-
-        // Texture //////////////////////
-        /*if(!assetManager->AddTexture("16map", "./assets/textures/16map.png", true))
-        {
-            ENGINE_ERROR("Failed to Create and Add Texture");
-            return false;
-        }
-        if(!assetManager->AddTexture("robot", "./assets/textures/robotSprite.png", true))
-        {
-            ENGINE_ERROR("Failed to Create and Add Texture");
-            return false;
-        }*/
   
         m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
@@ -187,12 +172,13 @@ namespace ENGINE_EDITOR
             return false;
         }        
 
-        //m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua);
-        if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
+        m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua);
+        /*if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
         {
             ENGINE_ERROR("Failed to add the sol::state to Registry Context");
             //return false;
-        }
+        }*/
+
         // Script System
         auto scriptSystem = std::make_shared<ENGINE_CORE::Systems::ScriptingSystem>(*m_pRegistry);
         if(!scriptSystem)
@@ -251,36 +237,6 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to add the AnimationSystem to Registry Context");
             return false;
         }
-
-        // Sound ///////////////////////
-        /*auto musicPlayer = std::make_shared<ENGINE_SOUNDS::MusicPlayer>();
-        if(!musicPlayer)
-        {
-            ENGINE_ERROR("Failed to create the Music Player");
-            return false;   
-        }
-        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_SOUNDS::MusicPlayer>>(musicPlayer))
-        {
-            ENGINE_ERROR("Failed to add the Music Player to Registry Context");
-            return false;
-        }
-
-        auto soundPlayer = std::make_shared<ENGINE_SOUNDS::SoundFxPlayer>();
-        if(!soundPlayer)
-        {
-            ENGINE_ERROR("Failed to create the SoundFX Player");
-            return false;   
-        }
-        if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_SOUNDS::SoundFxPlayer>>(soundPlayer))
-        {
-            ENGINE_ERROR("Failed to add the SoundFX Player to Registry Context");
-            return false;
-        }*/
-        /*if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>(assetManager))
-        {
-            ENGINE_ERROR("Failed to add the Asset Manager to Registry Context");
-            return false;
-        }*/
 
         // Camera //////////////////////
         auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
@@ -342,11 +298,6 @@ namespace ENGINE_EDITOR
 
         renderer->SetLineWidth(4.f);
 
-        /*if(!assetManager->AddFont("pixel", "./assets/fonts/retro_pixel.TTF"))
-        {
-            ENGINE_ERROR("Failed to load Pixel Font");
-            return false;
-        }*/
         if(!mainRegistry.GetAssetManager().CreateDefaultFonts())
         {
             ENGINE_ERROR("Failed to create Default Font");
@@ -366,6 +317,7 @@ namespace ENGINE_EDITOR
 			ENGINE_ERROR("Failed to add the Editor FrameBuffer to the Main Registry context!");
             return false;
         }	
+
         pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::SCENE, 
             std::make_shared<ENGINE_RENDERING::FrameBuffer>(640, 480, false));
         pEditorFramebuffers->mapFramebuffers.emplace( FramebufferType::TILEMAP, 
@@ -508,7 +460,6 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to get Asset Manager from the Registry Context");
             return false;
         }*/
-
         if (!assetManager.AddShader("basic", "assets/shaders/basicShader.vert", "assets/shaders/basicShader.frag"))
         {
             ENGINE_ERROR("Failed to add Basic-Shaders to Asset Manager");
@@ -548,18 +499,25 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to Create and Add Texture");
             return false;
         }
-
+        if(!assetManager.AddTexture("scene_icon", "./assets/textures/movie.png", true))
+        {
+            ENGINE_ERROR("Failed to Create and Add Texture");
+            return false;
+        }
+        if(!assetManager.AddTexture("music_icon", "./assets/textures/musicOn.png", true))
+        {
+            ENGINE_ERROR("Failed to Create and Add Texture");
+            return false;
+        }
+        assetManager.GetTexture("play_button")->SetIsEditorTexture(true);
+        assetManager.GetTexture("stop_button")->SetIsEditorTexture(true);
+        assetManager.GetTexture("scene_icon")->SetIsEditorTexture(true);
+        assetManager.GetTexture("music_icon")->SetIsEditorTexture(true);
         /*if(!assetManager.AddTextureFromMemory("play_button", play_button, sizeof(play_button) / sizeof(play_button[0])))
         {
             ENGINE_ERROR("Failed to load texture [play_button] from memory");
             return false;
-        }
-        if(!assetManager.AddTextureFromMemory("stop_button", stop_button, sizeof(stop_button) / sizeof(stop_button[0])))
-        {
-            ENGINE_ERROR("Failed to load texture [stop_button] from memory");
-            return false;
         }*/
-
         return true;
     }
 
@@ -580,8 +538,8 @@ namespace ENGINE_EDITOR
                     m_bIsRunning = false;
                     break;
                 case SDL_KEYDOWN:
-                    if(m_Event.key.keysym.sym == SDLK_ESCAPE)
-                        m_bIsRunning = false;
+                    //if(m_Event.key.keysym.sym == SDLK_ESCAPE)
+                       // m_bIsRunning = false;
                     keyboard.OnKeyPressed(m_Event.key.keysym.sym);
                     break;
                 case SDL_KEYUP:
@@ -640,6 +598,7 @@ namespace ENGINE_EDITOR
         //auto& renderUISystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderUISystem>>();
         //auto& renderShapeSystem = m_pRegistry->GetContext<std::shared_ptr<ENGINE_CORE::Systems::RenderShapeSystem>>();
         //auto& camera = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
+        //auto& renderer = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RENDERING::Renderer>>();
 
         //auto& assetManager = m_pRegistry->GetContext<std::shared_ptr<ENGINE_RESOURCES::AssetManager>>();
         //auto shader = assetManager->GetShader("color");
@@ -662,7 +621,6 @@ namespace ENGINE_EDITOR
         //renderer->DrawFilledRects(*shader, *camera);
         //renderer->DrawCircles(*circleShader, *camera);
         //renderer->DrawAllText(*fontShader, *camera);
-
 
         SDL_GL_SwapWindow(m_pWindow->GetWindow().get());
 
@@ -729,11 +687,18 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to create Tilemap Display");
             return false;
         }
+        auto pAssetDisplay = std::make_unique<AssetDisplay>();
+        if(!pAssetDisplay)
+        {
+            ENGINE_ERROR("Failed to create Asset Display");
+            return false;
+        }
 
         pDisplayHolder->displays.push_back(std::move(pSceneDisplay));
         pDisplayHolder->displays.push_back(std::move(pLogDisplay));
         pDisplayHolder->displays.push_back(std::move(pTilesetDisplay));
         pDisplayHolder->displays.push_back(std::move(pTilemapDisplay));
+        pDisplayHolder->displays.push_back(std::move(pAssetDisplay));
         return true;
     }    
 
@@ -813,6 +778,7 @@ namespace ENGINE_EDITOR
             ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
             ImGui::DockBuilderDockWindow("Scene", centerNodeId);
             ImGui::DockBuilderDockWindow("Tilemap Editor", centerNodeId);
+            ImGui::DockBuilderDockWindow("Assets", centerNodeId);
             ImGui::DockBuilderDockWindow("Logs", LogNodeId);
             ImGui::DockBuilderDockWindow("Tileset", LogNodeId);
 
