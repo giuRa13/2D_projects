@@ -1,5 +1,7 @@
 #include "SceneDisplay.hpp"
 #include <imgui.h>
+#include "Editor/scenes/SceneManager.hpp"
+#include "Editor/scenes/SceneObject.hpp"
 #include <Rendering/Buffers/FrameBuffer.hpp>
 #include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Core/Renderer.hpp>
@@ -15,26 +17,45 @@
 #include <Sounds/MusicPlayer/MusicPlayer.hpp>
 #include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
 #include <Physics/Box2DWrappers.hpp>
+#include <Physics/ContactListener.hpp>
 #include <Core/Resources/AssetManager.hpp>
 #include "Editor/utilities/EditorFramebuffer.hpp"
 
 using namespace ENGINE_CORE::Systems;
-
+using namespace ENGINE_RENDERING;
 constexpr float one_over_sixty = 1.f / 60.f;
 
 
 namespace ENGINE_EDITOR
 {
 
-    SceneDisplay::SceneDisplay(ENGINE_CORE::ECS::Registry& registry)
-        : m_Registry{registry}, m_bPlayScene{false}, m_bSceneLoaded{false}
+    SceneDisplay::SceneDisplay()
+        : m_bPlayScene{false}, m_bSceneLoaded{false}
     {  }
 
 
     void SceneDisplay::LoadScene()
     {
-        auto& scriptSystem = m_Registry.GetContext<std::shared_ptr<ScriptingSystem>>();
-        auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
+        auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+        if(!pCurrentScene)
+            return;
+
+        auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
+
+        const auto& canvas = pCurrentScene->GetCanvas();
+        runtimeRegistry.AddToContext<std::shared_ptr<Camera2D>>(std::make_shared<Camera2D>(canvas.width, canvas.height));
+
+        auto pPhysicsWorld = runtimeRegistry.AddToContext<
+            ENGINE_PHYSICS::PhysicsWorld>(std::make_shared<b2World>(b2Vec2{0.f, 9.9f}));
+
+        auto pContactListener = runtimeRegistry.AddToContext<
+            std::shared_ptr<ENGINE_PHYSICS::ContactListener>>(std::make_shared<ENGINE_PHYSICS::ContactListener>() );
+	    pPhysicsWorld->SetContactListener( pContactListener.get() );
+
+        auto scriptSystem = runtimeRegistry.AddToContext<std::shared_ptr<ScriptingSystem>>(std::make_shared<ScriptingSystem>(runtimeRegistry));
+        runtimeRegistry.AddToContext<std::shared_ptr<AnimationSystem>>(std::make_shared<AnimationSystem>( runtimeRegistry ) );
+	    runtimeRegistry.AddToContext<std::shared_ptr<PhysicsSystem>>(std::make_shared<PhysicsSystem>( runtimeRegistry ) );
+        auto lua = runtimeRegistry.AddToContext<std::shared_ptr<sol::state>>(std::make_shared<sol::state>());
 
         if(!lua)
             lua = std::make_shared<sol::state>();
@@ -42,8 +63,8 @@ namespace ENGINE_EDITOR
         lua->open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, 
             sol::lib::table, sol::lib::io, sol::lib::string, sol::lib::package);
 
-        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaBinding(*lua, m_Registry);
-        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua, m_Registry);
+        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaBinding(*lua, runtimeRegistry);
+        ENGINE_CORE::Systems::ScriptingSystem::RegisterLuaFunctions(*lua, runtimeRegistry);
 
         if(!scriptSystem->LoadMainScript(*lua))
         {
@@ -59,9 +80,16 @@ namespace ENGINE_EDITOR
     {
         m_bPlayScene = false;
         m_bSceneLoaded = false;
-        m_Registry.GetRegistry().clear();
-        auto& lua = m_Registry.GetContext<std::shared_ptr<sol::state>>();
-        lua.reset();
+        auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+        auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
+        
+        runtimeRegistry.ClearRegistry();
+        runtimeRegistry.RemoveContext<std::shared_ptr<Camera2D>>();
+        runtimeRegistry.RemoveContext<std::shared_ptr<sol::state>>();
+        runtimeRegistry.RemoveContext<std::shared_ptr<ENGINE_PHYSICS::PhysicsWorld>>();
+        runtimeRegistry.RemoveContext<std::shared_ptr<ENGINE_PHYSICS::ContactListener>>();
+        runtimeRegistry.RemoveContext<std::shared_ptr<AnimationSystem>>();
+        runtimeRegistry.RemoveContext<std::shared_ptr<PhysicsSystem>>();
 
         auto& mainRegistry = MAIN_REGISTRY();
         mainRegistry.GetMusicPlayer().Stop();
@@ -90,9 +118,14 @@ namespace ENGINE_EDITOR
         renderer->SetClearColor( 0.f, 0.f, 0.f, 1.f );//(0.15f, 0.45f, 0.75f, 1.f)
 		renderer->ClearBuffers(true, true, false);
 
-        renderSystem->Update();
-        renderShapeSystem->Update();
-        renderUISystem->Update(m_Registry.GetRegistry());
+        auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+        if (pCurrentScene && m_bPlayScene)
+        {
+            auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
+            renderSystem->Update(runtimeRegistry);
+            renderShapeSystem->Update(runtimeRegistry);
+            renderUISystem->Update( runtimeRegistry );
+        }
         
         fb->Unbind();
         fb->CheckResize();
@@ -104,11 +137,16 @@ namespace ENGINE_EDITOR
         if(!m_bPlayScene)
             return;
 
+        auto pCurrentScene = SCENE_MANAGER().GetCurrentScene();
+	    if ( !pCurrentScene )
+		    return;
+
+        auto& runtimeRegistry = pCurrentScene->GetRuntimeRegistry();
         auto& mainRegistry = MAIN_REGISTRY();
         auto& coreGlobals = CORE_GLOBALS();
 
         // Camera
-        auto& camera = m_Registry.GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
+        auto& camera = runtimeRegistry.GetContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>();
         if (!camera)
         {
             ENGINE_ERROR("Failed to get Camera from the Registry Context");
@@ -116,19 +154,19 @@ namespace ENGINE_EDITOR
         }
         camera->Update();
         //Scripting
-        auto& scriptSystem = m_Registry.GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
+        auto& scriptSystem = runtimeRegistry.GetContext<std::shared_ptr<ENGINE_CORE::Systems::ScriptingSystem>>();
         scriptSystem->Update();
         // Physics
         if(coreGlobals.IsPhysicsEnabled())
         {
-            auto& pPhysicsWorld = m_Registry.GetContext<ENGINE_PHYSICS::PhysicsWorld>();
+            auto& pPhysicsWorld = runtimeRegistry.GetContext<ENGINE_PHYSICS::PhysicsWorld>();
             pPhysicsWorld->Step(one_over_sixty,  coreGlobals.GetVelocityIterations(),  coreGlobals.GetPositionIterations());
             pPhysicsWorld->ClearForces();
         }
-        auto& pPhysicsSystem = m_Registry.GetContext<std::shared_ptr<ENGINE_CORE::Systems::PhysicsSystem>>();
-        pPhysicsSystem->Update(m_Registry.GetRegistry());
+        auto& pPhysicsSystem = runtimeRegistry.GetContext<std::shared_ptr<ENGINE_CORE::Systems::PhysicsSystem>>();
+        pPhysicsSystem->Update(runtimeRegistry.GetRegistry());
         // Animation
-        auto& animationSystem = m_Registry.GetContext<std::shared_ptr<ENGINE_CORE::Systems::AnimationSystem>>();
+        auto& animationSystem = runtimeRegistry.GetContext<std::shared_ptr<ENGINE_CORE::Systems::AnimationSystem>>();
         animationSystem->Update();
     }
 
@@ -154,6 +192,7 @@ namespace ENGINE_EDITOR
             ImGui::PushStyleColor( ImGuiCol_ButtonHovered, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
             ImGui::PushStyleColor( ImGuiCol_ButtonActive, ImVec4{ 0.f, 0.9f, 0.f, 0.3f } );
         }*/
+
         if(ImGui::ImageButton((ImTextureID)pPlayTexture->GetID(),
             ImVec2{
                 (float)pPlayTexture->GetWidth(),

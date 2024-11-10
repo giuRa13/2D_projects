@@ -12,6 +12,9 @@
 
 	private:
 		std::unique_ptr<entt::registry> m_pRegistry;
+		// entt provides: TContext
+		// object map that takes any type of variable (each Registry have one)
+		// TContext has to be movable and constructable
 
 
 	public:
@@ -20,16 +23,16 @@
 
 		inline entt::registry& GetRegistry() { return *m_pRegistry; }
 		inline entt::entity CreateEntity() { return m_pRegistry->create(); }
+		inline void ClearRegistry() { m_pRegistry->clear(); }
 
 		template <typename TContext>
 		TContext AddToContext(TContext context);
 		
 		template <typename TContext>
 		TContext& GetContext();
-		// entt provides: TContext
-		// object map that takes any type of variable (each Registry have one)
-		// TContext has to be movable and constructable
 
+		template <typename TContext>
+		bool RemoveContext();
 		
 		static void CreateLuaRegistryBind(sol::state& lua, Registry& registry);
 

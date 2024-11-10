@@ -26,9 +26,11 @@ namespace ENGINE_EDITOR
 
         void SetAssetType();
         void DrawSelectedAssets();
+        
         unsigned int GetTextureID(const std::string& sAssetName);
         bool DoRenameAsset(const std::string& sOldName, const std::string& sNewName);
         void CheckRename(const std::string& sCheckName);
+        void OpenAssetContext(const std::string& sAssetName);
 
 
     public:

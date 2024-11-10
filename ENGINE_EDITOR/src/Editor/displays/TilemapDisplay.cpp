@@ -5,6 +5,8 @@
 #include <Rendering/Core/Renderer.hpp>
 #include "Editor/systems/GridSystem.hpp"
 #include "Editor/utilities/EditorFramebuffer.hpp"
+#include "Editor/utilities/EditorUtilities.hpp"
+#include "Editor/scenes/SceneManager.hpp"
 #include <Logger/Logger.hpp>
 #include <memory>
 #include <imgui.h>
@@ -78,6 +80,19 @@ namespace ENGINE_EDITOR
                 imageSize,
                 ImVec2{0.f, 1.f},
                 ImVec2{1.f, 0.f});
+
+            // Accept Scene Drop Target
+            if(ImGui::BeginDragDropTarget())
+            {
+                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(DROP_SCENE_SRC);
+                if(payload)
+                {
+                    ENGINE_LOG("BEFORE: {}", SCENE_MANAGER().GetCurrentSceneName());
+                    SCENE_MANAGER().SetCurrentScene(std::string{(const char*)payload->Data});
+                    ENGINE_LOG("AFTER: {}", SCENE_MANAGER().GetCurrentSceneName());
+                }
+                ImGui::EndDragDropTarget();
+            }
 
             ImGui::EndChild();
         }

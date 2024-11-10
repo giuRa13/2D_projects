@@ -12,7 +12,6 @@ namespace ENGINE_EDITOR
     {
 
     private:
-        ENGINE_CORE::ECS::Registry& m_Registry;
         bool m_bPlayScene, m_bSceneLoaded;
 
         void LoadScene();
@@ -20,7 +19,7 @@ namespace ENGINE_EDITOR
         void RenderScene();
 
     public:
-        SceneDisplay(ENGINE_CORE::ECS::Registry& registry);
+        SceneDisplay();
         ~SceneDisplay() = default;
 
         virtual void Draw() override;

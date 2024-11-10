@@ -17,6 +17,12 @@ namespace ENGINE_CORE::ECS
 	{
 		return m_pRegistry->ctx().get<TContext>();
 	}
+
+    template <typename TContext>
+	bool Registry::RemoveContext()
+    {
+        return m_pRegistry->ctx().erase<TContext>();
+    }
 	
 
 	template <typename TComponent>

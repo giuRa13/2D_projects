@@ -16,22 +16,20 @@ using namespace ENGINE_RESOURCES;
 namespace ENGINE_CORE::Systems
 {
 
-        RenderSystem::RenderSystem(ENGINE_CORE::ECS::Registry& registry)
-            : m_Registry(registry), m_pBatchRenderer{nullptr}
-        {
-            m_pBatchRenderer = std::make_unique<SpriteBatchRenderer>();
-        }
+        RenderSystem::RenderSystem()
+            : m_pBatchRenderer{ std::make_unique<SpriteBatchRenderer>() }
+        { }
 
-        void RenderSystem::Update()
+        void RenderSystem::Update(ENGINE_CORE::ECS::Registry& registry)
         {
-            auto view = m_Registry.GetRegistry().view<SpriteComponent, TransformComponent>();
+            auto view = registry.GetRegistry().view<SpriteComponent, TransformComponent>();
 		    if (view.size_hint() < 1)
 			    return;
 
             auto& mainRegistry = MAIN_REGISTRY();
 	        auto& assetManager = mainRegistry.GetAssetManager();
             //auto& assetManager = m_Registry.GetContext<std::shared_ptr<AssetManager>>();
-            auto& camera = m_Registry.GetContext<std::shared_ptr<Camera2D>>();
+            auto& camera = registry.GetContext<std::shared_ptr<Camera2D>>();
             
 
             const auto& spriteShader = assetManager.GetShader("basic");

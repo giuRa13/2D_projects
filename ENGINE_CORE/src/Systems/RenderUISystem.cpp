@@ -15,9 +15,8 @@ using namespace ENGINE_RESOURCES;
 namespace ENGINE_CORE::Systems
 {
 
-    RenderUISystem::RenderUISystem(ENGINE_CORE::ECS::Registry& registry)
-        : m_Registry{registry}
-        , m_pSpriteRenderer{std::make_unique<ENGINE_RENDERING::SpriteBatchRenderer>()}
+    RenderUISystem::RenderUISystem()
+        : m_pSpriteRenderer{std::make_unique<ENGINE_RENDERING::SpriteBatchRenderer>()}
         , m_pTextRenderer{std::make_unique<ENGINE_RENDERING::TextBatchRenderer>()}
         , m_pCamera2D{ nullptr}
     {
@@ -32,9 +31,9 @@ namespace ENGINE_CORE::Systems
     }
 
 
-    void RenderUISystem::Update(entt::registry& registry)
+    void RenderUISystem::Update(ENGINE_CORE::ECS::Registry& registry)
     {
-        auto textView = registry.view<TextComponent, TransformComponent>();
+        auto textView = registry.GetRegistry().view<TextComponent, TransformComponent>();
 		if (textView.size_hint() < 1)
 			return;
 

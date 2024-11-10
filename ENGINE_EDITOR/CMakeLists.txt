@@ -18,6 +18,10 @@ add_executable(ENGINE_EDITOR
     "src/Editor/displays/AssetDisplay.hpp"
     "src/Editor/displays/AssetDisplay.cpp"
     "src/Editor/utilities/EditorUtilities.hpp"
+    "src/Editor/scenes/SceneObject.hpp"
+    "src/Editor/scenes/SceneObject.cpp"
+    "src/Editor/scenes/SceneManager.hpp"
+    "src/Editor/scenes/SceneManager.cpp"
     )
 
 target_include_directories(

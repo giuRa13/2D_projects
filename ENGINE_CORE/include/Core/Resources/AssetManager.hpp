@@ -67,6 +67,7 @@ namespace ENGINE_RESOURCES
 
 		bool ChangeAssetName(const std::string& sOldName, const std::string& sNewName, ENGINE_UTIL::AssetType eAssetType);
 		bool CheckHasAsset(const std::string& sCheckName, ENGINE_UTIL::AssetType eAssetType);
+		bool DeleteAsset(const std::string& sAssetName, ENGINE_UTIL::AssetType eAssetType);
 
 		static void CreateLuaAssetManager(sol::state& lua);
 	};

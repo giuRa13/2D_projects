@@ -5,6 +5,7 @@
 #include <Core/Resources/AssetManager.hpp>
 #include <Core/Scripting/InputManager.hpp>
 #include <Logger/Logger.hpp>
+#include "Editor/scenes/SceneManager.hpp"
 #include <imgui.h>
 
 constexpr float DEFAULT_ASSET_SIZE = 128.f;
@@ -113,8 +114,7 @@ namespace ENGINE_EDITOR
         }
         else
         {
-            auto& mainRegistry = MAIN_REGISTRY();
-            auto& assetManager = mainRegistry.GetAssetManager();
+            auto& assetManager = MAIN_REGISTRY().GetAssetManager();
             return assetManager.ChangeAssetName(sOldName, sNewName, m_eSelectedType);
         }
 
@@ -131,20 +131,45 @@ namespace ENGINE_EDITOR
         }
 
         bool bHasAsset{false};
+
         if(m_eSelectedType == ENGINE_UTIL::AssetType::SCENE)
         {
             // check if name already exists
         }
         else
         {
-            auto& mainRegistry = MAIN_REGISTRY();
-            auto& assetManager = mainRegistry.GetAssetManager();
+            auto& assetManager = MAIN_REGISTRY().GetAssetManager();
             if(assetManager.CheckHasAsset(sCheckName, m_eSelectedType))
                 bHasAsset = true;
         }
 
         if(bHasAsset)
             ImGui::TextColored(ImVec4{1.f, 0.f, 0.f, 1.f}, fmt::format("Asset Name [{}] already exists", sCheckName).c_str());
+    }
+
+    void AssetDisplay::OpenAssetContext(const std::string& sAssetName)
+    {
+        if(ImGui::Selectable("rename"))
+        {
+            m_bRename = true;
+        }
+            
+                        
+        if(ImGui::Selectable("delete"))
+        {
+            if(m_eSelectedType == ENGINE_UTIL::AssetType::SCENE)
+            {
+                // check if name already exists
+            }
+            else
+            {
+                auto& assetManager = MAIN_REGISTRY().GetAssetManager();
+                if(!assetManager.DeleteAsset(sAssetName, m_eSelectedType));
+                {
+                    ENGINE_ERROR("Failed to delete asset {}", sAssetName);
+                }
+            }
+        }
     }
 
 
@@ -156,8 +181,7 @@ namespace ENGINE_EDITOR
             return;
         }
 
-        auto& mainRegistry = MAIN_REGISTRY();
-        auto& assetManager = mainRegistry.GetAssetManager();
+        auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 
         ImGui::Text("Asset Type");
         ImGui::SameLine(0.f, 10.f); //offset to start, spacing
@@ -197,14 +221,13 @@ namespace ENGINE_EDITOR
 
     void AssetDisplay::DrawSelectedAssets()
     {
-        auto& mainRegistry = MAIN_REGISTRY();
-        auto& assetManager = mainRegistry.GetAssetManager();  
+        auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 
         std::vector<std::string> assetNames{};
 
         if(m_eSelectedType == ENGINE_UTIL::AssetType::SCENE)
         {
-            // Scene manager
+            assetNames = SCENE_MANAGER().GetSceneNames();
         } 
         else
         {
@@ -261,12 +284,7 @@ namespace ENGINE_EDITOR
 
                     if(bSelectedAsset && ImGui::BeginPopupContextItem())
                     {
-                        // open asset context
-
-                        if(ImGui::Selectable("rename"))
-                            m_bRename = true;
-                        if(ImGui::Selectable("delete"))
-                            ENGINE_MESSAGE("FILE to delete [{}]", *assetItr);
+                        OpenAssetContext(*assetItr);
                         
                         ImGui::EndPopup();
                     }

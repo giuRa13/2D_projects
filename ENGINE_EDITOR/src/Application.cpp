@@ -1,26 +1,26 @@
 #include "Application.hpp"
-#include <SDL2/SDL.h>
+//#include <SDL2/SDL.h>
 #include <glad/glad.h>
-#include <SOIL/SOIL.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <sol/sol.hpp>
-#include <iostream>
+//#include <SOIL/SOIL.h>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <sol/sol.hpp>
+//#include <iostream>
 
 #include <Logger/Logger.hpp>
-#include <Rendering/Essentials/ShaderLoader.hpp>
-#include <Rendering/Essentials/TextureLoader.hpp>
-#include <Rendering/Core/Camera2D.hpp>
+//#include <Rendering/Essentials/ShaderLoader.hpp>
+//#include <Rendering/Essentials/TextureLoader.hpp>
+//#include <Rendering/Core/Camera2D.hpp>
 #include <Rendering/Core/Renderer.hpp>
-#include <Rendering/Essentials/Vertex.hpp>
-#include <Rendering/Buffers/FrameBuffer.hpp>
-#include <Core/ECS/Entity.hpp>
-#include <Core/ECS/Components/TransformComponent.hpp>
-#include <Core/ECS/Components/SpriteComponent.hpp>
-#include <Core/ECS/Components/PhysicsComponent.hpp>
-#include <Core/ECS/Components/BoxColliderComponent.hpp>
-#include <Core/ECS/Components/CircleColliderComponent.hpp>
-#include <Core/ECS/Components/Identification.hpp>
+//#include <Rendering/Essentials/Vertex.hpp>
+//#include <Rendering/Buffers/FrameBuffer.hpp>
+//#include <Core/ECS/Entity.hpp>
+//#include <Core/ECS/Components/TransformComponent.hpp>
+//#include <Core/ECS/Components/SpriteComponent.hpp>
+//#include <Core/ECS/Components/PhysicsComponent.hpp>
+//#include <Core/ECS/Components/BoxColliderComponent.hpp>
+//#include <Core/ECS/Components/CircleColliderComponent.hpp>
+//#include <Core/ECS/Components/Identification.hpp>
 #include <Core/Resources/AssetManager.hpp>
 #include <Core/ECS/MainRegistry.hpp>
 
@@ -34,10 +34,11 @@
 #include <Core/Scripting/InputManager.hpp>
 #include <Windowing/Inputs/Keyboard.hpp>
 #include <Windowing/Inputs/Mouse.hpp>
-#include <Sounds/MusicPlayer/MusicPlayer.hpp>
-#include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
-#include <Physics/ContactListener.hpp>
+//#include <Sounds/MusicPlayer/MusicPlayer.hpp>
+//#include <Sounds/SoundPlayer/SoundFxPlayer.hpp>
+//#include <Physics/ContactListener.hpp>
 #include <Core/CoreUtilities/CoreEngineData.hpp>
+
 // IMGUI  ============================
 //#include <imgui.h>
 #include <imgui_internal.h>
@@ -53,14 +54,14 @@
 #include "Editor/displays/TilesetDisplay.hpp"
 #include "Editor/displays/TilemapDisplay.hpp"
 #include "Editor/displays/AssetDisplay.hpp"
-
+#include "Editor/scenes/SceneManager.hpp"
 
 
 namespace ENGINE_EDITOR
 {
 
     Application::Application()
-		: m_pWindow{nullptr}, m_pRegistry{nullptr}, m_Event{}, m_bIsRunning{true}
+		: m_pWindow{nullptr}/*, m_pRegistry{nullptr}*/, m_Event{}, m_bIsRunning{true}
 	{ }
 
     Application& Application::GetInstance()
@@ -160,12 +161,12 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to add the Renderer to Main Registry Context");
             //return false;
         }
+        
         //auto assetManager = std::make_shared<ENGINE_RESOURCES::AssetManager>();
-  
-        m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
+        //m_pRegistry = std::make_unique<ENGINE_CORE::ECS::Registry>();
 
         // Lua state //////////////////////
-        auto lua = std::make_shared<sol::state>();
+        /*auto lua = std::make_shared<sol::state>();
         if(!lua)
         {
             ENGINE_ERROR("Failed to create the Lua State");
@@ -173,14 +174,14 @@ namespace ENGINE_EDITOR
         }        
 
         m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua);
-        /*if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
+        if(!m_pRegistry->AddToContext<std::shared_ptr<sol::state>>(lua));
         {
             ENGINE_ERROR("Failed to add the sol::state to Registry Context");
             //return false;
         }*/
 
         // Script System
-        auto scriptSystem = std::make_shared<ENGINE_CORE::Systems::ScriptingSystem>(*m_pRegistry);
+        /*auto scriptSystem = std::make_shared<ENGINE_CORE::Systems::ScriptingSystem>(*m_pRegistry);
         if(!scriptSystem)
         {
             ENGINE_ERROR("Failed to create the Scripting System");
@@ -190,9 +191,9 @@ namespace ENGINE_EDITOR
         {
             ENGINE_ERROR("Failed to add the ScriptingSystem to Registry Context");
             return false;
-        }
+        }*/
         // Render System
-        auto renderSystem = std::make_shared<ENGINE_CORE::Systems::RenderSystem>(*m_pRegistry);
+        auto renderSystem = std::make_shared<ENGINE_CORE::Systems::RenderSystem>();
         if(!renderSystem)
         {
             ENGINE_ERROR("Failed to create the Render System");
@@ -203,7 +204,7 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to add the RenderSystem to Main Registry Context");
             return false;
         }
-        auto renderUISystem = std::make_shared<ENGINE_CORE::Systems::RenderUISystem>(*m_pRegistry);
+        auto renderUISystem = std::make_shared<ENGINE_CORE::Systems::RenderUISystem>();
         if(!renderUISystem)
         {
             ENGINE_ERROR("Failed to create the RenderUI System");
@@ -214,7 +215,7 @@ namespace ENGINE_EDITOR
             ENGINE_ERROR("Failed to add the RenderUISystem to Main Registry Context");
             return false;
         }
-        auto renderShapeSystem = std::make_shared<ENGINE_CORE::Systems::RenderShapeSystem>(*m_pRegistry);
+        auto renderShapeSystem = std::make_shared<ENGINE_CORE::Systems::RenderShapeSystem>();
         if(!renderShapeSystem)
         {
             ENGINE_ERROR("Failed to create the RenderShape System");
@@ -226,7 +227,7 @@ namespace ENGINE_EDITOR
             return false;
         }
         // Animation System
-        auto animationSystem = std::make_shared<ENGINE_CORE::Systems::AnimationSystem>(*m_pRegistry);
+        /*auto animationSystem = std::make_shared<ENGINE_CORE::Systems::AnimationSystem>(*m_pRegistry);
         if(!animationSystem)
         {
             ENGINE_ERROR("Failed to create the Animation System");
@@ -236,19 +237,19 @@ namespace ENGINE_EDITOR
         {
             ENGINE_ERROR("Failed to add the AnimationSystem to Registry Context");
             return false;
-        }
+        }*/
 
         // Camera //////////////////////
-        auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
+        /*auto camera = std::make_shared<ENGINE_RENDERING::Camera2D>();
 
         if(!m_pRegistry->AddToContext<std::shared_ptr<ENGINE_RENDERING::Camera2D>>(camera))
         {
             ENGINE_ERROR("Failed to add the Camera to Registry Context");
             return false;
-        }
+        }*/
 
         // Physics /////////////////////
-        ENGINE_PHYSICS::PhysicsWorld pPhysicsWorld = std::make_shared<b2World>(b2Vec2{0.f, 9.8f});
+        /*ENGINE_PHYSICS::PhysicsWorld pPhysicsWorld = std::make_shared<b2World>(b2Vec2{0.f, 9.8f});
         if(!m_pRegistry->AddToContext<ENGINE_PHYSICS::PhysicsWorld>(pPhysicsWorld))
         {
             ENGINE_ERROR("Failed to add the Physics World to Registry Context");
@@ -269,7 +270,7 @@ namespace ENGINE_EDITOR
 			return false;
 		}
 
-		pPhysicsWorld->SetContactListener(pContactListener.get());
+		pPhysicsWorld->SetContactListener(pContactListener.get());*/
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         if(!InitImGui())
@@ -328,6 +329,11 @@ namespace ENGINE_EDITOR
 			ENGINE_ERROR("Failed to add the GrydSystem to the Main Registry context!");
             return false;
         }	
+
+        SCENE_MANAGER().AddScene("DefultScene");
+        SCENE_MANAGER().AddScene("NewScene");
+        //SCENE_MANAGER().SetCurrentScene("DefaultScene");
+
 
         /*auto pTexture = assetManager->GetTexture("ball");
         using namespace ENGINE_CORE::ECS;
@@ -663,7 +669,7 @@ namespace ENGINE_EDITOR
             return false;
         }
 
-        auto pSceneDisplay = std::make_unique<SceneDisplay>(*m_pRegistry);
+        auto pSceneDisplay = std::make_unique<SceneDisplay>();
         if(!pSceneDisplay)
         {
             ENGINE_ERROR("Failed to create Scene Display");
@@ -773,12 +779,13 @@ namespace ENGINE_EDITOR
 
             auto centerNodeId = dockSpaceId;
             const auto leftNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Left, 0.2f, nullptr, &centerNodeId);
+            const auto rightNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Right, 0.2f, nullptr, &centerNodeId);
             const auto LogNodeId = ImGui::DockBuilderSplitNode(centerNodeId, ImGuiDir_Down, 0.28f, nullptr, &centerNodeId);
 
             ImGui::DockBuilderDockWindow("Dear ImGui Demo", leftNodeId);
             ImGui::DockBuilderDockWindow("Scene", centerNodeId);
             ImGui::DockBuilderDockWindow("Tilemap Editor", centerNodeId);
-            ImGui::DockBuilderDockWindow("Assets", centerNodeId);
+            ImGui::DockBuilderDockWindow("Assets", rightNodeId);
             ImGui::DockBuilderDockWindow("Logs", LogNodeId);
             ImGui::DockBuilderDockWindow("Tileset", LogNodeId);
 

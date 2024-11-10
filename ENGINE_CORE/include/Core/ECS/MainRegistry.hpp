@@ -4,7 +4,7 @@
 #include "Registry.hpp"
 
 
-#define MAIN_REGISTRY() ENGINE_CORE::ECS::MainRegistry::GetInstance();
+#define MAIN_REGISTRY() ENGINE_CORE::ECS::MainRegistry::GetInstance()
 
 namespace ENGINE_RESOURCES
 {

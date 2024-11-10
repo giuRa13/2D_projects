@@ -12,16 +12,15 @@ namespace ENGINE_CORE::Systems
     {
     
     private:
-        ENGINE_CORE::ECS::Registry& m_Registry;
         std::unique_ptr<ENGINE_RENDERING::RectBatchRenderer> m_pRectRenderer;
         std::unique_ptr<ENGINE_RENDERING::CircleBatchRenderer> m_pCircleRenderer;
     
 
     public:
-        RenderShapeSystem(ENGINE_CORE::ECS::Registry& registry);
+        RenderShapeSystem();
         ~RenderShapeSystem() = default;
 
-        void Update();
+        void Update(ENGINE_CORE::ECS::Registry& registry);
     };
 
 }

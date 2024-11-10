@@ -17,9 +17,7 @@ namespace ENGINE_EDITOR
             return;
         }
 
-        auto& mainRegistry = MAIN_REGISTRY();
-        auto& assetManager = mainRegistry.GetAssetManager();
-
+        auto& assetManager = MAIN_REGISTRY().GetAssetManager();
 
         if(ImGui::BeginCombo("Chose Tileset", m_sTileset.c_str()))
         {

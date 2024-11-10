@@ -81,6 +81,34 @@ namespace ENGINE_RESOURCES
 		return false;
 	}
 
+	bool AssetManager::DeleteAsset(const std::string& sAssetName, ENGINE_UTIL::AssetType eAssetType)
+	{
+		switch(eAssetType)
+		{
+		case ENGINE_UTIL::AssetType::TEXTURE: 
+			return std::erase_if(m_mapTextures, 
+				[&](const auto& pair) { return pair.first == sAssetName; }
+			) > 0;
+		case ENGINE_UTIL::AssetType::FONT:
+			return std::erase_if(m_mapFonts, 
+				[&](const auto& pair) { return pair.first == sAssetName; }
+			) > 0;
+		case ENGINE_UTIL::AssetType::SOUNDFX:
+			return std::erase_if(m_mapSoundFX, 
+				[&](const auto& pair) { return pair.first == sAssetName; }
+			) > 0;
+		case ENGINE_UTIL::AssetType::MUSIC:
+			return std::erase_if(m_mapMusic, 
+				[&](const auto& pair) { return pair.first == sAssetName; }
+			) > 0;
+
+		default: ENGINE_ASSERT(false && "Cannot get this asset type");
+		}
+
+		return false;
+	}
+
+
 	// Texture //////////////////////////
     bool AssetManager::AddTexture(const std::string& textureName, const std::string& texturePath, bool pixelArt, bool bTileset)
 	{
@@ -100,8 +128,10 @@ namespace ENGINE_RESOURCES
 			return false;
 		}
 
-		m_mapTextures.emplace(textureName, std::move(texture));
-		return true;
+		auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
+		return bSuccess;
+		//m_mapTextures.emplace(textureName, std::move(texture));
+		//return true;
 	}
 
     std::shared_ptr<ENGINE_RENDERING::Texture> AssetManager::GetTexture(const std::string& textureName)
@@ -139,7 +169,6 @@ namespace ENGINE_RESOURCES
 
 		// Insert the texture into the map
 		auto [ itr, bSuccess ] = m_mapTextures.emplace( textureName, std::move( texture ) );
-
 		return bSuccess;
 	}
 
@@ -159,8 +188,10 @@ namespace ENGINE_RESOURCES
 			return false;
 		}
 
-		m_mapShaders.emplace(shaderName, std::move(shader));
-		return true;
+		auto [ itr, bSuccess ] = m_mapShaders.insert( std::make_pair( shaderName, std::move( shader ) ) );
+		return bSuccess;
+		//m_mapShaders.emplace(shaderName, std::move(shader));
+		//return true;
 	}
 
 	bool AssetManager::AddShaderFromMemory(const std::string& shaderName, const char* vertexShader, const char* fragShader)
@@ -207,10 +238,10 @@ namespace ENGINE_RESOURCES
 			return false;
 		}
 
-		m_mapFonts.emplace(fontName, std::move(pFont));
-		return true;
-		//auto [ itr, bSuccess ] = m_mapFonts.emplace( fontName, std::move( pFont ) );
-		//return bSuccess;
+		//m_mapFonts.emplace(fontName, std::move(pFont));
+		//return true;
+		auto [ itr, bSuccess ] = m_mapFonts.emplace( fontName, std::move( pFont ) );
+		return bSuccess;
 	}
 
 	std::shared_ptr<ENGINE_RENDERING::Font> AssetManager::GetFont(const std::string& fontName)
@@ -242,8 +273,10 @@ namespace ENGINE_RESOURCES
 			return false;
 		}
 
-		m_mapFonts.emplace(fontName, std::move(pFont));
-		return true;
+		auto [ itr, bSuccess ] = m_mapFonts.emplace( fontName, std::move( pFont ) );
+	 	return bSuccess;
+		//m_mapFonts.emplace(fontName, std::move(pFont));
+		//return true;
 	}
 
 
@@ -279,10 +312,10 @@ namespace ENGINE_RESOURCES
 			return false;
 		}
 
-		m_mapMusic.emplace(musicName, std::move(musicPtr));
-		return true;
-		//auto [ itr, bSuccess ] = m_mapMusic.emplace( musicName, std::move( musicPtr ) );
-		//return bSuccess;
+		//m_mapMusic.emplace(musicName, std::move(musicPtr));
+		//return true;
+		auto [ itr, bSuccess ] = m_mapMusic.emplace( musicName, std::move( musicPtr ) );
+		return bSuccess;
 	}
 
 	std::shared_ptr<ENGINE_SOUNDS::Music> AssetManager::GetMusic(const std::string& musicName)
@@ -323,8 +356,10 @@ namespace ENGINE_RESOURCES
 		};
 
 		auto pSoundFx = std::make_shared<ENGINE_SOUNDS::SoundFX>(params, SoundFxPtr{ chunk });
-		m_mapSoundFX.emplace(soundFxName, std::move(pSoundFx));
-		return true;
+		auto [ itr, bSuccess ] = m_mapSoundFX.emplace( soundFxName, std::move( pSoundFx ) );
+		return bSuccess;
+		//m_mapSoundFX.emplace(soundFxName, std::move(pSoundFx));
+		//return true;
 	}
 
 	std::shared_ptr<ENGINE_SOUNDS::SoundFX> AssetManager::GetSoundFx(const std::string& soundFxName)
